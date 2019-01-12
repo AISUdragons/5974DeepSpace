@@ -36,6 +36,163 @@ public class Robot extends TimedRobot {
     Command autonomousCommand;
     SendableChooser<Command> chooser = new SendableChooser<>();
 
+	//Ports start at 0, not 1.
+	//This is code from last year. You will PROBABLY have to change what port number things are on.
+	//Some may have to be inverted.
+	//TODO: Set up motors once we know ports/inversion
+	VictorSP motorRB = new VictorSP(0); //motor right back
+	VictorSP motorRF = new VictorSP(1); //motor right front 
+	VictorSP motorLB = new VictorSP(3); //motor left back 
+	VictorSP motorLF = new VictorSP(2); //motor left front 
+	
+	//Variables we're using
+	Joystick controller = new Joystick(0);			//controller
+	//We'll probably need to initialize gyro/accelerometer in here somewhere too. Also camera.
+	double joystickLXAxis;			//left joystick x-axis
+	double joystickLYAxis;			//left joystick y-axis
+	double joystickRXAxis;			//right joystick x-axis
+	double joystickRYAxis;			//right joystick y-axis
+	double triggerL;				//left trigger
+	double triggerR;				//right trigger
+	boolean bumperL;				//left bumper
+	boolean bumperR;				//right bumper
+	boolean buttonX;				//x button
+	boolean buttonY;				//y button
+	boolean buttonA;				//a button
+	boolean buttonB;				//b button
+	int dPad;					    //d-pad
+	boolean joystickLPress;		    //left joystick button press
+	boolean joystickRPress;		    //right joystick button press
+	boolean buttonStart;			//start button
+	boolean buttonBack;			    //back button
+
+	boolean tankDriveBool = true;	//drive mode: true = tank drive, false = arcade drive
+	boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
+
+	//time variables [see updateTimer()]
+	//Not sure if we'll actually use these, but here they are.
+	Timer timer = new Timer();
+	Timer timerTest = new Timer();
+	double dT = 0; //time difference (t1-t0)
+	double t0 = 0; //time start
+	double t1 = 0; //time end
+
+	//sets dead zone for joysticks. 
+	//TODO: May need some testing/fine-tuning
+	public void joystickDeadZone() {
+		if (joystickLXAxis <= 0.075 && joystickLXAxis >= -0.075) {
+			joystickLXAxis = 0;
+		} if (joystickLYAxis <= 0.075 && joystickLYAxis >= -0.075) {
+			joystickLYAxis = 0;
+		}
+		if (joystickRXAxis <= 0.075 && joystickRXAxis >= -0.075) {
+			joystickRXAxis = 0;
+		} if (joystickRYAxis <= 0.075 && joystickRYAxis >= -0.075) {
+			joystickRYAxis = 0;
+		}
+	}
+
+	public void updateTimer() {		//sets change in time between the current running of a periodic function and the previous running
+		t0 = t1;
+		t1 = timer.get();
+		dT = t1 - t0;
+	}
+
+	public void updateController() {		//updates all controller features
+		//left joystick update
+		joystickLXAxis = controller.getRawAxis(0);		//returns a value [-1,1]
+		joystickLYAxis = controller.getRawAxis(1);		//returns a value [-1,1]
+		joystickLPress = controller.getRawButton(9);	//returns a value {0,1}
+		
+		//right joystick update
+		joystickRXAxis = controller.getRawAxis(4);		//returns a value [-1,1]
+		joystickRYAxis = controller.getRawAxis(5);		//returns a value [-1,1]
+		joystickRPress = controller.getRawButton(10);	//returns a value {0,1}
+		
+		//trigger updates
+		triggerL = controller.getRawAxis(2);		//returns a value [0,1]
+		triggerR = controller.getRawAxis(3);		//returns a value [0,1]
+		
+		//bumper updates
+		bumperL = controller.getRawButton(5);		//returns a value {0,1}
+		bumperR = controller.getRawButton(6);		//returns a value {0,1}
+		
+		//button updates
+		buttonX = controller.getRawButton(3);		//returns a value {0,1}
+		buttonY = controller.getRawButton(4);		//returns a value {0,1}
+		buttonA = controller.getRawButton(1);		//returns a value {0,1}
+		buttonB = controller.getRawButton(2);		//returns a value {0,1}
+		
+		buttonBack = controller.getRawButton(7);	//returns a value {0,1}
+		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
+		
+		//toggle checks
+		tankDriveBool = checkButton(buttonX, tankDriveBool, 3);		//toggles boolean if button is pressed
+		fastBool = checkButton(buttonB, fastBool, 2);					//toggles boolean if button is pressed
+		
+		
+		//d-pad/POV updates
+		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
+
+		//d-pad/POV turns
+		if (dPad != -1) {
+			dPad = 360 - dPad; //Converts the clockwise dPad rotation into a Gyro-readable counterclockwise rotation.
+			rotateTo(dPad);
+		}
+		
+		joystickDeadZone();
+	}
+	
+	public void update() {	//updates all update functions
+		updateController();
+		updateTimer();
+		//If we do gyro/accel update functions, don't forget to call them here
+	}
+
+	public void dashboardOutput() {			//sends and displays data to smart dashboard
+		SmartDashboard.putNumber("Time Remaining", GameTime);
+		SmartDashboard.putBoolean("Tank Drive Style", tankDriveBool);
+		SmartDashboard.putBoolean("Fast Mode", fastBool);
+		SmartDashboard.putNumber("Team Number", 5974);
+		SmartDashboard.putBoolean("Climb Mode", climbMode);
+	}
+
+	public void tankDrive() {	//tank drive: left joystick controls left wheels, right joystick controls right wheels
+		//right motors = right joystick y-axis
+		//left motors = left joystick y-axis
+		if (fastBool) {
+			motorRB.set(joystickRYAxis);
+			motorRF.set(joystickRYAxis);
+			//TODO: Invert the correct motors
+			motorLB.set(-joystickLYAxis); //Assuming these two are inverted.
+			motorLF.set(-joystickLYAxis);
+
+		} else {
+			motorRB.set(joystickRYAxis/2);
+			motorRF.set(joystickRYAxis/2);
+			motorLB.set(-joystickLYAxis/2);
+			motorLF.set(-joystickLYAxis/2);
+
+		}
+	}
+	
+	public void arcadeDrive() {	//arcade drive: left joystick controls all driving
+		//right wheels have less power the farther right the left joystick is and more power the farther left
+		//left wheels have less power the farther left the left joystick is and more power the farther right
+		//X-axis input is halved
+		if (fastBool) {
+			motorRB.set((joystickLYAxis + joystickLXAxis/2));
+			motorRF.set((joystickLYAxis + joystickLXAxis/2));
+			//TODO: Invert the correct motors
+			motorLB.set(-(joystickLYAxis - joystickLXAxis/2));
+			motorLF.set(-(joystickLYAxis - joystickLXAxis/2));
+		} else {
+			motorRB.set((joystickLYAxis + joystickLXAxis/2)/2);
+			motorRF.set((joystickLYAxis + joystickLXAxis/2)/2);
+			motorLB.set(-(joystickLYAxis - joystickLXAxis/2)/2);
+			motorLF.set(-(joystickLYAxis - joystickLXAxis/2)/2);
+		}
+}
     public static OI oi;
     // BEGIN AUTOGENERATED CODE, SOURCE=ROBOTBUILDER ID=DECLARATIONS
 
@@ -47,6 +204,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+		//Add in any needed initialization with sensors, autonomous/sendable chooser, etc.
 
         // BEGIN AUTOGENERATED CODE, SOURCE=ROBOTBUILDER ID=CONSTRUCTORS
 
@@ -101,7 +259,17 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
-        if (autonomousCommand != null) autonomousCommand.cancel();
+		if (autonomousCommand != null) autonomousCommand.cancel();
+
+		//Rumble controller for half a second
+		controller.setRumble(Joystick.RumbleType.kRightRumble, 0.5);
+		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0.5);
+		Timer.delay(0.5);
+		controller.setRumble(Joystick.RumbleType.kRightRumble, 0);
+		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
+		
+		timer.start();
+}
     }
 
     /**
@@ -109,6 +277,19 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
-        Scheduler.getInstance().run();
+		Scheduler.getInstance().run();
+
+		update();
+		
+		//dashboard outputs
+		dashboardOutput();
+
+		if (tankDriveBool) {
+			tankDrive();
+		} 
+		else {
+			arcadeDrive();
+		}
+
     }
 }
