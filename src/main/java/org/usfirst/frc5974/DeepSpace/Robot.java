@@ -15,7 +15,7 @@
 
 package org.usfirst.frc5974.DeepSpace;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj.*;         //Imports a lot of stuff (motors, contro
  * creating this project, you must also update the build.properties file in 
  * the project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends IterativeRobot {
 
     Command autonomousCommand;
     SendableChooser<Command> chooser = new SendableChooser<>();
