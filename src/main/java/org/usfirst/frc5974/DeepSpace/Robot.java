@@ -15,7 +15,6 @@
 
 package org.usfirst.frc5974.DeepSpace;
 
-import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -24,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 import org.usfirst.frc5974.DeepSpace.subsystems.*;
+import edu.wpi.first.wpilibj.*;         //Imports a lot of stuff (motors, controllers, timer, etc.)
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -48,7 +48,6 @@ public class Robot extends IterativeRobot {
 	
 	//Variables we're using
 	Joystick controller = new Joystick(0);			//controller
-	//We'll probably need to initialize gyro/accelerometer in here somewhere too. Also camera.
 	double joystickLXAxis;			//left joystick x-axis
 	double joystickLYAxis;			//left joystick y-axis
 	double joystickRXAxis;			//right joystick x-axis
@@ -66,6 +65,7 @@ public class Robot extends IterativeRobot {
 	boolean joystickRPress;		    //right joystick button press
 	boolean buttonStart;			//start button
 	boolean buttonBack;			    //back button
+    //We'll probably need to initialize gyro/accelerometer in here somewhere too. Also camera.
 
 	boolean tankDriveBool = true;	//drive mode: true = tank drive, false = arcade drive
 	boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
@@ -93,7 +93,7 @@ public class Robot extends IterativeRobot {
 		}
 	}
 
-	public void updateTimer() {		//sets change in time between the current running of a periodic function and the previous running
+	public void updateTimer() {	//sets change in time between the current running of a periodic function and the previous running
 		t0 = t1;
 		t1 = timer.get();
 		dT = t1 - t0;
@@ -109,7 +109,9 @@ public class Robot extends IterativeRobot {
 		joystickRXAxis = controller.getRawAxis(4);		//returns a value [-1,1]
 		joystickRYAxis = controller.getRawAxis(5);		//returns a value [-1,1]
 		joystickRPress = controller.getRawButton(10);	//returns a value {0,1}
-		
+        
+        joystickDeadZone();
+
 		//trigger updates
 		triggerL = controller.getRawAxis(2);		//returns a value [0,1]
 		triggerR = controller.getRawAxis(3);		//returns a value [0,1]
@@ -129,8 +131,7 @@ public class Robot extends IterativeRobot {
 		
 		//toggle checks
 		tankDriveBool = checkButton(buttonX, tankDriveBool, 3);		//toggles boolean if button is pressed
-		fastBool = checkButton(buttonB, fastBool, 2);					//toggles boolean if button is pressed
-		
+		fastBool = checkButton(buttonB, fastBool, 2);				//toggles boolean if button is pressed
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
@@ -140,8 +141,6 @@ public class Robot extends IterativeRobot {
 			dPad = 360 - dPad; //Converts the clockwise dPad rotation into a Gyro-readable counterclockwise rotation.
 			rotateTo(dPad);
 		}
-		
-		joystickDeadZone();
 	}
 	
 	public void update() {	//updates all update functions
