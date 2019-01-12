@@ -15,7 +15,8 @@
 
 package org.usfirst.frc5974.DeepSpace;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -31,7 +32,7 @@ import org.usfirst.frc5974.DeepSpace.subsystems.*;
  * creating this project, you must also update the build.properties file in 
  * the project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends IterativeRobot {
 
     Command autonomousCommand;
     SendableChooser<Command> chooser = new SendableChooser<>();
@@ -269,8 +270,8 @@ public class Robot extends TimedRobot {
 		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
 		
 		timer.start();
-}
-    }
+	}
+    
 
     /**
      * This function is called periodically during operator control
