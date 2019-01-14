@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
-import org.usfirst.frc5974.DeepSpace.subsystems.*;
+//import org.usfirst.frc5974.DeepSpace.subsystems.*;
 import edu.wpi.first.wpilibj.*;         //Imports a lot of stuff (motors, controllers, timer, etc.)
 
 /**
@@ -77,6 +77,16 @@ public class Robot extends IterativeRobot {
 	double dT = 0; //time difference (t1-t0)
 	double t0 = 0; //time start
 	double t1 = 0; //time end
+
+	public boolean checkButton(boolean button, boolean toggle, int port) {		//When the button is pushed, once it is released, its toggle is changed
+		if (button) {
+			toggle = !toggle;
+			while (button) {		//TODO while loop causes problems
+				button = controller.getRawButton(port);
+			}
+		}
+		return toggle;
+	}
 
 	//sets dead zone for joysticks. 
 	//TODO: May need some testing/fine-tuning
@@ -137,10 +147,6 @@ public class Robot extends IterativeRobot {
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
 
 		//d-pad/POV turns
-		if (dPad != -1) {
-			dPad = 360 - dPad; //Converts the clockwise dPad rotation into a Gyro-readable counterclockwise rotation.
-			rotateTo(dPad);
-		}
 	}
 	
 	public void update() {	//updates all update functions
@@ -150,11 +156,10 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
-		SmartDashboard.putNumber("Time Remaining", GameTime);
+		//SmartDashboard.putNumber("Time Remaining", GameTime);
 		SmartDashboard.putBoolean("Tank Drive Style", tankDriveBool);
 		SmartDashboard.putBoolean("Fast Mode", fastBool);
 		SmartDashboard.putNumber("Team Number", 5974);
-		SmartDashboard.putBoolean("Climb Mode", climbMode);
 	}
 
 	public void tankDrive() {	//tank drive: left joystick controls left wheels, right joystick controls right wheels
