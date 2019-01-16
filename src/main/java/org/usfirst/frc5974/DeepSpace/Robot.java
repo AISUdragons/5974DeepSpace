@@ -34,7 +34,7 @@ import edu.wpi.cscore.UsbCamera;
  * creating this project, you must also update the build.properties file in 
  * the project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
     Command autonomousCommand;
     SendableChooser<Command> chooser = new SendableChooser<>();
@@ -84,7 +84,8 @@ public class Robot extends TimedRobot {
 	public boolean checkButton(boolean button, boolean toggle, int port) {		//When the button is pushed, once it is released, its toggle is changed
 		if (button) {
 			toggle = !toggle;
-			while (button) {		//TODO while loop causes problems
+			while (button) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
+									// This is a pretty small amount of code though, so it shouldn't be an issue. 
 				button = controller.getRawButton(port);
 			}
 		}
