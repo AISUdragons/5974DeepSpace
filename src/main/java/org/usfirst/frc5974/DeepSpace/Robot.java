@@ -235,7 +235,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		//Camera init
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		//If we do vision processing, I think we need to run this in its own thread. I read about it in the WPIlib docs last year I think, don't remember where though.
-		
+
 		camera.setResolution(640,480);
     }
 
