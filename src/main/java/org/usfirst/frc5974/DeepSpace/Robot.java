@@ -1,4 +1,4 @@
-// Mara is here
+// Sam is here
 // Last year's github: https://github.com/AISUMechanicalDragons/FIRSTPowerUp5974
 // **If copying/pasting code, it MUST be from there.**
 
@@ -15,7 +15,7 @@
 
 package org.usfirst.frc5974.DeepSpace;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -34,7 +34,7 @@ import edu.wpi.cscore.UsbCamera;
  * creating this project, you must also update the build.properties file in 
  * the project.
  */
-public class Robot extends IterativeRobot {
+public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
     Command autonomousCommand;
     SendableChooser<Command> chooser = new SendableChooser<>();
@@ -84,7 +84,8 @@ public class Robot extends IterativeRobot {
 	public boolean checkButton(boolean button, boolean toggle, int port) {		//When the button is pushed, once it is released, its toggle is changed
 		if (button) {
 			toggle = !toggle;
-			while (button) {		//TODO while loop causes problems
+			while (button) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
+									// This is a pretty small amount of code though, so it shouldn't be an issue. 
 				button = controller.getRawButton(port);
 			}
 		}
@@ -233,6 +234,8 @@ public class Robot extends IterativeRobot {
 		
 		//Camera init
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+		//If we do vision processing, I think we need to run this in its own thread. I read about it in the WPIlib docs last year I think, don't remember where though.
+
 		camera.setResolution(640,480);
     }
 
