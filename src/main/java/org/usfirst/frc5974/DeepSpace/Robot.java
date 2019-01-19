@@ -25,6 +25,10 @@ import org.usfirst.frc5974.DeepSpace.commands.*;
 //import org.usfirst.frc5974.DeepSpace.subsystems.*;
 import edu.wpi.first.wpilibj.*;         //Imports a lot of stuff (motors, controllers, timer, etc.)
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTable; //for the camera
+import edu.wpi.first.networktables.NetworkTableEntry; // ""
+import edu.wpi.first.networktables.NetworkTableInstance; // ""
+//import java.util.Set;									// ""
 import edu.wpi.cscore.UsbCamera;
 
 /**
@@ -234,6 +238,26 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		//If we do vision processing, I think we need to run this in its own thread. I read about it in the WPIlib docs last year I think, don't remember where though.
 
 		camera.setResolution(640,480);
+
+		//Camera Stuff
+		NetworkTableInstance inst = NetworkTableInstance.getDefault();
+		NetworkTable table = inst.getTable("GRIP/myContours Report");
+		double[] defaultValue = new double[0];
+		/**String[] keys = table.getKeys().toArray(new String[0]);
+		int len = keys.length;
+		double[][] tableArray = new double[len][];
+		for (int i = 0; i < len; i++) {
+			tableArray[i] = table.getEntry(keys[i]).getDoubleArray(defaultValue);
+		}*/
+		while(true) {
+			double[] areas = table.getEntry("area").getDoubleArray(defaultValue);
+			System.out.print("areas: ");
+			for (double area : areas) {
+				System.out.print(area + " ");
+			}
+			System.out.println();
+			Timer.delay(1);
+		}
     }
 
     /**
@@ -283,7 +307,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		timer.start();
 	}
     
-
     /**
      * This function is called periodically during operator control
      */
