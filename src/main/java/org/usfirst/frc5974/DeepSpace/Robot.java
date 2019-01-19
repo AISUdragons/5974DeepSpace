@@ -14,7 +14,7 @@
 
 
 package org.usfirst.frc5974.DeepSpace;
-
+//IDK if we need all these imports
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -40,8 +40,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     SendableChooser<Command> chooser = new SendableChooser<>();
 
 	//Ports start at 0, not 1.
-	//This is code from last year. You will PROBABLY have to change what port number things are on.
-	//Some may have to be inverted.
 	//TODO: Set up motors once we know ports/inversion
 	VictorSP motorRB = new VictorSP(0); //motor right back
 	VictorSP motorRF = new VictorSP(1); //motor right front 
@@ -49,10 +47,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	VictorSP motorLF = new VictorSP(2); //motor left front 
 
 	//We'll probably need to initialize gyro/accelerometer in here somewhere too.
+	
 	//UsbCamera camera = new UsbCamera(String name, String path)
 	
-	//Variables we're using
-	Joystick controller = new Joystick(0);			//controller
+	//Variables for the Controller
+	Joystick controller = new Joystick(0);	//controller
 	double joystickLXAxis;			//left joystick x-axis
 	double joystickLYAxis;			//left joystick y-axis
 	double joystickRXAxis;			//right joystick x-axis
@@ -70,6 +69,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	boolean joystickRPress;		    //right joystick button press
 	boolean buttonStart;			//start button
 	boolean buttonBack;			    //back button
+	
+	//Drive Variables
 	boolean tankDriveBool = true;	//drive mode: true = tank drive, false = arcade drive
 	boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
 
@@ -81,19 +82,21 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double t0 = 0; //time start
 	double t1 = 0; //time end
 
-	public boolean checkButton(boolean button, boolean toggle, int port) {		//When the button is pushed, once it is released, its toggle is changed
-		if (button) {
+	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
+		//When the button is pushed, once it is released, its toggle is changed
+		if (pressed) {
 			toggle = !toggle;
-			while (button) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
+			while (pressed) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
 									// This is a pretty small amount of code though, so it shouldn't be an issue. 
-				button = controller.getRawButton(port);
+				pressed = controller.getRawButton(portNum);
 			}
 		}
 		return toggle;
 	}
 
-	//sets dead zone for joysticks. 
+	//Set dead zone for joysticks
 	//TODO: May need some testing/fine-tuning
+	//does this need to be a seperate function?
 	public void joystickDeadZone() {
 		if (joystickLXAxis <= 0.075 && joystickLXAxis >= -0.075) {
 			joystickLXAxis = 0;
@@ -114,16 +117,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 
 	public void updateController() {		//updates all controller features
-		//left joystick update
+		//joystick updates
 		joystickLXAxis = controller.getRawAxis(0);		//returns a value [-1,1]
 		joystickLYAxis = controller.getRawAxis(1);		//returns a value [-1,1]
-		joystickLPress = controller.getRawButton(9);	//returns a value {0,1}
-		
-		//right joystick update
 		joystickRXAxis = controller.getRawAxis(4);		//returns a value [-1,1]
 		joystickRYAxis = controller.getRawAxis(5);		//returns a value [-1,1]
+		joystickLPress = controller.getRawButton(9);	//returns a value {0,1}
 		joystickRPress = controller.getRawButton(10);	//returns a value {0,1}
-        
         joystickDeadZone();
 
 		//trigger updates
@@ -151,9 +151,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
 
 		//d-pad/POV turns
+		//??
 	}
 	
-	public void update() {	//updates all update functions
+	public void update() {	//updates everything
 		updateController();
 		updateTimer();
 		//If we do gyro/accel update functions, don't forget to call them here
@@ -166,16 +167,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Team Number", 5974);
 	}
 
-	public void tankDrive() {	//tank drive: left joystick controls left wheels, right joystick controls right wheels
-		//right motors = right joystick y-axis
-		//left motors = left joystick y-axis
+	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
 		if (fastBool) {
 			motorRB.set(joystickRYAxis);
 			motorRF.set(joystickRYAxis);
 			//TODO: Invert the correct motors
 			motorLB.set(-joystickLYAxis); //Assuming these two are inverted.
 			motorLF.set(-joystickLYAxis);
-
 		} else {
 			motorRB.set(joystickRYAxis/2);
 			motorRF.set(joystickRYAxis/2);
@@ -186,8 +184,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 	
 	public void arcadeDrive() {	//arcade drive: left joystick controls all driving
-		//right wheels have less power the farther right the left joystick is and more power the farther left
-		//left wheels have less power the farther left the left joystick is and more power the farther right
+		//right wheels have more forward power the farther left the joystick is pushed
+		//left wheels have more forward power the farther right the joystick is pushed
+		//All wheels have more forward power the farther up the joystick is pushed
 		//X-axis input is halved
 		if (fastBool) {
 			motorRB.set((joystickLYAxis + joystickLXAxis/2));
@@ -226,9 +225,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
         // Add commands to Autonomous Sendable Chooser
         // BEGIN AUTOGENERATED CODE, SOURCE=ROBOTBUILDER ID=AUTONOMOUS
-
         chooser.setDefaultOption("Autonomous Command", new AutonomousCommand());
-
         // END AUTOGENERATED CODE, SOURCE=ROBOTBUILDER ID=AUTONOMOUS
 		SmartDashboard.putData("Auto mode", chooser);
 		
@@ -295,8 +292,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		Scheduler.getInstance().run();
 
 		update();
-		
-		//dashboard outputs
 		dashboardOutput();
 
 		if (tankDriveBool) {
@@ -305,6 +300,5 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		else {
 			arcadeDrive();
 		}
-
     }
 }
