@@ -1,3 +1,5 @@
+package org.usfirst.frc5974.grip;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
