@@ -26,18 +26,17 @@ import org.usfirst.frc5974.DeepSpace.commands.*;
 import edu.wpi.first.wpilibj.*;         //Imports a lot of stuff (motors, controllers, timer, etc.)
 
 //Camera Stuff
-//import org.usfirst.frc5974.grip.MyVisionPipeline;
-import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.cameraserver.CameraServer;
+/*import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.vision.VisionRunner;
 import edu.wpi.first.vision.VisionThread;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import edu.wpi.cscore.UsbCamera;
 import org.usfirst.frc5974.grip.GripPipeline;
-//import java.util.Set;
+//import java.util.Set;*/
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -93,13 +92,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double t1 = 0; //time end
 
 	//Camera Stuff
-	private static final int IMG_WIDTH = 320;
+	/*private static final int IMG_WIDTH = 320;
 	private static final int IMG_HEIGHT =240;
 	private VisionThread visionThread;
 	private double centerX = 0.0;
-	//private RobotDrive drive;
+	private RobotDrive drive;
 	private final Object imgLock = new Object();
-	//UsbCamera camera = new UsbCamera(String name, String path)
+	//UsbCamera camera = new UsbCamera(String name, String path)*/
 
 	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
 		//When the button is pushed, once it is released, its toggle is changed
@@ -250,8 +249,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		//Camera Stuff
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-		/*visionThread = new VisionThread(camera, new MyVisionPipeline(), pipeline -> {
+		//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
 				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
 				synchronized (imgLock) {
@@ -262,15 +261,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		visionThread.start();
 		//drive = new RobotDrive(1, 2);*/
 
-		NetworkTableInstance inst = NetworkTableInstance.getDefault();
+		/*NetworkTableInstance inst = NetworkTableInstance.getDefault();
 		NetworkTable table = inst.getTable("GRIP/myContours Report");
 		double[] defaultValue = new double[0];
-		/**String[] keys = table.getKeys().toArray(new String[0]);
-		int len = keys.length;
-		double[][] tableArray = new double[len][];
-		for (int i = 0; i < len; i++) {
-			tableArray[i] = table.getEntry(keys[i]).getDoubleArray(defaultValue);
-		}*/
 		while(true) {
 			double[] areas = table.getEntry("area").getDoubleArray(defaultValue);
 			System.out.print("areas: ");
@@ -278,7 +271,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 				System.out.print(area + " ");
 			}
 			System.out.println();
-			Timer.delay(1);
+			Timer.delay(1);*/
 		}
     }
 
