@@ -248,7 +248,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		//Camera Stuff
-		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+		//UsbCamera camera = 
+		CameraServer.getInstance().startAutomaticCapture();
 		//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
@@ -271,8 +272,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 				System.out.print(area + " ");
 			}
 			System.out.println();
-			Timer.delay(1);*/
-		}
+			Timer.delay(1);
+		}*/
     }
 
     /**
