@@ -1,4 +1,4 @@
-// I will be here forever
+// I will be here forever. You do like lies, right?
 // Last year's github: https://github.com/AISUMechanicalDragons/FIRSTPowerUp5974
 // **If copying/pasting code, it MUST be from there.**
 
