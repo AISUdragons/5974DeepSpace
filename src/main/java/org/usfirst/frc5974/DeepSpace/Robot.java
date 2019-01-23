@@ -1,4 +1,4 @@
-// I is no longer here
+// I will be here forever
 // Last year's github: https://github.com/AISUMechanicalDragons/FIRSTPowerUp5974
 // **If copying/pasting code, it MUST be from there.**
 
