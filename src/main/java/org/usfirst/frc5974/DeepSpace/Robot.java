@@ -36,6 +36,7 @@ import edu.wpi.first.vision.VisionThread;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import edu.wpi.cscore.UsbCamera;
+import org.usfirst.frc5974.grip.GripPipeline;
 //import java.util.Set;
 
 /**
@@ -55,11 +56,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	VictorSP motorRB = new VictorSP(0); //motor right back
 	VictorSP motorRF = new VictorSP(1); //motor right front 
 	VictorSP motorLB = new VictorSP(3); //motor left back 
-	VictorSP motorLF = new VictorSP(2); //motor left front 
+	VictorSP motorLF = new VictorSP(2); //motor left front
 
 	//We'll probably need to initialize gyro/accelerometer in here somewhere too.
-	
-	//UsbCamera camera = new UsbCamera(String name, String path)
 	
 	//Variables for the Controller
 	Joystick controller = new Joystick(0);	//controller
@@ -98,8 +97,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	private static final int IMG_HEIGHT =240;
 	private VisionThread visionThread;
 	private double centerX = 0.0;
-	private RobotDrive drive;
+	//private RobotDrive drive;
 	private final Object imgLock = new Object();
+	//UsbCamera camera = new UsbCamera(String name, String path)
 
 	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
 		//When the button is pushed, once it is released, its toggle is changed
@@ -251,7 +251,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		//Camera Stuff
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-
 		/*visionThread = new VisionThread(camera, new MyVisionPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
 				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
@@ -342,8 +341,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 		if (tankDriveBool) {
 			tankDrive();
-		} 
-		else {
+		} else {
 			arcadeDrive();
 		}
     }
