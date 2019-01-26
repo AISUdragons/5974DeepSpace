@@ -299,6 +299,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			System.out.println();
 			Timer.delay(1);
 		}*/
+		sensorInit();
     }
 
     /**
