@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
-
 //IDK if we need all these imports
 //import org.usfirst.frc5974.DeepSpace.subsystems.*;
 import edu.wpi.first.wpilibj.*;         //Imports a lot of stuff (motors, controllers, timer, etc.)
