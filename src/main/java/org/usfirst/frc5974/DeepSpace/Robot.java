@@ -101,6 +101,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	//UsbCamera camera = new UsbCamera(String name, String path)*/
 
 	//Sensor Stuff
+	//This is for the little FRC Gyro/Accel chip on the top right corner of the RIO. 
+	//The thicc ADIS sensor in the middle needs different libraries and stuff, but that'd be fun to play with too.
 	private Accelerometer accel; 
 	double xVal;
 	double yVal;
@@ -202,6 +204,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putBoolean("Tank Drive Style", tankDriveBool);
 		SmartDashboard.putBoolean("Fast Mode", fastBool);
 		SmartDashboard.putNumber("Team Number", 5974);
+		SmartDashboard.putNumber("X Value",xVal);
+		SmartDashboard.putNumber("Y Value",yVal);
+		SmartDashboard.putNumber("Z Value",zVal);
+		SmartDashboard.putNumber("Angle",angle);
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
@@ -269,6 +275,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		//Camera Stuff
 		//UsbCamera camera = 
 		CameraServer.getInstance().startAutomaticCapture();	
+		sensorInit(); //Initiate FRC gyro/accel (NOT ADIS)
 		//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
