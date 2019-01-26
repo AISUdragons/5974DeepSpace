@@ -198,6 +198,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			motorRB.set(joystickRYAxis);
 			motorRF.set(joystickRYAxis);
 			//TODO: Invert the correct motors
+			//change
 			motorLB.set(-joystickLYAxis); //Assuming these two are inverted.
 			motorLF.set(-joystickLYAxis);
 		} else {
