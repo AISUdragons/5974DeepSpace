@@ -109,8 +109,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double zVal;
 	private Gyro gyro;
 	double angle;
+	double gyroRate;
 	public void sensorInit() {
 		gyro = new AnalogGyro(0);
+		gyro.calibrate(); //not actually sure what this does, but it seemed like a good idea.
 		//accel = new BuiltInAccelerometer();
 		accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
 	}
@@ -118,7 +120,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		xVal = accel.getX();
 		yVal = accel.getY();
 		zVal = accel.getZ();
-		angle = gyro.getAngle();
+		gyroRate = gyro.getRate(); //rate of rotation of gyro
+		angle = gyro.getAngle(); //Goes from 360 to 361 degrees. I think .reset() is maybe a thing though idk
 	}
 
 	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
@@ -208,6 +211,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Y Value",yVal);
 		SmartDashboard.putNumber("Z Value",zVal);
 		SmartDashboard.putNumber("Angle",angle);
+		SmartDashboard.putNumber("Rate",gyroRate);
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
