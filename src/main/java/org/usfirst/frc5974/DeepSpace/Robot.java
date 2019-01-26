@@ -279,8 +279,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		//Camera Stuff
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();	
-		camera.setResolution(320,240);
-		sensorInit(); //Initiate FRC gyro/accel (NOT ADIS)
+		camera.setResolution(240,180); //Default is 160x120 I think
+		//This seems like a sweet spot; may want further testing though.
+		//camera.setFPS(30);
+		//sensorInit(); //Initiate FRC gyro/accel (NOT ADIS)
 		//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
@@ -352,6 +354,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
 		
 		timer.start();
+
+		sensorInit();
 	}
     
     /**
@@ -368,6 +372,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			tankDrive();
 		} else {
 			arcadeDrive();
+		}
+		if(buttonBack){
+			gyro.reset();
 		}
     }
 }
