@@ -136,13 +136,20 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void joystickDeadZone() {
 		if (joystickLXAxis <= 0.075 && joystickLXAxis >= -0.075) {
 			joystickLXAxis = 0;
+		} else {
+			joystickLXAxis = (joystickLXAxis - 0.075)/0.925; // We may need to change this.
 		} if (joystickLYAxis <= 0.075 && joystickLYAxis >= -0.075) {
 			joystickLYAxis = 0;
-		}
-		if (joystickRXAxis <= 0.075 && joystickRXAxis >= -0.075) {
+		} else {
+			joystickLYAxis = (joystickLYAxis - 0.075)/0.925; // We may need to change this.
+		} if (joystickRXAxis <= 0.075 && joystickRXAxis >= -0.075) {
 			joystickRXAxis = 0;
+		} else {
+			joystickRXAxis = (joystickRXAxis - 0.075)/0.925; // We may need to change this.
 		} if (joystickRYAxis <= 0.075 && joystickRYAxis >= -0.075) {
 			joystickRYAxis = 0;
+		} else {
+			joystickRYAxis = (joystickRYAxis - 0.075)/0.925; // We may need to change this.
 		}
 	}
 
