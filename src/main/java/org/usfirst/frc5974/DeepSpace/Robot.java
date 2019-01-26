@@ -14,14 +14,16 @@
 
 
 package org.usfirst.frc5974.DeepSpace;
-//IDK if we need all these imports
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.interfaces.Accelerometer;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
+
+//IDK if we need all these imports
 //import org.usfirst.frc5974.DeepSpace.subsystems.*;
 import edu.wpi.first.wpilibj.*;         //Imports a lot of stuff (motors, controllers, timer, etc.)
 
@@ -56,8 +58,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	VictorSP motorRF = new VictorSP(1); //motor right front 
 	VictorSP motorLB = new VictorSP(3); //motor left back 
 	VictorSP motorLF = new VictorSP(2); //motor left front
-
-	//We'll probably need to initialize gyro/accelerometer in here somewhere too.
 	
 	//Variables for the Controller
 	Joystick controller = new Joystick(0);	//controller
@@ -99,6 +99,25 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	private RobotDrive drive;
 	private final Object imgLock = new Object();
 	//UsbCamera camera = new UsbCamera(String name, String path)*/
+
+	//Sensor Stuff
+	private Accelerometer accel; 
+	double xVal;
+	double yVal;
+	double zVal;
+	private Gyro gyro;
+	double angle;
+	public void sensorInit() {
+		gyro = new AnalogGyro(0);
+		//accel = new BuiltInAccelerometer();
+		accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
+	}
+	public void updateSensors() {
+		xVal = accel.getX();
+		yVal = accel.getY();
+		zVal = accel.getZ();
+		angle = gyro.getAngle();
+	}
 
 	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
 		//When the button is pushed, once it is released, its toggle is changed
@@ -175,7 +194,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void update() {	//updates everything
 		updateController();
 		updateTimer();
-		//If we do gyro/accel update functions, don't forget to call them here
+		updateSensors();
 	}
 
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
