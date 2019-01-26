@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.*;         //Imports a lot of stuff (motors, contro
 
 //Camera Stuff
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.cscore.UsbCamera;
 /*import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -207,9 +208,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putBoolean("Tank Drive Style", tankDriveBool);
 		SmartDashboard.putBoolean("Fast Mode", fastBool);
 		SmartDashboard.putNumber("Team Number", 5974);
-		SmartDashboard.putNumber("X Value",xVal);
-		SmartDashboard.putNumber("Y Value",yVal);
-		SmartDashboard.putNumber("Z Value",zVal);
+		SmartDashboard.putNumber("X Acceleration",xVal);
+		SmartDashboard.putNumber("Y Acceleration",yVal);
+		SmartDashboard.putNumber("Z Acceleration",zVal);
 		SmartDashboard.putNumber("Angle",angle);
 		SmartDashboard.putNumber("Rate",gyroRate);
 	}
@@ -277,8 +278,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		//Camera Stuff
-		//UsbCamera camera = 
-		CameraServer.getInstance().startAutomaticCapture();	
+		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();	
+		camera.setResolution(320,240);
 		sensorInit(); //Initiate FRC gyro/accel (NOT ADIS)
 		//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
