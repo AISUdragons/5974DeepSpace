@@ -249,7 +249,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		//Camera Stuff
 		//UsbCamera camera = 
-		CameraServer.getInstance().startAutomaticCapture();
+		CameraServer.getInstance().startAutomaticCapture();	
 		//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
