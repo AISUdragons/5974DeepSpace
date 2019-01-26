@@ -53,8 +53,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	//Ports start at 0, not 1.
 	//TODO: Set up motors once we know ports/inversion
-	VictorSP motorRB = new VictorSP(0); //motor right back
-	VictorSP motorRF = new VictorSP(1); //motor right front 
+	VictorSP motorRB = new VictorSP(1); //motor right back
+	VictorSP motorRF = new VictorSP(0); //motor right front 
 	VictorSP motorLB = new VictorSP(3); //motor left back 
 	VictorSP motorLF = new VictorSP(2); //motor left front
 	
@@ -215,13 +215,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			motorRB.set(joystickRYAxis);
 			motorRF.set(joystickRYAxis);
 			//TODO: Invert the correct motors
-			motorLB.set(-joystickLYAxis); //Assuming these two are inverted.
-			motorLF.set(-joystickLYAxis);
+			motorLB.set(joystickLYAxis); //Assuming these two are inverted.
+			motorLF.set(joystickLYAxis);
 		} else {
 			motorRB.set(joystickRYAxis/2);
 			motorRF.set(joystickRYAxis/2);
-			motorLB.set(-joystickLYAxis/2);
-			motorLF.set(-joystickLYAxis/2);
+			motorLB.set(joystickLYAxis/2);
+			motorLF.set(joystickLYAxis/2);
 
 		}
 	}
@@ -235,13 +235,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			motorRB.set((joystickLYAxis + joystickLXAxis/2));
 			motorRF.set((joystickLYAxis + joystickLXAxis/2));
 			//TODO: Invert the correct motors
-			motorLB.set(-(joystickLYAxis - joystickLXAxis/2));
-			motorLF.set(-(joystickLYAxis - joystickLXAxis/2));
+			motorLB.set((joystickLYAxis - joystickLXAxis/2));
+			motorLF.set((joystickLYAxis - joystickLXAxis/2));
 		} else {
 			motorRB.set((joystickLYAxis + joystickLXAxis/2)/2);
 			motorRF.set((joystickLYAxis + joystickLXAxis/2)/2);
-			motorLB.set(-(joystickLYAxis - joystickLXAxis/2)/2);
-			motorLF.set(-(joystickLYAxis - joystickLXAxis/2)/2);
+			motorLB.set((joystickLYAxis - joystickLXAxis/2)/2);
+			motorLF.set((joystickLYAxis - joystickLXAxis/2)/2);
 		}
 }
     public static OI oi;
