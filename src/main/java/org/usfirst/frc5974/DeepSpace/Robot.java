@@ -226,8 +226,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			motorRB.set(joystickRYAxis/2);
 			motorRF.set(joystickRYAxis/2);
-			motorLB.set(joystickLYAxis/2);
-			motorLF.set(joystickLYAxis/2);
+			motorLB.set(-joystickLYAxis/2);
+			motorLF.set(-joystickLYAxis/2);
 
 		}
 	}
