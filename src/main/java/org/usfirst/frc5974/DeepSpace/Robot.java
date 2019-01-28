@@ -208,6 +208,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putBoolean("Tank Drive Style", tankDriveBool);
 		SmartDashboard.putBoolean("Fast Mode", fastBool);
 		SmartDashboard.putNumber("Team Number", 5974);
+		SmartDashboard.putNumber("X acceleration", xVal);
+		SmartDashboard.putNumber("Y acceleration", yVal);
+		SmartDashboard.putNumber("Z acceleration", zVal);
+		SmartDashboard.putNumber("Angle of robot", angle);
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
