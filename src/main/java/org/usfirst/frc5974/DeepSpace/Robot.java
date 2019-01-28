@@ -106,6 +106,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double zVal;
 	private Gyro gyro;
 	double angle;
+	double rate;
 	public void sensorInit() {
 		gyro = new AnalogGyro(0);
 		//accel = new BuiltInAccelerometer();
@@ -116,6 +117,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		yVal = accel.getY();
 		zVal = accel.getZ();
 		angle = gyro.getAngle();
+		rate = gyro.getRate();
 	}
 
 	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
@@ -218,9 +220,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		if (fastBool) {
 			motorRB.set(joystickRYAxis);
 			motorRF.set(joystickRYAxis);
-			//TODO: Invert the correct motors
-			motorLB.set(joystickLYAxis); //Assuming these two are inverted.
-			motorLF.set(joystickLYAxis);
+			motorLB.set(-joystickLYAxis); //these two are inverted
+			motorLF.set(-joystickLYAxis);
 		} else {
 			motorRB.set(joystickRYAxis/2);
 			motorRF.set(joystickRYAxis/2);
