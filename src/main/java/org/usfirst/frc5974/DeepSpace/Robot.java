@@ -214,6 +214,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Y acceleration", yVal);
 		SmartDashboard.putNumber("Z acceleration", zVal);
 		SmartDashboard.putNumber("Angle of robot", angle);
+		SmartDashboard.putNumber("Angular velocity", rate);
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
