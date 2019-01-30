@@ -107,6 +107,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	private Gyro gyro;
 	double angle;
 	double rate;
+	boolean gyroConnected;
 	public void sensorInit() {
 		gyro = new ADXRS450_Gyro();
 		//accel = new BuiltInAccelerometer();
@@ -119,6 +120,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		zVal = accel.getZ();
 		angle = gyro.getAngle();
 		rate = gyro.getRate();
+		gyroConnected = gyro.isConnected();
+
 	}
 
 	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
@@ -216,6 +219,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Z acceleration", zVal);
 		SmartDashboard.putNumber("Angle of robot", angle);
 		SmartDashboard.putNumber("Angular velocity", rate);
+		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
@@ -229,7 +233,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			motorRF.set(joystickRYAxis/2);
 			motorLB.set(-joystickLYAxis/2);
 			motorLF.set(-joystickLYAxis/2);
-
 		}
 	}
 	
