@@ -335,7 +335,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
      */
     @Override
     public void autonomousPeriodic() {
-        Scheduler.getInstance().run();
+		Scheduler.getInstance().run();
+		Autonomous();
     }
 
     @Override
@@ -371,5 +372,25 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			arcadeDrive();
 		}
-    }
+	}
+	/*
+	The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
+
+	I plan for it to grab a ball from the depot, then put it in the front right slot of the cargo ship. Depending on how long this takes, I may have it grab another
+	cargo ball and put it into the slot right next to it. However, as of now, I'm not sure how fast it can move and grab/deposit cargo. The robot will probably start
+	on the second tier, on the right platform when facing the glass from the field. A primitive map, with * being a filled cargo slot and 0 being an empty one.
+	The numbers are the platforms.
+	|     1 2
+	|000  1 3
+	|0**  1 3
+	|     1 2 <-- our robot
+	*/
+	/*public void Autonomous(){
+		motorLB.set(1);
+		motorRB.set(1);
+		motorLF.set(1);
+		motorRF.set(1);
+		timer.delay(1);*/
+	}
+
 }
