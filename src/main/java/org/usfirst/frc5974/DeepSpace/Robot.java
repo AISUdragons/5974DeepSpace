@@ -137,22 +137,23 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	//TODO: May need some testing/fine-tuning
 	//does this need to be a seperate function?
 	public void joystickDeadZone() {
-		if (joystickLXAxis <= 0.075 && joystickLXAxis >= -0.075) {
+		double deadZoneValue=.16;
+		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
 			joystickLXAxis = 0;
 		} else {
-			joystickLXAxis = (joystickLXAxis - 0.075)/0.925; // We may need to change this.
-		} if (joystickLYAxis <= 0.075 && joystickLYAxis >= -0.075) {
+			joystickLXAxis = (joystickLXAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
+		} if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
 			joystickLYAxis = 0;
 		} else {
-			joystickLYAxis = (joystickLYAxis - 0.075)/0.925; // We may need to change this.
-		} if (joystickRXAxis <= 0.075 && joystickRXAxis >= -0.075) {
+			joystickLYAxis = (joystickLYAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
+		} if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
 			joystickRXAxis = 0;
 		} else {
-			joystickRXAxis = (joystickRXAxis - 0.075)/0.925; // We may need to change this.
-		} if (joystickRYAxis <= 0.075 && joystickRYAxis >= -0.075) {
+			joystickRXAxis = (joystickRXAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
+		} if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
 			joystickRYAxis = 0;
 		} else {
-			joystickRYAxis = (joystickRYAxis - 0.075)/0.925; // We may need to change this.
+			joystickRYAxis = (joystickRYAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
 		}
 	}
 
