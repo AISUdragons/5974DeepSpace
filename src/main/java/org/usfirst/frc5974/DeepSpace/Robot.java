@@ -15,7 +15,7 @@
 
 package org.usfirst.frc5974.DeepSpace;
 //TODO: Optimize imports?
-import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU; //ADIS16448 IMU - the thicc one that goes in the middle
+import com.analog.adis16448.frc.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
