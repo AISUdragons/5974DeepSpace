@@ -331,12 +331,20 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
 		//SmartDashboard.putNumber("Time Remaining", GameTime);
 		SmartDashboard.putBoolean("Fast Mode", fastBool);
+		if(driveNormal){
+			SmartDashboard.putString("Drive mode","Tank");
+		} else{
+			SmartDashboard.putString("Drive mode","Straight");
+		}
+		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
+	}
+	public void sensitiveOutput(){ //Displays smartdash data that changes very quickly
 		SmartDashboard.putNumber("Old X acceleration", xVal);
 		SmartDashboard.putNumber("Old Y acceleration", yVal);
 		SmartDashboard.putNumber("Old Z acceleration", zVal);
 		SmartDashboard.putNumber("Old angle of robot", angle);
 		SmartDashboard.putNumber("Old angular velocity", rate);
-
+		
 		SmartDashboard.putNumber("New X acceleration", accelX);
 		SmartDashboard.putNumber("New Y acceleration", accelY);
 		SmartDashboard.putNumber("New Z acceleration", accelZ);
@@ -352,7 +360,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
 
-		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
@@ -519,9 +526,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		update();
-		if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, dashboardoutput. In theory.
-			dashboardOutput();
+		if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, run sensitive output.
+
 		}
+		dashboardOutput();
 		if(driveNormal){
 			tankDrive();
 		} else{
