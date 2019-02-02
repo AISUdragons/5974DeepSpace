@@ -99,17 +99,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	//UsbCamera camera = new UsbCamera(String name, String path)*/
 
 	//Sensor Stuff
-	private Accelerometer accel; 
 	double xVal;
 	double yVal;
 	double zVal;
-	private Gyro gyro;
 	double angle;
 	double rate;
+	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	BuiltInAccelerometer accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
 	public void sensorInit() {
-		gyro = new ADXRS450_Gyro();
-		//accel = new BuiltInAccelerometer();
-		accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
 		gyro.calibrate();
 	}
 	public void updateSensors() {
@@ -335,6 +332,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
 		
 		timer.start();
+		sensorInit();
 	}
     
     /**
