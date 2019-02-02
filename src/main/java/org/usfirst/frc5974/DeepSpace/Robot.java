@@ -15,6 +15,7 @@
 
 package org.usfirst.frc5974.DeepSpace;
 //TODO: Optimize imports?
+import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU; //ADIS16448 IMU - the thicc one that goes in the middle
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
@@ -79,7 +80,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	boolean buttonBack;			    //back button
 	
 	//Drive Variables
-	boolean tankDriveBool = true;	//drive mode: true = tank drive, false = arcade drive
 	boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
 
 	//time variables [see updateTimer()]
@@ -100,10 +100,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	//UsbCamera camera = new UsbCamera(String name, String path)*/
 
 	//Sensor Stuff
-	private Accelerometer accel; 
 	double xVal;
 	double yVal;
 	double zVal;
+<<<<<<< HEAD
 	private ADXRS450_Gyro gyro;
 	double angle;
 	double rate;
@@ -112,6 +112,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		//accel = new BuiltInAccelerometer();
 		accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
+=======
+	double angle;
+	double rate;
+	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	BuiltInAccelerometer accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
+	public void sensorInit() {
+>>>>>>> a362d16c5341bb15b1a9e91a690dbc9ce74e8ba0
 		gyro.calibrate();
 	}
 	public void updateSensors() {
@@ -140,22 +147,23 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	//TODO: May need some testing/fine-tuning
 	//does this need to be a seperate function?
 	public void joystickDeadZone() {
-		if (joystickLXAxis <= 0.075 && joystickLXAxis >= -0.075) {
+		double deadZoneValue=.16;
+		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
 			joystickLXAxis = 0;
 		} else {
-			joystickLXAxis = (joystickLXAxis - 0.075)/0.925; // We may need to change this.
-		} if (joystickLYAxis <= 0.075 && joystickLYAxis >= -0.075) {
+			joystickLXAxis = (joystickLXAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
+		} if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
 			joystickLYAxis = 0;
 		} else {
-			joystickLYAxis = (joystickLYAxis - 0.075)/0.925; // We may need to change this.
-		} if (joystickRXAxis <= 0.075 && joystickRXAxis >= -0.075) {
+			joystickLYAxis = (joystickLYAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
+		} if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
 			joystickRXAxis = 0;
 		} else {
-			joystickRXAxis = (joystickRXAxis - 0.075)/0.925; // We may need to change this.
-		} if (joystickRYAxis <= 0.075 && joystickRYAxis >= -0.075) {
+			joystickRXAxis = (joystickRXAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
+		} if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
 			joystickRYAxis = 0;
 		} else {
-			joystickRYAxis = (joystickRYAxis - 0.075)/0.925; // We may need to change this.
+			joystickRYAxis = (joystickRYAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
 		}
 	}
 
@@ -193,7 +201,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
 		
 		//toggle checks
-		tankDriveBool = checkButton(buttonX, tankDriveBool, 3);		//toggles boolean if button is pressed
 		fastBool = checkButton(buttonB, fastBool, 2);				//toggles boolean if button is pressed
 		
 		//d-pad/POV updates
@@ -211,7 +218,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
 		//SmartDashboard.putNumber("Time Remaining", GameTime);
-		SmartDashboard.putBoolean("Tank Drive Style", tankDriveBool);
 		SmartDashboard.putBoolean("Fast Mode", fastBool);
 		SmartDashboard.putNumber("Team Number", 5974);
 		SmartDashboard.putNumber("X acceleration", xVal);
@@ -236,24 +242,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 	}
 	
-	public void arcadeDrive() {	//arcade drive: left joystick controls all driving
-		//right wheels have more forward power the farther left the joystick is pushed
-		//left wheels have more forward power the farther right the joystick is pushed
-		//All wheels have more forward power the farther up the joystick is pushed
-		//X-axis input is halved
-		if (fastBool) {
-			motorRB.set((joystickLYAxis + joystickLXAxis/2));
-			motorRF.set((joystickLYAxis + joystickLXAxis/2));
-			//TODO: Invert the correct motors
-			motorLB.set((joystickLYAxis - joystickLXAxis/2));
-			motorLF.set((joystickLYAxis - joystickLXAxis/2));
-		} else {
-			motorRB.set((joystickLYAxis + joystickLXAxis/2)/2);
-			motorRF.set((joystickLYAxis + joystickLXAxis/2)/2);
-			motorLB.set((joystickLYAxis - joystickLXAxis/2)/2);
-			motorLF.set((joystickLYAxis - joystickLXAxis/2)/2);
-		}
-}
     public static OI oi;
     // BEGIN AUTOGENERATED CODE, SOURCE=ROBOTBUILDER ID=DECLARATIONS
 
@@ -338,7 +326,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
      */
     @Override
     public void autonomousPeriodic() {
-        Scheduler.getInstance().run();
+		Scheduler.getInstance().run();
+		//Autonomous();
     }
 
     @Override
@@ -357,6 +346,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
 		
 		timer.start();
+		sensorInit();
 	}
     
     /**
@@ -365,14 +355,111 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     @Override
     public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-
 		update();
-		dashboardOutput();
-
-		if (tankDriveBool) {
-			tankDrive();
-		} else {
-			arcadeDrive();
+		if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, dashboardoutput. In theory.
+			dashboardOutput();
 		}
+		tankDrive();
+
     }
+	/*
+	The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
+
+	I plan for it to grab a ball from the depot, then put it in the front right slot of the cargo ship. Depending on how long this takes, I may have it grab another
+	cargo ball and put it into the slot right next to it. However, as of now, I'm not sure how fast it can move and grab/deposit cargo. The robot will probably start
+	on the second tier, on the right platform when facing the glass from the field. A primitive map, with * being a filled cargo slot and 0 being an empty one.
+	The numbers are the platforms.
+	|     1 2
+	|000  1 3
+	|0**  1 3
+	|     1 2 <-- our robot
+	*/
+	float firstmove;
+	float turntime1;
+	float secondmove;
+	float turntime2;
+	float thirdmove;
+	float turntime3;
+	float turnaround;
+	public void Autonomous(){
+		//get down from platform two. assume I'm facing forward just in front of the plaform
+		motorLB.set(1);
+		motorRB.set(1);
+		motorLF.set(1);
+		motorRF.set(1);
+
+		timer.delay(firstmove); // I'm not completely sure what Java means by the green underline on the timer.delay(); lines.
+		motorLB.set(0);
+		motorLF.set(0);
+		timer.delay(turntime1);
+		motorLB.set(1);
+		motorRB.set(1);
+		timer.delay(secondmove);
+		motorLB.set(0);
+		motorLF.set(0);
+		motorRB.set(0);
+		motorRF.set(0);
+		//grab the cargo ball
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turnaround);
+		motorLB.set(1);
+		motorRB.set(1);
+		motorRF.set(1);
+		motorLF.set(1);
+		timer.delay(thirdmove);
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turntime3);
+		motorLB.set(0);
+		motorRB.set(0);
+		motorRF.set(0);
+		motorLF.set(0);
+		//put the ball in the cargo slot
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turnaround);
+		motorLB.set(1);
+		motorRB.set(1);
+		motorRF.set(1);
+		motorLF.set(1);
+		timer.delay(thirdmove);
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turntime3);
+		motorLB.set(0);
+		motorRB.set(0);
+		motorRF.set(0);
+		motorLF.set(0);
+		// grab another cargo ball
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turnaround);
+		motorLB.set(1);
+		motorRB.set(1);
+		motorRF.set(1);
+		motorLF.set(1);
+		timer.delay(thirdmove);
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turntime3);
+		motorLB.set(0);
+		motorRB.set(0);
+		motorRF.set(0);
+		motorLF.set(0);
+		// put it in again. this may be all the time we have
+	}
+
 }
