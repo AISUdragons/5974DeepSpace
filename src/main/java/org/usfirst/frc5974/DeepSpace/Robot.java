@@ -15,6 +15,7 @@
 
 package org.usfirst.frc5974.DeepSpace;
 //TODO: Optimize imports?
+import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU; //ADIS16448 IMU - the thicc one that goes in the middle
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
@@ -341,7 +342,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     @Override
     public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-
 		update();
 		if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, dashboardoutput. In theory.
 			dashboardOutput();
