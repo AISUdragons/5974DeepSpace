@@ -1,4 +1,11 @@
-// I will be here forever. You do like lies, right?
+/*CONTROLS
+
+Joystick Y axes: drive
+B: fast mode
+A: drive straight
+
+*/
+
 // Last year's github: https://github.com/AISUMechanicalDragons/FIRSTPowerUp5974
 // **If copying/pasting code, it MUST be from there.**
 
@@ -26,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 //import org.usfirst.frc5974.DeepSpace.subsystems.*;
 import edu.wpi.first.wpilibj.*;         //Imports a lot of stuff (motors, controllers, timer, etc.)
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 //Camera Stuff
 import edu.wpi.first.cameraserver.CameraServer;
@@ -55,9 +63,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	//Ports start at 0, not 1.
 	VictorSP motorRB = new VictorSP(1); //motor right back
 	VictorSP motorRF = new VictorSP(0); //motor right front 
+	SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB);
+
 	VictorSP motorLB = new VictorSP(3); //motor left back 
 	VictorSP motorLF = new VictorSP(2); //motor left front
+	SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB);
 	
+	DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
+
 	//Variables for the Controller
 	Joystick controller = new Joystick(0);	//controller
 	double joystickLXAxis;			//left joystick x-axis
@@ -80,6 +93,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	
 	//Drive Variables
 	boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
+	boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
 
 	//time variables [see updateTimer()]
 	//Not sure if we'll actually use these, but here they are.
@@ -225,6 +239,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		//toggle checks
 		fastBool = checkButton(buttonB, fastBool, 2);				//toggles boolean if button is pressed
+		driveNormal = checkButton(buttonA, driveNormal, 1);
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
@@ -266,6 +281,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
+		
+		//Differential Drive solution - much more elegant
+		if(fastBool){
+			driver.tankDrive(-joystickLYAxis,joystickRYAxis);
+		} else{
+			driver.tankDrive(-joystickLYAxis/2,joystickRYAxis/2);
+		}
+		
+		/* Last year's solution
 		if (fastBool) {
 			motorRB.set(joystickRYAxis);
 			motorRF.set(joystickRYAxis);
@@ -277,6 +301,39 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			motorLB.set(-joystickLYAxis/2);
 			motorLF.set(-joystickLYAxis/2);
 		}
+		*/
+	}
+	
+	//This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
+	private static final double kAngleSetPoint=0.0; //straight ahead
+	private static final double kP=0.005; //proportional turning constant. not sure what this is, ngl
+
+	//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
+	private static final double kVoltsPerDegreePerSecond=0.0128;
+
+	public void driveStraight(){
+		boolean useFancy = true;
+		double turningValue = 0;
+		if(useFancy){
+			//ADIS16448 IMU; set useFancy to true to activate.
+			turningValue = (kAngleSetPoint-FancyIMU.getAngle()) * kP;
+		}else{
+			//ADXRS450; set useFancy to false to activate.
+			turningValue = (kAngleSetPoint-gyro.getAngle()) * kP;
+		}
+
+			//Invert direction of turn if we are going backwards
+			turningValue = Math.copySign(turningValue, joystickLYAxis);
+
+			//Drive.
+			if(fastBool){
+				driver.arcadeDrive(joystickLYAxis, turningValue);
+			}else{
+				driver.arcadeDrive(joystickLYAxis/2, turningValue);
+			}
+
+		}
+
 	}
 	
     public static OI oi;
@@ -396,8 +453,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, dashboardoutput. In theory.
 			dashboardOutput();
 		}
-		tankDrive();
-
+		if(driveNormal){
+			tankDrive();
+		} else{
+			driveStraight();
+		}
     }
 	/*
 	The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
