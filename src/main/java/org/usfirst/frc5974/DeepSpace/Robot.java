@@ -107,6 +107,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double zVal;
 	double angle;
 	double rate;
+	boolean gyroConnected;
 
 	ADIS16448_IMU FancyIMU = new ADIS16448_IMU();
 	double accelX;
@@ -136,6 +137,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		angle = gyro.getAngle();
 		rate = gyro.getRate();
 
+
 		//ADIS sensor data
 		accelX = FancyIMU.getAccelX();
 		accelY=FancyIMU.getAccelY();
@@ -151,6 +153,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		rateZ=FancyIMU.getRateZ();
 		roll=FancyIMU.getRoll();
 		yaw=FancyIMU.getYaw();
+		gyroConnected = gyro.isConnected();
+
 	}
 
 	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
@@ -261,6 +265,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("X rate", rateX);
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
+		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
@@ -274,7 +279,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			motorRF.set(joystickRYAxis/2);
 			motorLB.set(-joystickLYAxis/2);
 			motorLF.set(-joystickLYAxis/2);
-
 		}
 	}
 	
