@@ -343,7 +343,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		Scheduler.getInstance().run();
 
 		update();
-		dashboardOutput();
+		if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, dashboardoutput. In theory.
+			dashboardOutput();
+		}
 		tankDrive();
 
     }
