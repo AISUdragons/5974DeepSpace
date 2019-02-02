@@ -238,19 +238,19 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 		//ADIS sensor data
 		accelX = FancyIMU.getAccelX();
-		accelY=FancyIMU.getAccelY();
-		accelZ=FancyIMU.getAccelZ();
+		accelY = FancyIMU.getAccelY();
+		accelZ = FancyIMU.getAccelZ();
 		fancyAngle=FancyIMU.getAngle();
-		angleX=FancyIMU.getAngleX();
-		angleY=FancyIMU.getAngleY();
-		angleZ=FancyIMU.getAngleZ();
+		angleX = FancyIMU.getAngleX();
+		angleY = FancyIMU.getAngleY();
+		angleZ = FancyIMU.getAngleZ();
 		pitch=FancyIMU.getPitch();
+		yaw = FancyIMU.getYaw();
+		roll =FancyIMU.getRoll();
 		fancyRate=FancyIMU.getRate();
-		rateX=FancyIMU.getRateX();
-		rateY=FancyIMU.getRateY();
-		rateZ=FancyIMU.getRateZ();
-		roll=FancyIMU.getRoll();
-		yaw=FancyIMU.getYaw();
+		rateX = FancyIMU.getRateX();
+		rateY = FancyIMU.getRateY();
+		rateZ = FancyIMU.getRateZ();
 	}
 
 	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
@@ -320,7 +320,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
-
 	}
 	
 	public void update() {	//updates everything
@@ -333,7 +332,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putBoolean("Fast Mode", fastBool);
 		if(driveNormal){
 			SmartDashboard.putString("Drive mode","Tank");
-		} else{
+		} else {
 			SmartDashboard.putString("Drive mode","Straight");
 		}
 		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
@@ -345,21 +344,20 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Old angle of robot", angle);
 		SmartDashboard.putNumber("Old angular velocity", rate);
 		
-		SmartDashboard.putNumber("New X acceleration", accelX);
-		SmartDashboard.putNumber("New Y acceleration", accelY);
-		SmartDashboard.putNumber("New Z acceleration", accelZ);
-		SmartDashboard.putNumber("New angle", fancyAngle);
+		SmartDashboard.putNumber("X acceleration", accelX);
+		SmartDashboard.putNumber("Y acceleration", accelY);
+		SmartDashboard.putNumber("Z acceleration", accelZ);
+		SmartDashboard.putNumber("Angle", fancyAngle);
 		SmartDashboard.putNumber("X angle", angleX);
 		SmartDashboard.putNumber("Y angle", angleY);
 		SmartDashboard.putNumber("Z angle", angleZ);
 		SmartDashboard.putNumber("Pitch", pitch);
 		SmartDashboard.putNumber("Yaw", yaw);
 		SmartDashboard.putNumber("Roll", roll);
-		SmartDashboard.putNumber("New rate", fancyRate);
+		SmartDashboard.putNumber("Rate", fancyRate);
 		SmartDashboard.putNumber("X rate", rateX);
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
-
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
