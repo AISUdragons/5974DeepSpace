@@ -104,12 +104,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double xVal;
 	double yVal;
 	double zVal;
-	private Gyro gyro;
+	private ADXRS450_Gyro gyro;
 	double angle;
 	double rate;
 	boolean gyroConnected;
 	public void sensorInit() {
-		gyro = new ADXRS450_Gyro();
+		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		//accel = new BuiltInAccelerometer();
 		accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
 		gyro.calibrate();
