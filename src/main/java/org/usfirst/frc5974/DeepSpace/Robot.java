@@ -99,23 +99,59 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	//UsbCamera camera = new UsbCamera(String name, String path)*/
 
 	//Sensor Stuff
+	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	BuiltInAccelerometer accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
 	double xVal;
 	double yVal;
 	double zVal;
 	double angle;
 	double rate;
 	boolean gyroConnected;
-	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-	BuiltInAccelerometer accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
+
+	ADIS16448_IMU FancyIMU = new ADIS16448_IMU();
+	double accelX;
+	double accelY;
+	double accelZ;
+	double fancyAngle;
+	double angleX;
+	double angleY;
+	double angleZ;
+	double pitch;
+	double yaw;
+	double roll;
+	double fancyRate;
+	double rateX;
+	double rateY;
+	double rateZ;
+
 	public void sensorInit() {
 		gyro.calibrate();
+		FancyIMU.calibrate();
 	}
 	public void updateSensors() {
+		//ADXRS gyro and accel
 		xVal = accel.getX();
 		yVal = accel.getY();
 		zVal = accel.getZ();
 		angle = gyro.getAngle();
 		rate = gyro.getRate();
+
+
+		//ADIS sensor data
+		accelX = FancyIMU.getAccelX();
+		accelY=FancyIMU.getAccelY();
+		accelZ=FancyIMU.getAccelZ();
+		fancyAngle=FancyIMU.getAngle();
+		angleX=FancyIMU.getAngleX();
+		angleY=FancyIMU.getAngleY();
+		angleZ=FancyIMU.getAngleZ();
+		pitch=FancyIMU.getPitch();
+		fancyRate=FancyIMU.getRate();
+		rateX=FancyIMU.getRateX();
+		rateY=FancyIMU.getRateY();
+		rateZ=FancyIMU.getRateZ();
+		roll=FancyIMU.getRoll();
+		yaw=FancyIMU.getYaw();
 		gyroConnected = gyro.isConnected();
 
 	}
@@ -133,8 +169,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 
 	//Set dead zone for joysticks
-	//TODO: May need some testing/fine-tuning
-	//does this need to be a seperate function?
 	public void joystickDeadZone() {
 		double deadZoneValue=.16;
 		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
@@ -208,12 +242,26 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
 		//SmartDashboard.putNumber("Time Remaining", GameTime);
 		SmartDashboard.putBoolean("Fast Mode", fastBool);
-		SmartDashboard.putNumber("Team Number", 5974);
-		SmartDashboard.putNumber("X acceleration", xVal);
-		SmartDashboard.putNumber("Y acceleration", yVal);
-		SmartDashboard.putNumber("Z acceleration", zVal);
-		SmartDashboard.putNumber("Angle of robot", angle);
-		SmartDashboard.putNumber("Angular velocity", rate);
+		SmartDashboard.putNumber("Old X acceleration", xVal);
+		SmartDashboard.putNumber("Old Y acceleration", yVal);
+		SmartDashboard.putNumber("Old Z acceleration", zVal);
+		SmartDashboard.putNumber("Old angle of robot", angle);
+		SmartDashboard.putNumber("Old angular velocity", rate);
+
+		SmartDashboard.putNumber("New X acceleration", accelX);
+		SmartDashboard.putNumber("New Y acceleration", accelY);
+		SmartDashboard.putNumber("New Z acceleration", accelZ);
+		SmartDashboard.putNumber("New angle", fancyAngle);
+		SmartDashboard.putNumber("X angle", angleX);
+		SmartDashboard.putNumber("Y angle", angleY);
+		SmartDashboard.putNumber("Z angle", angleZ);
+		SmartDashboard.putNumber("Pitch", pitch);
+		SmartDashboard.putNumber("Yaw", yaw);
+		SmartDashboard.putNumber("Roll", roll);
+		SmartDashboard.putNumber("New rate", fancyRate);
+		SmartDashboard.putNumber("X rate", rateX);
+		SmartDashboard.putNumber("Y rate", rateY);
+		SmartDashboard.putNumber("Z rate", rateZ);
 		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
 	}
 
