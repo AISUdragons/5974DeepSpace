@@ -19,7 +19,7 @@ import com.analog.adis16448.frc.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
+//import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -178,15 +178,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
 			joystickLYAxis = 0;
 		} else {
-			joystickLYAxis = (joystickLYAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
+			joystickLYAxis = (joystickLYAxis -deadZoneValue)/(1-deadZoneValue);
 		} if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
 			joystickRXAxis = 0;
 		} else {
-			joystickRXAxis = (joystickRXAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
+			joystickRXAxis = (joystickRXAxis -deadZoneValue)/(1-deadZoneValue);
 		} if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
 			joystickRYAxis = 0;
 		} else {
-			joystickRYAxis = (joystickRYAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
+			joystickRYAxis = (joystickRYAxis -deadZoneValue)/(1-deadZoneValue);
 		}
 	}
 
@@ -498,5 +498,4 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		motorLF.set(0);
 		// put it in again. this may be all the time we have
 	}
-
 }
