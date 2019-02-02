@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 
-import com.analog.adis16448.frc.ADIS16448_IMU;
+import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -122,6 +122,106 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double rateX;
 	double rateY;
 	double rateZ;
+
+/*
+		The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
+
+		I plan for it to grab a ball from the depot, then put it in the front right slot of the cargo ship. Depending on how long this takes, I may have it grab another
+		cargo ball and put it into the slot right next to it. However, as of now, I'm not sure how fast it can move and grab/deposit cargo. The robot will probably start
+		on the second tier, on the right platform when facing the glass from the field. A primitive map, with * being a filled cargo slot and 0 being an empty one.
+		The numbers are the platforms.
+		|     1 2
+		|000  1 3
+		|0**  1 3
+		|     1 2 <-- our robot
+		*/
+		float firstmove;
+		float turntime1;
+		float secondmove;
+		float turntime2;
+		float thirdmove;
+		float turntime3;
+		float turnaround;
+		public void Autonomous() {
+			//get down from platform two. assume I'm facing forward just in front of the plaform
+			motorLB.set(1);
+			motorRB.set(1);
+			motorLF.set(1);
+			motorRF.set(1);
+
+			timer.delay(firstmove); // I'm not completely sure what Java means by the green underline on the timer.delay(); lines.
+			motorLB.set(0);
+			motorLF.set(0);
+			timer.delay(turntime1);
+			motorLB.set(1);
+			motorRB.set(1);
+			timer.delay(secondmove);
+			motorLB.set(0);
+			motorLF.set(0);
+			motorRB.set(0);
+			motorRF.set(0);
+			//grab the cargo ball
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turnaround);
+			motorLB.set(1);
+			motorRB.set(1);
+			motorRF.set(1);
+			motorLF.set(1);
+			timer.delay(thirdmove);
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turntime3);
+			motorLB.set(0);
+			motorRB.set(0);
+			motorRF.set(0);
+			motorLF.set(0);
+			//put the ball in the cargo slot
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turnaround);
+			motorLB.set(1);
+			motorRB.set(1);
+			motorRF.set(1);
+			motorLF.set(1);
+			timer.delay(thirdmove);
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turntime3);
+			motorLB.set(0);
+			motorRB.set(0);
+			motorRF.set(0);
+			motorLF.set(0);
+			// grab another cargo ball
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turnaround);
+			motorLB.set(1);
+			motorRB.set(1);
+			motorRF.set(1);
+			motorLF.set(1);
+			timer.delay(thirdmove);
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turntime3);
+			motorLB.set(0);
+			motorRB.set(0);
+			motorRF.set(0);
+			motorLF.set(0);
+			// put it in again. this may be all the time we have
+		}
 
 	public void sensorInit() {
 		gyro.calibrate();
@@ -319,6 +419,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
         chooser.setDefaultOption("Autonomous Command", new AutonomousCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 		
+		sensorInit(); //Calibrates sensors
+		
 		//Camera Stuff
 		new Thread(() -> {
 			//Creates a UsbCamera on the default port and streams output on MjpegServer [1]
@@ -343,7 +445,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 				outputStream.putFrame(output);
 			}
 		}).start();
-
 		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
 				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
@@ -367,7 +468,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			System.out.println();
 			Timer.delay(1);
 		}*/
-		sensorInit(); //Calibrates sensors
     }
 
     /**
@@ -388,13 +488,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     public void autonomousInit() {
         autonomousCommand = chooser.getSelected();
         // schedule the autonomous command (example)
-        if (autonomousCommand != null) autonomousCommand.start();
+		if (autonomousCommand != null) autonomousCommand.start();
+
+		//Autonomous();
     }
 
     @Override
     public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-		//Autonomous();
     }
 
     @Override
@@ -425,105 +526,4 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			driveStraight();
 		}
     }
-	/*
-	The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
-
-	I plan for it to grab a ball from the depot, then put it in the front right slot of the cargo ship. Depending on how long this takes, I may have it grab another
-	cargo ball and put it into the slot right next to it. However, as of now, I'm not sure how fast it can move and grab/deposit cargo. The robot will probably start
-	on the second tier, on the right platform when facing the glass from the field. A primitive map, with * being a filled cargo slot and 0 being an empty one.
-	The numbers are the platforms.
-	|     1 2
-	|000  1 3
-	|0**  1 3
-	|     1 2 <-- our robot
-	*/
-
-	//I'll play with this later, once we know if gyros work. --Ella
-	float firstmove;
-	float turntime1;
-	float secondmove;
-	float turntime2;
-	float thirdmove;
-	float turntime3;
-	float turnaround;
-	public void Autonomous(){
-		//get down from platform two. assume I'm facing forward just in front of the plaform
-		motorLB.set(1);
-		motorRB.set(1);
-		motorLF.set(1);
-		motorRF.set(1);
-
-		timer.delay(firstmove); // I'm not completely sure what Java means by the green underline on the timer.delay(); lines.
-		motorLB.set(0);
-		motorLF.set(0);
-		timer.delay(turntime1);
-		motorLB.set(1);
-		motorRB.set(1);
-		timer.delay(secondmove);
-		motorLB.set(0);
-		motorLF.set(0);
-		motorRB.set(0);
-		motorRF.set(0);
-		//grab the cargo ball
-		motorLB.set(1);
-		motorRB.set(-1);
-		motorRF.set(-1);
-		motorLF.set(1);
-		timer.delay(turnaround);
-		motorLB.set(1);
-		motorRB.set(1);
-		motorRF.set(1);
-		motorLF.set(1);
-		timer.delay(thirdmove);
-		motorLB.set(1);
-		motorRB.set(-1);
-		motorRF.set(-1);
-		motorLF.set(1);
-		timer.delay(turntime3);
-		motorLB.set(0);
-		motorRB.set(0);
-		motorRF.set(0);
-		motorLF.set(0);
-		//put the ball in the cargo slot
-		motorLB.set(1);
-		motorRB.set(-1);
-		motorRF.set(-1);
-		motorLF.set(1);
-		timer.delay(turnaround);
-		motorLB.set(1);
-		motorRB.set(1);
-		motorRF.set(1);
-		motorLF.set(1);
-		timer.delay(thirdmove);
-		motorLB.set(1);
-		motorRB.set(-1);
-		motorRF.set(-1);
-		motorLF.set(1);
-		timer.delay(turntime3);
-		motorLB.set(0);
-		motorRB.set(0);
-		motorRF.set(0);
-		motorLF.set(0);
-		// grab another cargo ball
-		motorLB.set(1);
-		motorRB.set(-1);
-		motorRF.set(-1);
-		motorLF.set(1);
-		timer.delay(turnaround);
-		motorLB.set(1);
-		motorRB.set(1);
-		motorRF.set(1);
-		motorLF.set(1);
-		timer.delay(thirdmove);
-		motorLB.set(1);
-		motorRB.set(-1);
-		motorRF.set(-1);
-		motorLF.set(1);
-		timer.delay(turntime3);
-		motorLB.set(0);
-		motorRB.set(0);
-		motorRF.set(0);
-		motorLF.set(0);
-		// put it in again. this may be all the time we have
-	}
 }
