@@ -53,7 +53,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     SendableChooser<Command> chooser = new SendableChooser<>();
 
 	//Ports start at 0, not 1.
-	//TODO: Set up motors once we know ports/inversion
 	VictorSP motorRB = new VictorSP(1); //motor right back
 	VictorSP motorRF = new VictorSP(0); //motor right front 
 	VictorSP motorLB = new VictorSP(3); //motor left back 
@@ -170,8 +169,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 
 	//Set dead zone for joysticks
-	//TODO: May need some testing/fine-tuning
-	//does this need to be a seperate function?
 	public void joystickDeadZone() {
 		double deadZoneValue=.16;
 		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
