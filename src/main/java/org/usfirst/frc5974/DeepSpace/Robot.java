@@ -29,14 +29,17 @@ import edu.wpi.first.wpilibj.*;         //Imports a lot of stuff (motors, contro
 
 //Camera Stuff
 import edu.wpi.first.cameraserver.CameraServer;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
 /*import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.vision.VisionRunner;
 import edu.wpi.first.vision.VisionThread;
 import org.opencv.core.Rect;
-import org.opencv.imgproc.Imgproc;
-import edu.wpi.cscore.UsbCamera;
 import org.usfirst.frc5974.grip.GripPipeline;
 //import java.util.Set;*/
 
@@ -90,9 +93,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double t1 = 0; //time end
 
 	//Camera Stuff
-	/*private static final int IMG_WIDTH = 320;
-	private static final int IMG_HEIGHT =240;
-	private VisionThread visionThread;
+	private static final int IMG_WIDTH = 640;
+	private static final int IMG_HEIGHT =480;
+	/*private VisionThread visionThread;
 	private double centerX = 0.0;
 	private RobotDrive drive;
 	private final Object imgLock = new Object();
@@ -308,9 +311,30 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		//Camera Stuff
-		//UsbCamera camera = 
-		CameraServer.getInstance().startAutomaticCapture();
-		//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+		new Thread(() -> {
+			//Creates a UsbCamera on the default port and streams output on MjpegServer [1]
+			//equivalent to "".startAutomaticCapture(0), which is equivalent to "".startAutomaticCapture("USB Camera 0", 0)
+			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+
+			//Creates an image input (sink) that takes video from the primary feed (UsbCamera camera)
+			//equivalent to "".getVideo(camera)
+			CvSink cvSink = CameraServer.getInstance().getVideo();
+
+			//Creates an image stream (source) MjpegServer [2] with the name "Blur"
+			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", IMG_WIDTH, IMG_HEIGHT);
+			
+			Mat source = new Mat(); //unreleated to CvSource
+			Mat output = new Mat();
+
+			while(!Thread.interrupted()) {
+				//Applies the 'Imgproc.COLOR_BGR2GRAY' filter to a frame from 'cvSink' and puts the result on 'outputStream'
+				cvSink.grabFrame(source);
+				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+				outputStream.putFrame(output);
+			}
+		}).start();
+
 		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
 				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
