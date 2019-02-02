@@ -89,8 +89,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	Timer timer = new Timer();
 
 	//Camera Stuff
-	private static final int IMG_WIDTH = 640;
-	private static final int IMG_HEIGHT =480;
+	private static final int IMG_WIDTH = 320;
+	private static final int IMG_HEIGHT =240;
 	/*private VisionThread visionThread;
 	private double centerX = 0.0;
 	private DifferentialDrive driver;
@@ -359,9 +359,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		//Differential Drive solution - much more elegant
 		if(fastBool){
-			driver.tankDrive(-joystickLYAxis,joystickRYAxis);
+			driver.tankDrive(joystickLYAxis,joystickRYAxis);
 		} else{
-			driver.tankDrive(-joystickLYAxis/2,joystickRYAxis/2);
+			driver.tankDrive(joystickLYAxis/2,joystickRYAxis/2);
 		}
 		
 		/* Last year's solution
@@ -391,10 +391,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		double turningValue = 0;
 		if(useFancy){
 			//ADIS16448 IMU; set useFancy to true to activate.
-			turningValue = (kAngleSetPoint-FancyIMU.getAngle()) * kP;
+			turningValue = (kAngleSetPoint-yaw) * kP;
+			//turningValue = (kAngleSetPoint-angleX); //Pretty sure we should use yaw or anglex but idk which
 		}else{
 			//ADXRS450; set useFancy to false to activate.
-			turningValue = (kAngleSetPoint-gyro.getAngle()) * kP;
+			turningValue = (kAngleSetPoint-angle) * kP;
 		}
 
 		//Invert direction of turn if we are going backwards
@@ -420,6 +421,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		sensorInit(); //Calibrates sensors
+		driver.setRightSideInverted(true);
 		
 		//Camera Stuff
 		new Thread(() -> {
