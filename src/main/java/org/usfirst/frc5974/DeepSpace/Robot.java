@@ -385,12 +385,91 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	|0**  1 3
 	|     1 2 <-- our robot
 	*/
-	/*public void Autonomous(){
+	float firstmove;
+	float turntime1;
+	float secondmove;
+	float turntime2;
+	float thirdmove;
+	float turntime3;
+	float turnaround;
+	public void Autonomous(){
+		//get down from platform two. assume I'm facing forward just in front of the plaform
 		motorLB.set(1);
 		motorRB.set(1);
 		motorLF.set(1);
 		motorRF.set(1);
-		timer.delay(1);*/
+		timer.delay(firstmove); // I'm not completely sure what Java means by the green underline on the timer.delay(); lines.
+		motorLB.set(0);
+		motorLF.set(0);
+		timer.delay(turntime1);
+		motorLB.set(1);
+		motorRB.set(1);
+		timer.delay(secondmove);
+		motorLB.set(0);
+		motorLF.set(0);
+		motorRB.set(0);
+		motorRF.set(0);
+		//grab the cargo ball
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turnaround);
+		motorLB.set(1);
+		motorRB.set(1);
+		motorRF.set(1);
+		motorLF.set(1);
+		timer.delay(thirdmove);
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turntime3);
+		motorLB.set(0);
+		motorRB.set(0);
+		motorRF.set(0);
+		motorLF.set(0);
+		//put the ball in the cargo slot
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turnaround);
+		motorLB.set(1);
+		motorRB.set(1);
+		motorRF.set(1);
+		motorLF.set(1);
+		timer.delay(thirdmove);
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turntime3);
+		motorLB.set(0);
+		motorRB.set(0);
+		motorRF.set(0);
+		motorLF.set(0);
+		// grab another cargo ball
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turnaround);
+		motorLB.set(1);
+		motorRB.set(1);
+		motorRF.set(1);
+		motorLF.set(1);
+		timer.delay(thirdmove);
+		motorLB.set(1);
+		motorRB.set(-1);
+		motorRF.set(-1);
+		motorLF.set(1);
+		timer.delay(turntime3);
+		motorLB.set(0);
+		motorRB.set(0);
+		motorRF.set(0);
+		motorLF.set(0);
+		// put it in again. this may be all the time we have
 	}
 
 }
