@@ -440,7 +440,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			CvSink cvSink = CameraServer.getInstance().getVideo();
 
 			//Creates an image stream (source) MjpegServer [2] with the name "Blur"
-			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", IMG_WIDTH, IMG_HEIGHT);
+			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", IMG_WIDTH/2, IMG_HEIGHT/2);
 			
 			Mat source = new Mat(); //unreleated to CvSource
 			Mat output = new Mat();
