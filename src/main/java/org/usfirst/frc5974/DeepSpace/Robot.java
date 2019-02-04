@@ -123,6 +123,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double rateY;
 	double rateZ;
 
+	double velX;
+	double velY;
+	double velZ;
+	double time;
+	double prevTime = 0;
+
 /*
 		The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
 
@@ -226,6 +232,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void sensorInit() {
 		gyro.calibrate();
 		FancyIMU.calibrate();
+		velX = velY = velZ = 0;
 	}
 	public void updateSensors() {
 		//ADXRS sensor data
@@ -251,6 +258,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		rateX = FancyIMU.getRateX();
 		rateY = FancyIMU.getRateY();
 		rateZ = FancyIMU.getRateZ();
+
+		time = timer.get();
+		dt = time - prevTime
+		velX += accelX * dt;
+		velY += accelY * dt;
+		velZ += accelZ * dt;
+		prevTime = time;
 	}
 
 	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
@@ -358,6 +372,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("X rate", rateX);
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
+		SmartDashboard.putNumber("X velocity", velX);
+		SmartDashboard.putNumber("Y velocity", velY);
+		SmartDashboard.putNumber("Z velocity", velZ);
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
