@@ -135,7 +135,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		|0**  1 3
 		|     1 2 <-- our robot
 		*/
-		float firstmove;
+		/*float firstmove;
 		float turntime1;
 		float secondmove;
 		float turntime2;
@@ -221,7 +221,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			motorRF.set(0);
 			motorLF.set(0);
 			// put it in again. this may be all the time we have
-		}
+		}*/
 
 	public void sensorInit() {
 		gyro.calibrate();
@@ -338,15 +338,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
 	}
 	public void sensitiveOutput(){ //Displays smartdash data that changes very quickly
-		SmartDashboard.putNumber("Old X acceleration", xVal);
-		SmartDashboard.putNumber("Old Y acceleration", yVal);
-		SmartDashboard.putNumber("Old Z acceleration", zVal);
+		SmartDashboard.putNumber("Old X acceleration", xVal*9.8);
+		SmartDashboard.putNumber("Old Y acceleration", yVal*9.8);
+		SmartDashboard.putNumber("Old Z acceleration", zVal*9.8);
 		SmartDashboard.putNumber("Old angle of robot", angle);
 		SmartDashboard.putNumber("Old angular velocity", rate);
 		
-		SmartDashboard.putNumber("X acceleration", accelX);
-		SmartDashboard.putNumber("Y acceleration", accelY);
-		SmartDashboard.putNumber("Z acceleration", accelZ);
+		SmartDashboard.putNumber("X acceleration", accelX*9.8);
+		SmartDashboard.putNumber("Y acceleration", accelY*9.8);
+		SmartDashboard.putNumber("Z acceleration", accelZ*9.8);
 		SmartDashboard.putNumber("Angle", fancyAngle);
 		SmartDashboard.putNumber("X angle", angleX);
 		SmartDashboard.putNumber("Y angle", angleY);
