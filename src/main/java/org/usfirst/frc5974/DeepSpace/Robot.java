@@ -391,14 +391,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
 	private static final double kVoltsPerDegreePerSecond=0.0128;
 
-	public void driveStraight(){
+	public void driveStraight() {
 		boolean useFancy = true;
 		double turningValue = 0;
-		if(useFancy){
+		if (useFancy) {
 			//ADIS16448 IMU; set useFancy to true to activate.
 			turningValue = (kAngleSetPoint-yaw) * kP;
 			//turningValue = (kAngleSetPoint-angleX); //Pretty sure we should use yaw or anglex but idk which
-		}else{
+		} else {
 			//ADXRS450; set useFancy to false to activate.
 			turningValue = (kAngleSetPoint-angle) * kP;
 		}
@@ -407,13 +407,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		turningValue = Math.copySign(turningValue, joystickLYAxis);
 
 		//Drive.
-		if(fastBool){
+		if (fastBool) {
 			driver.arcadeDrive(joystickLYAxis, turningValue);
-		}else{
+		} else {
 			driver.arcadeDrive(joystickLYAxis/2, turningValue);
 		}
-
-		}
+	}
 
     public static OI oi;
 
