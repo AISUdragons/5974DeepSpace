@@ -128,6 +128,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double velZ;
 	double time;
 	double prevTime = 0;
+	double dt;
 
 /*
 		The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
@@ -233,6 +234,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		gyro.calibrate();
 		FancyIMU.calibrate();
 		velX = velY = velZ = 0;
+		FancyIMU.reset();
 	}
 	public void updateSensors() {
 		//ADXRS sensor data
@@ -260,7 +262,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		rateZ = FancyIMU.getRateZ();
 
 		time = timer.get();
-		dt = time - prevTime
+		dt = time - prevTime;
 		velX += accelX * dt;
 		velY += accelY * dt;
 		velZ += accelZ * dt;
