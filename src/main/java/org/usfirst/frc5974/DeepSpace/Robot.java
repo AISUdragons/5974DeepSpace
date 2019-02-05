@@ -18,7 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 
-import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU;
+//import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU;
+import com.analog.adis16448.frc.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -108,13 +109,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	boolean gyroConnected;
 
 	//This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
-	private static final double kAngleSetPoint=0.0; //straight ahead
-	private static final double kP=0.005; //proportional turning constant. not sure what this is, ngl
+	private static final double kAngleSetPoint = 0.0; //straight ahead
+	private static final double kP = 0.005; //proportional turning constant. not sure what this is, ngl
 
 	//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
 	private static final double kVoltsPerDegreePerSecond=0.0128;
 
-	ADIS16448_IMU FancyIMU = new ADIS16448_IMU();
+	public static final ADIS16448_IMU FancyIMU = new ADIS16448_IMU();
 	double accelX;
 	double accelY;
 	double accelZ;
@@ -140,8 +141,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void sensorInit() {
 		gyro.calibrate();
 		FancyIMU.calibrate();
+		FancyIMU.reset();	//calibrate and reset are not necessary. I put them here just to be safe.
 		velX = velY = velZ = 0;
-		FancyIMU.reset();
 	}
 	public void updateSensors() {
 		//ADXRS sensor data
@@ -314,7 +315,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			//ADIS16448 IMU; set useFancy to true to activate.
 			turningValue = (kAngleSetPoint-yaw) * kP;
 			//turningValue = (kAngleSetPoint-angleX); //Pretty sure we should use yaw or anglex but idk which
-		}else{
+		} else {
 			//ADXRS450; set useFancy to false to activate.
 			turningValue = (kAngleSetPoint-angle) * kP;
 		}
