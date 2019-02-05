@@ -107,6 +107,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double rate;
 	boolean gyroConnected;
 
+	//This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
+	private static final double kAngleSetPoint=0.0; //straight ahead
+	private static final double kP=0.005; //proportional turning constant. not sure what this is, ngl
+
+	//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
+	private static final double kVoltsPerDegreePerSecond=0.0128;
+
 	ADIS16448_IMU FancyIMU = new ADIS16448_IMU();
 	double accelX;
 	double accelY;
@@ -129,106 +136,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double time;
 	double prevTime = 0;
 	double dt;
-
-/*
-		The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
-
-		I plan for it to grab a ball from the depot, then put it in the front right slot of the cargo ship. Depending on how long this takes, I may have it grab another
-		cargo ball and put it into the slot right next to it. However, as of now, I'm not sure how fast it can move and grab/deposit cargo. The robot will probably start
-		on the second tier, on the right platform when facing the glass from the field. A primitive map, with * being a filled cargo slot and 0 being an empty one.
-		The numbers are the platforms.
-		|     1 2
-		|000  1 3
-		|0**  1 3
-		|     1 2 <-- our robot
-		*/
-		float firstmove;
-		float turntime1;
-		float secondmove;
-		float turntime2;
-		float thirdmove;
-		float turntime3;
-		float turnaround;
-		public void Autonomous() {
-			//get down from platform two. assume I'm facing forward just in front of the plaform
-			motorLB.set(1);
-			motorRB.set(1);
-			motorLF.set(1);
-			motorRF.set(1);
-
-			timer.delay(firstmove); // I'm not completely sure what Java means by the green underline on the timer.delay(); lines.
-			motorLB.set(0);
-			motorLF.set(0);
-			timer.delay(turntime1);
-			motorLB.set(1);
-			motorRB.set(1);
-			timer.delay(secondmove);
-			motorLB.set(0);
-			motorLF.set(0);
-			motorRB.set(0);
-			motorRF.set(0);
-			//grab the cargo ball
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turnaround);
-			motorLB.set(1);
-			motorRB.set(1);
-			motorRF.set(1);
-			motorLF.set(1);
-			timer.delay(thirdmove);
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turntime3);
-			motorLB.set(0);
-			motorRB.set(0);
-			motorRF.set(0);
-			motorLF.set(0);
-			//put the ball in the cargo slot
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turnaround);
-			motorLB.set(1);
-			motorRB.set(1);
-			motorRF.set(1);
-			motorLF.set(1);
-			timer.delay(thirdmove);
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turntime3);
-			motorLB.set(0);
-			motorRB.set(0);
-			motorRF.set(0);
-			motorLF.set(0);
-			// grab another cargo ball
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turnaround);
-			motorLB.set(1);
-			motorRB.set(1);
-			motorRF.set(1);
-			motorLF.set(1);
-			timer.delay(thirdmove);
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turntime3);
-			motorLB.set(0);
-			motorRB.set(0);
-			motorRF.set(0);
-			motorLF.set(0);
-			// put it in again. this may be all the time we have
-		}
 
 	public void sensorInit() {
 		gyro.calibrate();
@@ -346,7 +253,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
 		//SmartDashboard.putNumber("Time Remaining", GameTime);
 		SmartDashboard.putBoolean("Fast Mode", fastBool);
-		if(driveNormal){
+		if (driveNormal) {
 			SmartDashboard.putString("Drive mode","Tank");
 		} else {
 			SmartDashboard.putString("Drive mode","Straight");
@@ -374,6 +281,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("X rate", rateX);
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
+		SmartDashboard.putNumber("latest time interval", dt);
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
@@ -399,18 +307,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 		*/
 	}
-	
-	//This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
-	private static final double kAngleSetPoint=0.0; //straight ahead
-	private static final double kP=0.005; //proportional turning constant. not sure what this is, ngl
-
-	//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
-	private static final double kVoltsPerDegreePerSecond=0.0128;
-
 	public void driveStraight(){
 		boolean useFancy = true;
 		double turningValue = 0;
-		if(useFancy){
+		if (useFancy) {
 			//ADIS16448 IMU; set useFancy to true to activate.
 			turningValue = (kAngleSetPoint-yaw) * kP;
 			//turningValue = (kAngleSetPoint-angleX); //Pretty sure we should use yaw or anglex but idk which
@@ -423,15 +323,115 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		turningValue = Math.copySign(turningValue, joystickLYAxis);
 
 		//Drive.
-		if(fastBool){
+		if (fastBool) {
 			driver.arcadeDrive(joystickLYAxis, turningValue);
-		}else{
+		} else {
 			driver.arcadeDrive(joystickLYAxis/2, turningValue);
 		}
-
-		}
+	}
 
     public static OI oi;
+
+
+/*
+		The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
+
+		I plan for it to grab a ball from the depot, then put it in the front right slot of the cargo ship. Depending on how long this takes, I may have it grab another
+		cargo ball and put it into the slot right next to it. However, as of now, I'm not sure how fast it can move and grab/deposit cargo. The robot will probably start
+		on the second tier, on the right platform when facing the glass from the field. A primitive map, with * being a filled cargo slot and 0 being an empty one.
+		The numbers are the platforms.
+		|     1 2
+		|000  1 3
+		|0**  1 3
+		|     1 2 <-- our robot
+		*/
+		/*float firstmove;
+		float turntime1;
+		float secondmove;
+		float turntime2;
+		float thirdmove;
+		float turntime3;
+		float turnaround;
+		public void Autonomous() {
+			//get down from platform two. assume I'm facing forward just in front of the plaform
+			motorLB.set(1);
+			motorRB.set(1);
+			motorLF.set(1);
+			motorRF.set(1);
+
+			timer.delay(firstmove); // I'm not completely sure what Java means by the green underline on the timer.delay(); lines.
+			motorLB.set(0);
+			motorLF.set(0);
+			timer.delay(turntime1);
+			motorLB.set(1);
+			motorRB.set(1);
+			timer.delay(secondmove);
+			motorLB.set(0);
+			motorLF.set(0);
+			motorRB.set(0);
+			motorRF.set(0);
+			//grab the cargo ball
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turnaround);
+			motorLB.set(1);
+			motorRB.set(1);
+			motorRF.set(1);
+			motorLF.set(1);
+			timer.delay(thirdmove);
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turntime3);
+			motorLB.set(0);
+			motorRB.set(0);
+			motorRF.set(0);
+			motorLF.set(0);
+			//put the ball in the cargo slot
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turnaround);
+			motorLB.set(1);
+			motorRB.set(1);
+			motorRF.set(1);
+			motorLF.set(1);
+			timer.delay(thirdmove);
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turntime3);
+			motorLB.set(0);
+			motorRB.set(0);
+			motorRF.set(0);
+			motorLF.set(0);
+			// grab another cargo ball
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turnaround);
+			motorLB.set(1);
+			motorRB.set(1);
+			motorRF.set(1);
+			motorLF.set(1);
+			timer.delay(thirdmove);
+			motorLB.set(1);
+			motorRB.set(-1);
+			motorRF.set(-1);
+			motorLF.set(1);
+			timer.delay(turntime3);
+			motorLB.set(0);
+			motorRB.set(0);
+			motorRF.set(0);
+			motorLF.set(0);
+			// put it in again. this may be all the time we have
+		}*/
 
     @Override
     public void robotInit() {
@@ -544,9 +544,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			sensitiveOutput();
 		}
 		dashboardOutput();
-		if(driveNormal){
+		if (driveNormal) {
 			tankDrive();
-		} else{
+		} else {
 			driveStraight();
 		}
     }
