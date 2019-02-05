@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 
-//import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU;
-import com.analog.adis16448.frc.ADIS16448_IMU;
+import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU;
+//import com.analog.adis16448.frc.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -57,7 +57,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	VictorSP motorRF = new VictorSP(0); //motor right front 
 	SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB);
 
-	VictorSP motorLB = new VictorSP(3); //motor left back 
+	VictorSP motorLB = new VictorSP(3); //motor left back
 	VictorSP motorLF = new VictorSP(2); //motor left front
 	SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB);
 	
@@ -90,8 +90,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	Timer timer = new Timer();
 
 	//Camera Stuff
-	private static final int IMG_WIDTH = 320;
-	private static final int IMG_HEIGHT =240;
+	private static final int IMG_WIDTH = 240;
+	private static final int IMG_HEIGHT =180;
 	/*private VisionThread visionThread;
 	private double centerX = 0.0;
 	private DifferentialDrive driver;
@@ -457,12 +457,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			CvSink cvSink = CameraServer.getInstance().getVideo();
 
 			//Creates an image stream (source) MjpegServer [2] with the name "Blur"
-			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", IMG_WIDTH/2, IMG_HEIGHT/2);
+			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", IMG_WIDTH, IMG_HEIGHT);
 			
 			Mat source = new Mat(); //unreleated to CvSource
 			Mat output = new Mat();
 
-			while(!Thread.interrupted()) {
+			while (!Thread.interrupted()) {
 				//Applies the 'Imgproc.COLOR_BGR2GRAY' filter to a frame from 'cvSink' and puts the result on 'outputStream'
 				cvSink.grabFrame(source);
 				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
@@ -541,9 +541,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		update();
-		if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, run sensitive output.
+		//if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, run sensitive output.
 			sensitiveOutput();
-		}
+		//}
 		dashboardOutput();
 		if (driveNormal) {
 			tankDrive();
