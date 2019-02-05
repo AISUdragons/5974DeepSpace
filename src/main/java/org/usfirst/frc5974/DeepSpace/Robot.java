@@ -142,7 +142,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		|0**  1 3
 		|     1 2 <-- our robot
 		*/
-		/*float firstmove;
+		float firstmove;
 		float turntime1;
 		float secondmove;
 		float turntime2;
@@ -228,7 +228,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			motorRF.set(0);
 			motorLF.set(0);
 			// put it in again. this may be all the time we have
-		}*/
+		}
 
 	public void sensorInit() {
 		gyro.calibrate();
@@ -354,15 +354,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
 	}
 	public void sensitiveOutput(){ //Displays smartdash data that changes very quickly
-		SmartDashboard.putNumber("Old X acceleration", xVal*9.8);
-		SmartDashboard.putNumber("Old Y acceleration", yVal*9.8);
-		SmartDashboard.putNumber("Old Z acceleration", zVal*9.8);
+		SmartDashboard.putNumber("Old X acceleration", xVal);
+		SmartDashboard.putNumber("Old Y acceleration", yVal);
+		SmartDashboard.putNumber("Old Z acceleration", zVal);
 		SmartDashboard.putNumber("Old angle of robot", angle);
 		SmartDashboard.putNumber("Old angular velocity", rate);
 		
-		SmartDashboard.putNumber("X acceleration", accelX*9.8);
-		SmartDashboard.putNumber("Y acceleration", accelY*9.8);
-		SmartDashboard.putNumber("Z acceleration", accelZ*9.8);
+		SmartDashboard.putNumber("X acceleration", accelX);
+		SmartDashboard.putNumber("Y acceleration", accelY);
+		SmartDashboard.putNumber("Z acceleration", accelZ);
 		SmartDashboard.putNumber("Angle", fancyAngle);
 		SmartDashboard.putNumber("X angle", angleX);
 		SmartDashboard.putNumber("Y angle", angleY);
@@ -374,9 +374,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("X rate", rateX);
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
-		SmartDashboard.putNumber("X velocity", velX);
-		SmartDashboard.putNumber("Y velocity", velY);
-		SmartDashboard.putNumber("Z velocity", velZ);
 	}
 
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
@@ -410,14 +407,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
 	private static final double kVoltsPerDegreePerSecond=0.0128;
 
-	public void driveStraight() {
+	public void driveStraight(){
 		boolean useFancy = true;
 		double turningValue = 0;
-		if (useFancy) {
+		if(useFancy){
 			//ADIS16448 IMU; set useFancy to true to activate.
 			turningValue = (kAngleSetPoint-yaw) * kP;
 			//turningValue = (kAngleSetPoint-angleX); //Pretty sure we should use yaw or anglex but idk which
-		} else {
+		}else{
 			//ADXRS450; set useFancy to false to activate.
 			turningValue = (kAngleSetPoint-angle) * kP;
 		}
@@ -426,12 +423,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		turningValue = Math.copySign(turningValue, joystickLYAxis);
 
 		//Drive.
-		if (fastBool) {
+		if(fastBool){
 			driver.arcadeDrive(joystickLYAxis, turningValue);
-		} else {
+		}else{
 			driver.arcadeDrive(joystickLYAxis/2, turningValue);
 		}
-	}
+
+		}
 
     public static OI oi;
 
@@ -458,7 +456,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			CvSink cvSink = CameraServer.getInstance().getVideo();
 
 			//Creates an image stream (source) MjpegServer [2] with the name "Blur"
-			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", IMG_WIDTH, IMG_HEIGHT);
+			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", IMG_WIDTH/2, IMG_HEIGHT/2);
 			
 			Mat source = new Mat(); //unreleated to CvSource
 			Mat output = new Mat();
