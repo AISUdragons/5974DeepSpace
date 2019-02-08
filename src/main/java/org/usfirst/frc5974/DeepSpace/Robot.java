@@ -259,7 +259,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			SmartDashboard.putString("Drive mode","Straight");
 		}
-		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
+		SmartDashboard.putBoolean("Old Gyro Connected?", gyroConnected);
 	}
 	public void sensitiveOutput(){ //Displays smartdash data that changes very quickly
 		SmartDashboard.putNumber("Old X acceleration", xVal);
@@ -288,25 +288,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
 		
 		//Differential Drive solution - much more elegant
-		if(fastBool){
-			driver.tankDrive(joystickLYAxis,joystickRYAxis);
-		} else{
+		if (fastBool) {
+			driver.tankDrive(joystickLYAxis, joystickRYAxis);
+		} else {
 			driver.tankDrive(joystickLYAxis/2,joystickRYAxis/2);
 		}
-		
-		/* Last year's solution
-		if (fastBool) {
-			motorRB.set(joystickRYAxis);
-			motorRF.set(joystickRYAxis);
-			motorLB.set(-joystickLYAxis); //these two are inverted
-			motorLF.set(-joystickLYAxis);
-		} else {
-			motorRB.set(joystickRYAxis/2);
-			motorRF.set(joystickRYAxis/2);
-			motorLB.set(-joystickLYAxis/2);
-			motorLF.set(-joystickLYAxis/2);
-		}
-		*/
 	}
 	public void driveStraight(){
 		boolean useFancy = true;
@@ -327,14 +313,92 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		if (fastBool) {
 			driver.arcadeDrive(joystickLYAxis, turningValue);
 		} else {
-			driver.arcadeDrive(joystickLYAxis/2, turningValue);
+			driver.arcadeDrive(joystickLYAxis/2,turningValue);
 		}
 	}
 
     public static OI oi;
 
+    @Override
+    public void robotInit() {
+        oi = new OI();
+		
+		//I think this is how we choose different autonomous code options from smartdash
+        chooser.setDefaultOption("Autonomous Command", new AutonomousCommand());
+		SmartDashboard.putData("Auto mode", chooser);
+		
+		sensorInit(); //Calibrates sensors
+		driver.setRightSideInverted(true);
+		
+		//Camera Stuff
+		new Thread(() -> {
+			//Creates a UsbCamera on the default port and streams output on MjpegServer [1]
+			//equivalent to "".startAutomaticCapture(0), which is equivalent to "".startAutomaticCapture("USB Camera 0", 0)
+			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 
-/*
+			//Creates an image input (sink) that takes video from the primary feed (UsbCamera camera)
+			//equivalent to "".getVideo(camera)
+			CvSink cvSink = CameraServer.getInstance().getVideo();
+
+			//Creates an image stream (source) MjpegServer [2] with the name "Blur"
+			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", IMG_WIDTH, IMG_HEIGHT);
+			
+			Mat source = new Mat(); //unreleated to CvSource
+			Mat output = new Mat();
+
+			while (!Thread.interrupted()) {
+				//Applies the 'Imgproc.COLOR_BGR2GRAY' filter to a frame from 'cvSink' and puts the result on 'outputStream'
+				cvSink.grabFrame(source);
+				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+				outputStream.putFrame(output);
+			}
+		}).start();
+		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
+			if (!pipeline.filterContoursOutput.isEmpty()) {
+				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
+				synchronized (imgLock) {
+					centerX = r.x + (r.width / 2);
+				}
+			}
+		});
+		visionThread.start();
+		//drive = new RobotDrive(1, 2);*/
+
+		/*NetworkTableInstance inst = NetworkTableInstance.getDefault();
+		NetworkTable table = inst.getTable("GRIP/myContours Report");
+		double[] defaultValue = new double[0];
+		while(true) {
+			double[] areas = table.getEntry("area").getDoubleArray(defaultValue);
+			System.out.print("areas: ");
+			for (double area : areas) {
+				System.out.print(area + " ");
+			}
+			System.out.println();
+			Timer.delay(1);
+		}*/
+    }
+
+    /**
+     * This function is called when the disabled button is hit.
+     * You can use it to reset subsystems before shutting down.
+     */
+    @Override
+    public void disabledInit(){
+
+    }
+
+    @Override
+    public void disabledPeriodic() {
+        Scheduler.getInstance().run();
+    }
+
+    @Override
+    public void autonomousInit() {
+        autonomousCommand = chooser.getSelected();
+        // schedule the autonomous command (example)
+		if (autonomousCommand != null) autonomousCommand.start();
+		/*
 		The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
 
 		I plan for it to grab a ball from the depot, then put it in the front right slot of the cargo ship. Depending on how long this takes, I may have it grab another
@@ -433,87 +497,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			motorLF.set(0);
 			// put it in again. this may be all the time we have
 		}*/
-
-    @Override
-    public void robotInit() {
-        oi = new OI();
-		
-		//I think this is how we choose different autonomous code options from smartdash
-        chooser.setDefaultOption("Autonomous Command", new AutonomousCommand());
-		SmartDashboard.putData("Auto mode", chooser);
-		
-		sensorInit(); //Calibrates sensors
-		driver.setRightSideInverted(true);
-		
-		//Camera Stuff
-		new Thread(() -> {
-			//Creates a UsbCamera on the default port and streams output on MjpegServer [1]
-			//equivalent to "".startAutomaticCapture(0), which is equivalent to "".startAutomaticCapture("USB Camera 0", 0)
-			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-
-			//Creates an image input (sink) that takes video from the primary feed (UsbCamera camera)
-			//equivalent to "".getVideo(camera)
-			CvSink cvSink = CameraServer.getInstance().getVideo();
-
-			//Creates an image stream (source) MjpegServer [2] with the name "Blur"
-			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", IMG_WIDTH, IMG_HEIGHT);
-			
-			Mat source = new Mat(); //unreleated to CvSource
-			Mat output = new Mat();
-
-			while (!Thread.interrupted()) {
-				//Applies the 'Imgproc.COLOR_BGR2GRAY' filter to a frame from 'cvSink' and puts the result on 'outputStream'
-				cvSink.grabFrame(source);
-				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-				outputStream.putFrame(output);
-			}
-		}).start();
-		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
-			if (!pipeline.filterContoursOutput.isEmpty()) {
-				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
-				synchronized (imgLock) {
-					centerX = r.x + (r.width / 2);
-				}
-			}
-		});
-		visionThread.start();
-		//drive = new RobotDrive(1, 2);*/
-
-		/*NetworkTableInstance inst = NetworkTableInstance.getDefault();
-		NetworkTable table = inst.getTable("GRIP/myContours Report");
-		double[] defaultValue = new double[0];
-		while(true) {
-			double[] areas = table.getEntry("area").getDoubleArray(defaultValue);
-			System.out.print("areas: ");
-			for (double area : areas) {
-				System.out.print(area + " ");
-			}
-			System.out.println();
-			Timer.delay(1);
-		}*/
-    }
-
-    /**
-     * This function is called when the disabled button is hit.
-     * You can use it to reset subsystems before shutting down.
-     */
-    @Override
-    public void disabledInit(){
-
-    }
-
-    @Override
-    public void disabledPeriodic() {
-        Scheduler.getInstance().run();
-    }
-
-    @Override
-    public void autonomousInit() {
-        autonomousCommand = chooser.getSelected();
-        // schedule the autonomous command (example)
-		if (autonomousCommand != null) autonomousCommand.start();
-
 		//Autonomous();
     }
 
