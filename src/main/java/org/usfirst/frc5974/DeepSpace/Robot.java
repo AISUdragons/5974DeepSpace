@@ -18,7 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 
-import com.analog.adis16448.frc.ADIS16448_IMU;
+import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU;
+//import com.analog.adis16448.frc.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -56,7 +57,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	VictorSP motorRF = new VictorSP(0); //motor right front 
 	SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB);
 
-	VictorSP motorLB = new VictorSP(3); //motor left back 
+	VictorSP motorLB = new VictorSP(3); //motor left back
 	VictorSP motorLF = new VictorSP(2); //motor left front
 	SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB);
 	
@@ -89,8 +90,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	Timer timer = new Timer();
 
 	//Camera Stuff
-	private static final int IMG_WIDTH = 640;
-	private static final int IMG_HEIGHT =480;
+	private static final int IMG_WIDTH = 240;
+	private static final int IMG_HEIGHT =180;
 	/*private VisionThread visionThread;
 	private double centerX = 0.0;
 	private DifferentialDrive driver;
@@ -107,7 +108,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double rate;
 	boolean gyroConnected;
 
-	ADIS16448_IMU FancyIMU = new ADIS16448_IMU();
+	//This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
+	private static final double kAngleSetPoint = 0.0; //straight ahead
+	private static final double kP = 0.005; //proportional turning constant. not sure what this is, ngl
+
+	//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
+	private static final double kVoltsPerDegreePerSecond=0.0128;
+
+	public static final ADIS16448_IMU FancyIMU = new ADIS16448_IMU();
 	double accelX;
 	double accelY;
 	double accelZ;
@@ -123,6 +131,209 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double rateY;
 	double rateZ;
 
+	double velX;
+	double velY;
+	double velZ;
+	double time;
+	double prevTime = 0;
+	double dt;
+
+	public void sensorInit() {
+		gyro.calibrate();
+		FancyIMU.calibrate();
+		FancyIMU.reset();	//calibrate and reset are not necessary. I put them here just to be safe.
+		velX = velY = velZ = 0;
+	}
+	public void updateSensors() {
+		//ADXRS sensor data
+		xVal = accel.getX();
+		yVal = accel.getY();
+		zVal = accel.getZ();
+		angle = gyro.getAngle();
+		rate = gyro.getRate();
+		gyroConnected = gyro.isConnected();
+
+		//ADIS sensor data
+		accelX = FancyIMU.getAccelX();
+		accelY = FancyIMU.getAccelY();
+		accelZ = FancyIMU.getAccelZ();
+		fancyAngle=FancyIMU.getAngle();
+		angleX = FancyIMU.getAngleX();
+		angleY = FancyIMU.getAngleY();
+		angleZ = FancyIMU.getAngleZ();
+		pitch=FancyIMU.getPitch();
+		yaw = FancyIMU.getYaw();
+		roll =FancyIMU.getRoll();
+		fancyRate=FancyIMU.getRate();
+		rateX = FancyIMU.getRateX();
+		rateY = FancyIMU.getRateY();
+		rateZ = FancyIMU.getRateZ();
+
+		time = timer.get();
+		dt = time - prevTime;
+		velX += accelX * dt;
+		velY += accelY * dt;
+		velZ += accelZ * dt;
+		prevTime = time;
+	}
+
+	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
+		//When the button is pushed, once it is released, its toggle is changed
+		if (pressed) {
+			toggle = !toggle;
+			while (pressed) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
+									// This is a pretty small amount of code though, so it shouldn't be an issue?
+				pressed = controller.getRawButton(portNum);
+			}
+		}
+		return toggle;
+	}
+
+	//Set dead zone for joysticks
+	public void joystickDeadZone() {
+		double deadZoneValue=.16;
+		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
+			joystickLXAxis = 0;
+		} else {
+			joystickLXAxis = (joystickLXAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
+		} if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
+			joystickLYAxis = 0;
+		} else {
+			joystickLYAxis = (joystickLYAxis -deadZoneValue)/(1-deadZoneValue);
+		} if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
+			joystickRXAxis = 0;
+		} else {
+			joystickRXAxis = (joystickRXAxis -deadZoneValue)/(1-deadZoneValue);
+		} if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
+			joystickRYAxis = 0;
+		} else {
+			joystickRYAxis = (joystickRYAxis -deadZoneValue)/(1-deadZoneValue);
+		}
+	}
+
+	public void updateController() {		//updates all controller features
+		//joystick updates
+		joystickLXAxis = controller.getRawAxis(0);		//returns a value [-1,1]
+		joystickLYAxis = controller.getRawAxis(1);		//returns a value [-1,1]
+		joystickRXAxis = controller.getRawAxis(4);		//returns a value [-1,1]
+		joystickRYAxis = controller.getRawAxis(5);		//returns a value [-1,1]
+		joystickLPress = controller.getRawButton(9);	//returns a value {0,1}
+		joystickRPress = controller.getRawButton(10);	//returns a value {0,1}
+        joystickDeadZone();
+
+		//trigger updates
+		triggerL = controller.getRawAxis(2);		//returns a value [0,1]
+		triggerR = controller.getRawAxis(3);		//returns a value [0,1]
+		
+		//bumper updates
+		bumperL = controller.getRawButton(5);		//returns a value {0,1}
+		bumperR = controller.getRawButton(6);		//returns a value {0,1}
+		
+		//button updates
+		buttonX = controller.getRawButton(3);		//returns a value {0,1}
+		buttonY = controller.getRawButton(4);		//returns a value {0,1}
+		buttonA = controller.getRawButton(1);		//returns a value {0,1}
+		buttonB = controller.getRawButton(2);		//returns a value {0,1}
+		
+		buttonBack = controller.getRawButton(7);	//returns a value {0,1}
+		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
+		
+		//toggle checks
+		fastBool = checkButton(buttonB, fastBool, 2);				//toggles boolean if button is pressed
+		driveNormal = checkButton(buttonA, driveNormal, 1);
+		
+		//d-pad/POV updates
+		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
+	}
+	
+	public void update() {	//updates everything
+		updateController();
+		updateSensors();
+	}
+
+	public void dashboardOutput() {			//sends and displays data to smart dashboard
+		//SmartDashboard.putNumber("Time Remaining", GameTime);
+		SmartDashboard.putBoolean("Fast Mode", fastBool);
+		if (driveNormal) {
+			SmartDashboard.putString("Drive mode","Tank");
+		} else {
+			SmartDashboard.putString("Drive mode","Straight");
+		}
+		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
+	}
+	public void sensitiveOutput(){ //Displays smartdash data that changes very quickly
+		SmartDashboard.putNumber("Old X acceleration", xVal);
+		SmartDashboard.putNumber("Old Y acceleration", yVal);
+		SmartDashboard.putNumber("Old Z acceleration", zVal);
+		SmartDashboard.putNumber("Old angle of robot", angle);
+		SmartDashboard.putNumber("Old angular velocity", rate);
+		
+		SmartDashboard.putNumber("X acceleration", accelX);
+		SmartDashboard.putNumber("Y acceleration", accelY);
+		SmartDashboard.putNumber("Z acceleration", accelZ);
+		SmartDashboard.putNumber("Angle", fancyAngle);
+		SmartDashboard.putNumber("X angle", angleX);
+		SmartDashboard.putNumber("Y angle", angleY);
+		SmartDashboard.putNumber("Z angle", angleZ);
+		SmartDashboard.putNumber("Pitch", pitch);
+		SmartDashboard.putNumber("Yaw", yaw);
+		SmartDashboard.putNumber("Roll", roll);
+		SmartDashboard.putNumber("Rate", fancyRate);
+		SmartDashboard.putNumber("X rate", rateX);
+		SmartDashboard.putNumber("Y rate", rateY);
+		SmartDashboard.putNumber("Z rate", rateZ);
+		SmartDashboard.putNumber("latest time interval", dt);
+	}
+
+	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
+		
+		//Differential Drive solution - much more elegant
+		if(fastBool){
+			driver.tankDrive(joystickLYAxis,joystickRYAxis);
+		} else{
+			driver.tankDrive(joystickLYAxis/2,joystickRYAxis/2);
+		}
+		
+		/* Last year's solution
+		if (fastBool) {
+			motorRB.set(joystickRYAxis);
+			motorRF.set(joystickRYAxis);
+			motorLB.set(-joystickLYAxis); //these two are inverted
+			motorLF.set(-joystickLYAxis);
+		} else {
+			motorRB.set(joystickRYAxis/2);
+			motorRF.set(joystickRYAxis/2);
+			motorLB.set(-joystickLYAxis/2);
+			motorLF.set(-joystickLYAxis/2);
+		}
+		*/
+	}
+	public void driveStraight(){
+		boolean useFancy = true;
+		double turningValue = 0;
+		if (useFancy) {
+			//ADIS16448 IMU; set useFancy to true to activate.
+			turningValue = (kAngleSetPoint-yaw) * kP;
+			//turningValue = (kAngleSetPoint-angleX); //Pretty sure we should use yaw or anglex but idk which
+		} else {
+			//ADXRS450; set useFancy to false to activate.
+			turningValue = (kAngleSetPoint-angle) * kP;
+		}
+
+		//Invert direction of turn if we are going backwards
+		turningValue = Math.copySign(turningValue, joystickLYAxis);
+
+		//Drive.
+		if (fastBool) {
+			driver.arcadeDrive(joystickLYAxis, turningValue);
+		} else {
+			driver.arcadeDrive(joystickLYAxis/2, turningValue);
+		}
+	}
+
+    public static OI oi;
+
+
 /*
 		The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
 
@@ -135,7 +346,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		|0**  1 3
 		|     1 2 <-- our robot
 		*/
-		float firstmove;
+		/*float firstmove;
 		float turntime1;
 		float secondmove;
 		float turntime2;
@@ -221,195 +432,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			motorRF.set(0);
 			motorLF.set(0);
 			// put it in again. this may be all the time we have
-		}
-
-	public void sensorInit() {
-		gyro.calibrate();
-		FancyIMU.calibrate();
-	}
-	public void updateSensors() {
-		//ADXRS sensor data
-		xVal = accel.getX();
-		yVal = accel.getY();
-		zVal = accel.getZ();
-		angle = gyro.getAngle();
-		rate = gyro.getRate();
-		gyroConnected = gyro.isConnected();
-
-		//ADIS sensor data
-		accelX = FancyIMU.getAccelX();
-		accelY=FancyIMU.getAccelY();
-		accelZ=FancyIMU.getAccelZ();
-		fancyAngle=FancyIMU.getAngle();
-		angleX=FancyIMU.getAngleX();
-		angleY=FancyIMU.getAngleY();
-		angleZ=FancyIMU.getAngleZ();
-		pitch=FancyIMU.getPitch();
-		fancyRate=FancyIMU.getRate();
-		rateX=FancyIMU.getRateX();
-		rateY=FancyIMU.getRateY();
-		rateZ=FancyIMU.getRateZ();
-		roll=FancyIMU.getRoll();
-		yaw=FancyIMU.getYaw();
-	}
-
-	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
-		//When the button is pushed, once it is released, its toggle is changed
-		if (pressed) {
-			toggle = !toggle;
-			while (pressed) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
-									// This is a pretty small amount of code though, so it shouldn't be an issue?
-				pressed = controller.getRawButton(portNum);
-			}
-		}
-		return toggle;
-	}
-
-	//Set dead zone for joysticks
-	public void joystickDeadZone() {
-		double deadZoneValue=.16;
-		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
-			joystickLXAxis = 0;
-		} else {
-			joystickLXAxis = (joystickLXAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
-		} if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
-			joystickLYAxis = 0;
-		} else {
-			joystickLYAxis = (joystickLYAxis -deadZoneValue)/(1-deadZoneValue);
-		} if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
-			joystickRXAxis = 0;
-		} else {
-			joystickRXAxis = (joystickRXAxis -deadZoneValue)/(1-deadZoneValue);
-		} if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
-			joystickRYAxis = 0;
-		} else {
-			joystickRYAxis = (joystickRYAxis -deadZoneValue)/(1-deadZoneValue);
-		}
-	}
-
-	public void updateController() {		//updates all controller features
-		//joystick updates
-		joystickLXAxis = controller.getRawAxis(0);		//returns a value [-1,1]
-		joystickLYAxis = controller.getRawAxis(1);		//returns a value [-1,1]
-		joystickRXAxis = controller.getRawAxis(4);		//returns a value [-1,1]
-		joystickRYAxis = controller.getRawAxis(5);		//returns a value [-1,1]
-		joystickLPress = controller.getRawButton(9);	//returns a value {0,1}
-		joystickRPress = controller.getRawButton(10);	//returns a value {0,1}
-        joystickDeadZone();
-
-		//trigger updates
-		triggerL = controller.getRawAxis(2);		//returns a value [0,1]
-		triggerR = controller.getRawAxis(3);		//returns a value [0,1]
-		
-		//bumper updates
-		bumperL = controller.getRawButton(5);		//returns a value {0,1}
-		bumperR = controller.getRawButton(6);		//returns a value {0,1}
-		
-		//button updates
-		buttonX = controller.getRawButton(3);		//returns a value {0,1}
-		buttonY = controller.getRawButton(4);		//returns a value {0,1}
-		buttonA = controller.getRawButton(1);		//returns a value {0,1}
-		buttonB = controller.getRawButton(2);		//returns a value {0,1}
-		
-		buttonBack = controller.getRawButton(7);	//returns a value {0,1}
-		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
-		
-		//toggle checks
-		fastBool = checkButton(buttonB, fastBool, 2);				//toggles boolean if button is pressed
-		driveNormal = checkButton(buttonA, driveNormal, 1);
-		
-		//d-pad/POV updates
-		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
-
-	}
-	
-	public void update() {	//updates everything
-		updateController();
-		updateSensors();
-	}
-
-	public void dashboardOutput() {			//sends and displays data to smart dashboard
-		//SmartDashboard.putNumber("Time Remaining", GameTime);
-		SmartDashboard.putBoolean("Fast Mode", fastBool);
-		SmartDashboard.putNumber("Old X acceleration", xVal);
-		SmartDashboard.putNumber("Old Y acceleration", yVal);
-		SmartDashboard.putNumber("Old Z acceleration", zVal);
-		SmartDashboard.putNumber("Old angle of robot", angle);
-		SmartDashboard.putNumber("Old angular velocity", rate);
-
-		SmartDashboard.putNumber("New X acceleration", accelX);
-		SmartDashboard.putNumber("New Y acceleration", accelY);
-		SmartDashboard.putNumber("New Z acceleration", accelZ);
-		SmartDashboard.putNumber("New angle", fancyAngle);
-		SmartDashboard.putNumber("X angle", angleX);
-		SmartDashboard.putNumber("Y angle", angleY);
-		SmartDashboard.putNumber("Z angle", angleZ);
-		SmartDashboard.putNumber("Pitch", pitch);
-		SmartDashboard.putNumber("Yaw", yaw);
-		SmartDashboard.putNumber("Roll", roll);
-		SmartDashboard.putNumber("New rate", fancyRate);
-		SmartDashboard.putNumber("X rate", rateX);
-		SmartDashboard.putNumber("Y rate", rateY);
-		SmartDashboard.putNumber("Z rate", rateZ);
-
-		SmartDashboard.putBoolean("Gyro Connected?", gyroConnected);
-	}
-
-	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
-		
-		//Differential Drive solution - much more elegant
-		if(fastBool){
-			driver.tankDrive(-joystickLYAxis,joystickRYAxis);
-		} else{
-			driver.tankDrive(-joystickLYAxis/2,joystickRYAxis/2);
-		}
-		
-		/* Last year's solution
-		if (fastBool) {
-			motorRB.set(joystickRYAxis);
-			motorRF.set(joystickRYAxis);
-			motorLB.set(-joystickLYAxis); //these two are inverted
-			motorLF.set(-joystickLYAxis);
-		} else {
-			motorRB.set(joystickRYAxis/2);
-			motorRF.set(joystickRYAxis/2);
-			motorLB.set(-joystickLYAxis/2);
-			motorLF.set(-joystickLYAxis/2);
-		}
-		*/
-	}
-	
-	//This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
-	private static final double kAngleSetPoint=0.0; //straight ahead
-	private static final double kP=0.005; //proportional turning constant. not sure what this is, ngl
-
-	//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
-	private static final double kVoltsPerDegreePerSecond=0.0128;
-
-	public void driveStraight(){
-		boolean useFancy = true;
-		double turningValue = 0;
-		if(useFancy){
-			//ADIS16448 IMU; set useFancy to true to activate.
-			turningValue = (kAngleSetPoint-FancyIMU.getAngle()) * kP;
-		}else{
-			//ADXRS450; set useFancy to false to activate.
-			turningValue = (kAngleSetPoint-gyro.getAngle()) * kP;
-		}
-
-		//Invert direction of turn if we are going backwards
-		turningValue = Math.copySign(turningValue, joystickLYAxis);
-
-		//Drive.
-		if(fastBool){
-			driver.arcadeDrive(joystickLYAxis, turningValue);
-		}else{
-			driver.arcadeDrive(joystickLYAxis/2, turningValue);
-		}
-
-		}
-
-    public static OI oi;
+		}*/
 
     @Override
     public void robotInit() {
@@ -420,6 +443,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		sensorInit(); //Calibrates sensors
+		driver.setRightSideInverted(true);
 		
 		//Camera Stuff
 		new Thread(() -> {
@@ -438,7 +462,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			Mat source = new Mat(); //unreleated to CvSource
 			Mat output = new Mat();
 
-			while(!Thread.interrupted()) {
+			while (!Thread.interrupted()) {
 				//Applies the 'Imgproc.COLOR_BGR2GRAY' filter to a frame from 'cvSink' and puts the result on 'outputStream'
 				cvSink.grabFrame(source);
 				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
@@ -517,12 +541,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		update();
-		if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, dashboardoutput. In theory.
-			dashboardOutput();
-		}
-		if(driveNormal){
+		//if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, run sensitive output.
+			sensitiveOutput();
+		//}
+		dashboardOutput();
+		if (driveNormal) {
 			tankDrive();
-		} else{
+		} else {
 			driveStraight();
 		}
     }
