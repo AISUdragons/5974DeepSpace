@@ -189,8 +189,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		return toggle;
 	}
 
-	//Set dead zone for joysticks
-	public void joystickDeadZone() {
+	public void joystickDeadZone() {		//Set dead zone for joysticks
 		double deadZoneValue=.16;
 		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
 			joystickLXAxis = 0;
@@ -239,14 +238,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
 		
 		//toggle checks
-		fastBool = checkButton(buttonB, fastBool, 2);				//toggles boolean if button is pressed
+		fastBool = checkButton(buttonB, fastBool, 2);	//toggles boolean if button is pressed
 		driveNormal = checkButton(buttonA, driveNormal, 1);
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
 	}
 	
-	public void update() {	//updates everything
+	public void update() {					//updates everything
 		updateController();
 		updateSensors();
 	}
@@ -261,7 +260,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 		SmartDashboard.putBoolean("Old Gyro Connected?", gyroConnected);
 	}
-	public void sensitiveOutput(){ //Displays smartdash data that changes very quickly
+	public void sensitiveOutput(){ 			//Displays smartdash data that changes very quickly
 		SmartDashboard.putNumber("Old X acceleration", xVal);
 		SmartDashboard.putNumber("Old Y acceleration", yVal);
 		SmartDashboard.putNumber("Old Z acceleration", zVal);
@@ -285,8 +284,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("latest time interval", dt);
 	}
 
-	public void tankDrive() {	//left joystick controls left wheels, right joystick controls right wheels
-		
+	public void tankDrive() {				//left joystick controls left wheels, right joystick controls right wheels
 		//Differential Drive solution - much more elegant
 		if (fastBool) {
 			driver.tankDrive(joystickLYAxis, joystickRYAxis);
