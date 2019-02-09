@@ -522,9 +522,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		update();
-		//if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, run sensitive output.
+		if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, run sensitive output.
 			sensitiveOutput();
-		//}
+		}
 		dashboardOutput();
 		if (driveNormal) {
 			tankDrive();
