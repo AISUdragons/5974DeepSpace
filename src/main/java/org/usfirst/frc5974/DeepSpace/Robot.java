@@ -92,11 +92,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
 
 	Timer timer = new Timer();
-	int check = 0;
+	int track = 0;
+	int check = 10;
 
 	//Camera Stuff
 	private static final int IMG_WIDTH = 240;
 	private static final int IMG_HEIGHT = 180;
+	private static final int fps = 30;
 	/*private VisionThread visionThread;
 	private double centerX = 0.0;
 	private DifferentialDrive driver;
@@ -254,8 +256,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		updateController();
 
 		//Calls updateSensors every 10 updates
-		check = 10%(check+1);
-		if (check == 0) {
+		track = (track+1) % check;
+		if (track == 0) {
 			updateSensors();
 		}
 	}
@@ -342,7 +344,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-		camera.setFPS(15);
+		camera.setFPS(fps);
 
 		new Thread(() -> {
 			//Creates a UsbCamera on the default port and streams output on MjpegServer [1]
@@ -536,9 +538,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		update();
-		if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, run sensitive output.
+		//if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, run sensitive output.
 			sensitiveOutput();
-		}
+		//}
 		dashboardOutput();
 		if (driveNormal) {
 			tankDrive();
