@@ -92,10 +92,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
 
 	Timer timer = new Timer();
+	int check = 0;
 
 	//Camera Stuff
 	private static final int IMG_WIDTH = 240;
-	private static final int IMG_HEIGHT =180;
+	private static final int IMG_HEIGHT = 180;
 	/*private VisionThread visionThread;
 	private double centerX = 0.0;
 	private DifferentialDrive driver;
@@ -251,7 +252,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	
 	public void update() {					//updates everything
 		updateController();
-		updateSensors();
+
+		//Calls updateSensors every 10 updates
+		check = 10%(check+1);
+		if (check == 0) {
+			updateSensors();
+		}
 	}
 
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
@@ -264,7 +270,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 		SmartDashboard.putBoolean("Old Gyro Connected?", gyroConnected);
 	}
-	public void sensitiveOutput(){ 			//Displays smartdash data that changes very quickly
+	public void sensitiveOutput() {			//Displays smartdash data that changes very quickly
 		SmartDashboard.putNumber("Old X acceleration", xVal);
 		SmartDashboard.putNumber("Old Y acceleration", yVal);
 		SmartDashboard.putNumber("Old Z acceleration", zVal);
