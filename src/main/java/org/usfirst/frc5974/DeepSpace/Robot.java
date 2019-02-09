@@ -359,7 +359,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			}
 		}).start();
 
-		visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
+		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
 				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
 				synchronized (imgLock) {
@@ -381,7 +381,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			}
 			System.out.println();
 			Timer.delay(1);
-		}
+		}*/
     }
 
     /**
