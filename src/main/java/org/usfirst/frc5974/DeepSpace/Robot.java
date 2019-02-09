@@ -9,7 +9,7 @@ package org.usfirst.frc5974.DeepSpace;
 Joystick Y axes: drive
 B: fast mode
 A: drive straight
-Y: Recalibrate gyro
+Y: Reset gyro
 
 */
 
@@ -64,6 +64,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	VictorSP motorLB = new VictorSP(3); //motor left back
 	VictorSP motorLF = new VictorSP(2); //motor left front
+	VictorSP motorLift = new VictorSP(4); // lift motor
 	SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB);
 	
 	DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
@@ -155,6 +156,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	public void gyroReset() { //it resets the gyro
 		FancyIMU.reset();
+		gyro.reset();
 	} 
 
 	public void sensorInit() {
@@ -289,14 +291,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			SmartDashboard.putString("Drive mode","Straight");
 		}
 		SmartDashboard.putBoolean("Old Gyro Connected?", gyroConnected);
-	}
-	public void sensitiveOutput() {			//Displays smartdash data that changes very quickly
+
+		//Sensor data
 		SmartDashboard.putNumber("Old X acceleration", xVal);
 		SmartDashboard.putNumber("Old Y acceleration", yVal);
 		SmartDashboard.putNumber("Old Z acceleration", zVal);
 		SmartDashboard.putNumber("Old angle of robot", angle);
 		SmartDashboard.putNumber("Old angular velocity", rate);
 		
+		//ADIS sensor data
 		SmartDashboard.putNumber("X acceleration", accelX);
 		SmartDashboard.putNumber("Y acceleration", accelY);
 		SmartDashboard.putNumber("Z acceleration", accelZ);
@@ -312,7 +315,22 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
 		SmartDashboard.putNumber("latest time interval", dt);
+		SmartDashboard.putNumber("X velocity", velX);
+		SmartDashboard.putNumber("Y velocity", velY);
+		SmartDashboard.putNumber("Z velocity", velZ);
 	}
+	// start of lift proto (?) code. Will probably need changes.
+	public void liftUp() {
+		if (buttonX){
+			motorLift.set(1);
+			timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
+		}
+	}
+	public void liftDown() {
+		motorLift.set(-1);
+		timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
+	}
+	// end of proto code.
 
 	public void tankDrive() {				//left joystick controls left wheels, right joystick controls right wheels
 		//Differential Drive solution - much more elegant
@@ -556,9 +574,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		update();
-		//if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, run sensitive output.
-			sensitiveOutput();
-		//}
 		dashboardOutput();
 		if (driveNormal) {
 			tankDrive();
