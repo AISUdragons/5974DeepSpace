@@ -88,6 +88,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	boolean buttonStart;			//start button
 	boolean buttonBack;			    //back button
 	
+	boolean[] pairX = {false, false};
+	boolean[] pairY = {false, false};
+	boolean[] pairA = {false, false};
+	boolean[] pairB = {false, false};
+
 	//Drive Variables
 	boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
 	boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
@@ -190,16 +195,22 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		prevTime = time;
 	}
 
-	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
-		//When the button is pushed, once it is released, its toggle is changed
-		if (pressed) {
-			toggle = !toggle;
-			while (pressed) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
-									// This is a pretty small amount of code though, so it shouldn't be an issue?
-				pressed = controller.getRawButton(portNum);
+	public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
+		return runOnce(button, buttonPair) ? !toggle : toggle;
+	}
+
+	public boolean runOnce(boolean pressed, boolean[] buttonPair) {	//first in buttonPair is run, second is completed
+		boolean completed = buttonPair[0];
+		if (pressed && !completed) {
+			buttonPair[0] = true;
+			buttonPair[1] = true;
+		} else {
+			if (!pressed && completed) {
+				buttonPair[0] = false;
 			}
+			if (buttonPair[1]) {buttonPair[1] = false;}
 		}
-		return toggle;
+		return buttonPair[1];
 	}
 
 	public void joystickDeadZone() {		//Set dead zone for joysticks
@@ -251,18 +262,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
 		
 		//toggle checks
-		fastBool = checkButton(buttonB, fastBool, 2);	//toggles boolean if button is pressed
-		driveNormal = checkButton(buttonA, driveNormal, 1);
+		fastBool = toggle(buttonB, fastBool, pairB);	//toggles boolean if button is pressed
+		driveNormal = toggle(buttonA, driveNormal, pairA);
+		if (runOnce(buttonY, pairY)) {gyroReset();}
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
-		
-		if (buttonY && !pressed){ //recalibrates gyro
-			gyroReset();
-			pressed = true;
-		} else if (!buttonY && pressed) {
-			pressed = false;
-		}
 	}
 	
 	public void update() {					//updates everything
