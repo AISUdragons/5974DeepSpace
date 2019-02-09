@@ -259,7 +259,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		updateController();
 
 		//Calls updateSensors every 10 updates
-		int check = 0;
+		int check;
 		check = 10%(check+1);
 		if (check == 0) {
 			updateSensors();
@@ -371,7 +371,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			}
 		}).start();
 
-		visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
+		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
 				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
 				synchronized (imgLock) {
@@ -393,9 +393,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			}
 			System.out.println();
 			Timer.delay(1);
+<<<<<<< HEAD
 		}
 	}
 	
+=======
+		}*/
+    }
+>>>>>>> 720d8a66748bdc18315141761846a4d0067b0834
 
     /**
      * This function is called when the disabled button is hit.
