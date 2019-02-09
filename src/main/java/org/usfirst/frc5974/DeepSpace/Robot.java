@@ -336,6 +336,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+		camera.setFPS(15);
 
 		new Thread(() -> {
 			//Creates a UsbCamera on the default port and streams output on MjpegServer [1]
