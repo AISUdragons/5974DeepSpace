@@ -94,19 +94,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	Timer timer = new Timer();
 
 	//Camera Stuff
-<<<<<<< HEAD
-	private static final int IMG_WIDTH = 320;
-	private static final int IMG_HEIGHT = 240;
-	
-	private VisionThread visionThread;
-	private double centerX = 0.0;
-	private RobotDrive drive;
-	
-	private final Object imgLock = new Object();
-=======
 	private static final int IMG_WIDTH = 240;
 	private static final int IMG_HEIGHT =180;
->>>>>>> b654c7b19383f3ec9a4193c85089725e872ab413
 	/*private VisionThread visionThread;
 	private double centerX = 0.0;
 	private DifferentialDrive driver;
