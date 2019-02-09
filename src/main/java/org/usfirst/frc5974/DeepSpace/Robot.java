@@ -9,6 +9,7 @@ package org.usfirst.frc5974.DeepSpace;
 Joystick Y axes: drive
 B: fast mode
 A: drive straight
+Y: Recalibrate gyro
 
 */
 
@@ -93,6 +94,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	Timer timer = new Timer();
 
+	boolean pressed = false;
+
 	//Camera Stuff
 	private static final int IMG_WIDTH = 240;
 	private static final int IMG_HEIGHT =180;
@@ -142,10 +145,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double prevTime = 0;
 	double dt;
 
+	public void gyroReset() { //it resets the gyro
+		gyro.calibrate();
+		FancyIMU.reset();
+		FancyIMU.calibrate();
+	} 
+
 	public void sensorInit() {
 		gyro.calibrate();
 		FancyIMU.calibrate();
-		FancyIMU.reset();	//calibrate and reset are not necessary. I put them here just to be safe.
 		velX = velY = velZ = 0;
 	}
 	public void updateSensors() {
@@ -247,6 +255,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
+		
+		if (buttonY && !pressed){ //recalibrates gyro
+			gyroReset();
+			pressed = true;
+		} else if (!buttonY && pressed) {
+			pressed = false;
+		}
 	}
 	
 	public void update() {					//updates everything
