@@ -149,9 +149,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double dt;
 
 	public void gyroReset() { //it resets the gyro
-		gyro.calibrate();
 		FancyIMU.reset();
-		FancyIMU.calibrate();
 	} 
 
 	public void sensorInit() {
