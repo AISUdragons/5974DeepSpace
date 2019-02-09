@@ -1,5 +1,6 @@
 package org.usfirst.frc5974.DeepSpace;
 
+
 // Last year's github: https://github.com/AISUMechanicalDragons/FIRSTPowerUp5974
 // **If copying/pasting code, it MUST be from there.**
 
@@ -31,20 +32,23 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 
 //Camera Stuff
-import edu.wpi.first.cameraserver.CameraServer;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
-/*import edu.wpi.first.networktables.NetworkTable;
+
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.vision.VisionRunner;
 import edu.wpi.first.vision.VisionThread;
 import org.opencv.core.Rect;
 import org.usfirst.frc5974.grip.GripPipeline;
-import java.util.Set;*/
+import java.util.Set;
+
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
@@ -90,7 +94,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	//Camera Stuff
 	private static final int IMG_WIDTH = 320;
-	private static final int IMG_HEIGHT =240;
+	private static final int IMG_HEIGHT = 240;
+	
+	private VisionThread visionThread;
+	private double centerX = 0.0;
+	private RobotDrive drive;
+	
+	private final Object imgLock = new Object();
 	/*private VisionThread visionThread;
 	private double centerX = 0.0;
 	private DifferentialDrive driver;
@@ -429,11 +439,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		driver.setRightSideInverted(true);
 		
 		//Camera Stuff
+
+		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+
 		new Thread(() -> {
 			//Creates a UsbCamera on the default port and streams output on MjpegServer [1]
 			//equivalent to "".startAutomaticCapture(0), which is equivalent to "".startAutomaticCapture("USB Camera 0", 0)
-			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-			camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 
 			//Creates an image input (sink) that takes video from the primary feed (UsbCamera camera)
 			//equivalent to "".getVideo(camera)
@@ -452,7 +464,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 				outputStream.putFrame(output);
 			}
 		}).start();
-		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
+
+		visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput.isEmpty()) {
 				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
 				synchronized (imgLock) {
@@ -461,9 +474,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			}
 		});
 		visionThread.start();
-		//drive = new RobotDrive(1, 2);*/
+		//drive = new RobotDrive(1, 2);
 
-		/*NetworkTableInstance inst = NetworkTableInstance.getDefault();
+		NetworkTableInstance inst = NetworkTableInstance.getDefault();
 		NetworkTable table = inst.getTable("GRIP/myContours Report");
 		double[] defaultValue = new double[0];
 		while(true) {
@@ -474,7 +487,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			}
 			System.out.println();
 			Timer.delay(1);
-		}*/
+		}
     }
 
     /**
