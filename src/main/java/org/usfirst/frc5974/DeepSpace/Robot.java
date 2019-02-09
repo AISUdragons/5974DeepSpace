@@ -150,6 +150,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	public void gyroReset() { //it resets the gyro
 		FancyIMU.reset();
+		gyro.reset();
 	} 
 
 	public void sensorInit() {
@@ -257,7 +258,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
 		
-		if (buttonY && !pressed){ //recalibrates gyro
+		if (buttonY && !pressed){ //resets gyros to 0
 			gyroReset();
 			pressed = true;
 		} else if (!buttonY && pressed) {
@@ -284,14 +285,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			SmartDashboard.putString("Drive mode","Straight");
 		}
 		SmartDashboard.putBoolean("Old Gyro Connected?", gyroConnected);
-	}
-	public void sensitiveOutput() {			//Displays smartdash data that changes very quickly
+
+		//Sensor data
 		SmartDashboard.putNumber("Old X acceleration", xVal);
 		SmartDashboard.putNumber("Old Y acceleration", yVal);
 		SmartDashboard.putNumber("Old Z acceleration", zVal);
 		SmartDashboard.putNumber("Old angle of robot", angle);
 		SmartDashboard.putNumber("Old angular velocity", rate);
 		
+		//ADIS sensor data
 		SmartDashboard.putNumber("X acceleration", accelX);
 		SmartDashboard.putNumber("Y acceleration", accelY);
 		SmartDashboard.putNumber("Z acceleration", accelZ);
@@ -307,6 +309,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
 		SmartDashboard.putNumber("latest time interval", dt);
+		SmartDashboard.putNumber("X velocity", velX);
+		SmartDashboard.putNumber("Y velocity", velY);
+		SmartDashboard.putNumber("Z velocity", velZ);
 	}
 
 	public void tankDrive() {				//left joystick controls left wheels, right joystick controls right wheels
@@ -551,9 +556,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		update();
-		//if(Math.abs(Math.round(timer.get())-timer.get())<.01){ //If the timer is within .01 of a whole second, run sensitive output.
-			sensitiveOutput();
-		//}
 		dashboardOutput();
 		if (driveNormal) {
 			tankDrive();
