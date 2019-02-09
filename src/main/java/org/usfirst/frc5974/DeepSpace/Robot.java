@@ -258,6 +258,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void update() {					//updates everything
 		updateController();
 
+		//Calls updateSensors every 10 updates
 		int check = 0;
 		check = 10%(check+1);
 		if (check == 0) {
