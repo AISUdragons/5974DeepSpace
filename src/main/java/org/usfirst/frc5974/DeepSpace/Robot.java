@@ -63,6 +63,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	VictorSP motorLB = new VictorSP(3); //motor left back
 	VictorSP motorLF = new VictorSP(2); //motor left front
+	VictorSP motorLift = new VictorSP(4); // lift motor
 	SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB);
 	
 	DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
@@ -295,6 +296,18 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Z rate", rateZ);
 		SmartDashboard.putNumber("latest time interval", dt);
 	}
+	// start of lift proto (?) code. Will probably need changes.
+	public void liftUp() {
+		if (buttonX){
+			motorLift.set(1);
+			timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
+		}
+	}
+	public void liftDown() {
+		motorLift.set(-1);
+		timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
+	}
+	// end of proto code.
 
 	public void tankDrive() {				//left joystick controls left wheels, right joystick controls right wheels
 		//Differential Drive solution - much more elegant
