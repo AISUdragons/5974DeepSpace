@@ -9,7 +9,7 @@ package org.usfirst.frc5974.DeepSpace;
 Joystick Y axes: drive
 B: fast mode
 A: drive straight
-Y: Recalibrate gyro
+Y: Reset gyro
 
 */
 
