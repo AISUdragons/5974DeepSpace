@@ -13,8 +13,6 @@ Y: Reset gyro
 
 */
 
-import java.util.Timer; // timer thing for lifts
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -120,6 +118,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double angle;
 	double rate;
 	boolean gyroConnected;
+	double gravAngle;
 
 	//This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
 	private static final double kAngleSetPoint = 0.0; //straight ahead
@@ -192,6 +191,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		velY += accelY * dt;
 		velZ += accelZ * dt;
 		prevTime = time;
+
+
+		gravAngle = Math.acos(accelX);
+	}
+
+	public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
+		return runOnce(button, buttonPair) ? !toggle : toggle;
 	}
 
 	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
@@ -255,8 +261,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
 		
 		//toggle checks
-		fastBool = checkButton(buttonB, fastBool, 2);	//toggles boolean if button is pressed
-		driveNormal = checkButton(buttonA, driveNormal, 1);
+		fastBool = toggle(buttonY, fastBool, pairY);	//toggles boolean if button is pressed
+		driveNormal = toggle(buttonA, driveNormal, pairA);
+		if (runOnce(buttonY, pairY)) {gyroReset();}
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
@@ -269,6 +276,17 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 	}
 	
+	/*
+	if(motorLift.get()==0&&buttonA){
+		double t0=timer.get();
+		motorLift.set(1)
+	}
+	if(timer.get()-t0>1){
+		motorLift.set(0);
+	}
+	*/
+
+
 	public void update() {					//updates everything
 		updateController();
 
@@ -311,29 +329,34 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("X rate", rateX);
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
+
 		SmartDashboard.putNumber("latest time interval", dt);
 		SmartDashboard.putNumber("X velocity", velX);
 		SmartDashboard.putNumber("Y velocity", velY);
 		SmartDashboard.putNumber("Z velocity", velZ);
+
+		SmartDashboard.putNumber("Gravity Angle from Vertical", gravAngle);
+
 	}
 	// start of lift proto (?) code. Will probably need changes.
 	Timer liftTimer = new Timer();
 	public void liftUp() {
-		motorLift.set(1);
-		motorLift.set(0);
+		if (buttonX){
+			motorLift.set(1);
+			//timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
+		}
 	}
 	public void liftDown() {
 		motorLift.set(-1);
-		motorLift.set(0);
+		//timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
 	}
-	// end of proto code.
 
 	public void tankDrive() {				//left joystick controls left wheels, right joystick controls right wheels
 		//Differential Drive solution - much more elegant
 		if (fastBool) {
-			driver.tankDrive(joystickLYAxis, joystickRYAxis);
+			driver.tankDrive(-joystickLYAxis, -joystickRYAxis);
 		} else {
-			driver.tankDrive(joystickLYAxis/2,joystickRYAxis/2);
+			driver.tankDrive(-joystickLYAxis/2,-joystickRYAxis/2);
 		}
 	}
 	public void driveStraight(){
