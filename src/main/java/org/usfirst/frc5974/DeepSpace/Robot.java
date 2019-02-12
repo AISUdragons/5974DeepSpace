@@ -223,21 +223,25 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		double deadZoneValue=.16;
 		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
 			joystickLXAxis = 0;
-		} else {
+		} /*else {
 			joystickLXAxis = (joystickLXAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
-		} if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
+		} */
+		if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
 			joystickLYAxis = 0;
-		} else {
+		} /*else {
 			joystickLYAxis = (joystickLYAxis -deadZoneValue)/(1-deadZoneValue);
-		} if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
+		} */
+		if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
 			joystickRXAxis = 0;
-		} else {
+		} /*else {
 			joystickRXAxis = (joystickRXAxis -deadZoneValue)/(1-deadZoneValue);
-		} if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
+		} 
+		*/if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
 			joystickRYAxis = 0;
-		} else {
+		} 
+		/*else {
 			joystickRYAxis = (joystickRYAxis -deadZoneValue)/(1-deadZoneValue);
-		}
+		}*/
 	}
 
 	public void updateController() {		//updates all controller features
@@ -294,6 +298,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			SmartDashboard.putString("Drive mode","Straight");
 		}
+
+		SmartDashboard.putNumber("Left Joystick Y:",joystickLYAxis);
+		SmartDashboard.putNumber("Right Joystick Y:",joystickRYAxis);
+
 		SmartDashboard.putBoolean("Old Gyro Connected?", gyroConnected);
 
 		//Sensor data
@@ -342,7 +350,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		if (fastBool) {
 			driver.tankDrive(-joystickLYAxis, -joystickRYAxis);
 		} else {
-			driver.tankDrive(-joystickLYAxis/2,-joystickRYAxis/2);
+			driver.tankDrive(-.75*joystickLYAxis, -.75*joystickRYAxis);
 		}
 	}
 	public void driveStraight(){
