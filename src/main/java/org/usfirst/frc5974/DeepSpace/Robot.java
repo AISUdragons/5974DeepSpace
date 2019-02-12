@@ -191,12 +191,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		rateY = FancyIMU.getRateY();
 		rateZ = FancyIMU.getRateZ();
 
-		/*time = timer.get();
+		time = timer.get();
 		dt = time - prevTime;
 		velX += accelX * dt;
 		velY += accelY * dt;
 		velZ += accelZ * dt;
-		prevTime = time;*/
+		prevTime = time;
 
 		gravAngle = Math.acos(accelX);
 	}
@@ -319,22 +319,22 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
 		
-		SmartDashboard.putNumber("latest time interval", dt);
+		/*SmartDashboard.putNumber("latest time interval", dt);
 		SmartDashboard.putNumber("X velocity", velX);
 		SmartDashboard.putNumber("Y velocity", velY);
-		SmartDashboard.putNumber("Z velocity", velZ);
+		SmartDashboard.putNumber("Z velocity", velZ);*/
 		SmartDashboard.putNumber("Gravity Angle from Vertical", gravAngle);
 	}
 	// start of lift proto (?) code. Will probably need changes.
 	public void liftUp() {
 		if (buttonX){
 			motorLift.set(1);
-			timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
+			//timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
 		}
 	}
 	public void liftDown() {
 		motorLift.set(-1);
-		timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
+		//timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
 	}
 	// end of proto code.
 
