@@ -37,9 +37,21 @@ public class Controller{
     boolean[] pairB = {false, false};
     
     boolean pressed = false;
-    
-    public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
+	
+	public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
 		return runOnce(button, buttonPair) ? !toggle : toggle;
+	}
+
+	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
+		//When the button is pushed, once it is released, its toggle is changed
+		if (pressed) {
+			toggle = !toggle;
+			while (pressed) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
+									// This is a pretty small amount of code though, so it shouldn't be an issue?
+				pressed = controller.getRawButton(portNum);
+			}
+		}
+		return toggle;
 	}
 
 	public boolean runOnce(boolean pressed, boolean[] buttonPair) {	//first in buttonPair is run, second is completed

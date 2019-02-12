@@ -42,7 +42,17 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	Timer timer = new Timer();
 	int track = 0;
-	int check = 25;
+	int check = 10;
+	
+	/*
+	if(motorLift.get()==0&&buttonA){
+		double t0=timer.get();
+		motorLift.set(1)
+	}
+	if(timer.get()-t0>1){
+		motorLift.set(0);
+	}
+	*/
 
 	public void update() {					//updates everything
 		controls.updateController();
@@ -100,6 +110,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Temperature: ", sensors.FancyIMU.getTemperature());
 	}
 	// start of lift proto (?) code. Will probably need changes.
+	Timer liftTimer = new Timer();
 	public void liftUp() {
 		if (controls.buttonX){
 			motorLift.set(1);
@@ -267,6 +278,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
     @Override
     public void teleopPeriodic() {
+		double t0=0;
+		if(robotDrive.motorRB.get()==0&&controls.buttonA){
+			t0=timer.get();
+			robotDrive.motorRB.set(1);
+		}
+		if(timer.get()-t0>1){
+			robotDrive.motorRB.set(0);
+		}
+
 		Scheduler.getInstance().run();
 		update();
 		dashboardOutput();
