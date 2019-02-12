@@ -381,6 +381,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		sensorInit(); //Calibrates sensors
 		driver.setRightSideInverted(true);
 		
+		timer.start();
+
 		//Camera Stuff
 
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
@@ -571,8 +573,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		Timer.delay(0.5);
 		controller.setRumble(Joystick.RumbleType.kRightRumble, 0);
 		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
-		
-		timer.start();
 	}
 
     @Override
