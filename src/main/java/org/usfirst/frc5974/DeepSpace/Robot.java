@@ -13,6 +13,9 @@ Y: Reset gyro
 
 */
 
+import org.usfirst.frc5974.DeepSpace.Sensors;
+import org.usfirst.frc5974.DeepSpace.Driving;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -20,323 +23,85 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 
-import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU;
-//import com.analog.adis16448.frc.ADIS16448_IMU;
-import edu.wpi.first.wpilibj.interfaces.Accelerometer;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
-
-import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 
-//Camera Stuff
-import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
-
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.UsbCamera;
-
-/*import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.vision.VisionRunner;*/
-import edu.wpi.first.vision.VisionThread;
-import org.opencv.core.Rect;
-import org.usfirst.frc5974.grip.GripPipeline;
-//import java.util.Set;
+import edu.wpi.first.wpilibj.VictorSP;
 
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
-    Command autonomousCommand;
+	Sensors sensors = new Sensors();
+	Driving robotDrive = new Driving();
+	Controller controls = new Controller();
+	Camera camera = new Camera();
+	
+	Command autonomousCommand;
     SendableChooser<Command> chooser = new SendableChooser<>();
 
-	//Ports start at 0, not 1.
-	VictorSP motorRB = new VictorSP(1); //motor right back
-	VictorSP motorRF = new VictorSP(0); //motor right front 
-	SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB);
-
-	VictorSP motorLB = new VictorSP(3); //motor left back
-	VictorSP motorLF = new VictorSP(2); //motor left front
 	VictorSP motorLift = new VictorSP(4); // lift motor
-	SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB);
-	
-	DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
-
-	//Variables for the Controller
-	Joystick controller = new Joystick(0);	//controller
-	double joystickLXAxis;			//left joystick x-axis
-	double joystickLYAxis;			//left joystick y-axis
-	double joystickRXAxis;			//right joystick x-axis
-	double joystickRYAxis;			//right joystick y-axis
-	double triggerL;				//left trigger
-	double triggerR;				//right trigger
-	boolean bumperL;				//left bumper
-	boolean bumperR;				//right bumper
-	boolean buttonX;				//x button
-	boolean buttonY;				//y button
-	boolean buttonA;				//a button
-	boolean buttonB;				//b button
-	int dPad;					    //d-pad
-	boolean joystickLPress;		    //left joystick button press
-	boolean joystickRPress;		    //right joystick button press
-	boolean buttonStart;			//start button
-	boolean buttonBack;			    //back button
-	
-	boolean[] pairX = {false, false};
-	boolean[] pairY = {false, false};
-	boolean[] pairA = {false, false};
-	boolean[] pairB = {false, false};
-
-	//Drive Variables
-	boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
-	boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
 
 	Timer timer = new Timer();
 	int track = 0;
 	int check = 25;
 
-	boolean pressed = false;
-
-	//Camera Stuff
-	private static final int IMG_WIDTH = 240;
-	private static final int IMG_HEIGHT = 180;
-	private static final int fps = 20;
-	private VisionThread visionThread;
-	private double centerX = 0.0;
-	private final Object imgLock = new Object();
-	//UsbCamera camera = new UsbCamera(String name, String path)*/
-
-	//Sensor Stuff
-	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-	BuiltInAccelerometer accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
-	double xVal;
-	double yVal;
-	double zVal;
-	double angle;
-	double rate;
-	boolean gyroConnected;
-
-	//This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
-	private static final double kAngleSetPoint = 0.0; //straight ahead
-	private static final double kP = 0.005; //proportional turning constant. not sure what this is, ngl
-
-	//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
-	private static final double kVoltsPerDegreePerSecond=0.0128;
-
-	public static final ADIS16448_IMU FancyIMU = new ADIS16448_IMU();
-	double accelX;
-	double accelY;
-	double accelZ;
-	double fancyAngle;
-	double angleX;
-	double angleY;
-	double angleZ;
-	double pitch;
-	double yaw;
-	double roll;
-	double fancyRate;
-	double rateX;
-	double rateY;
-	double rateZ;
-
-	double velX;
-	double velY;
-	double velZ;
-	double time;
-	double prevTime = 0;
-	double dt;
-
-	double gravAngle;
-
-	public void gyroReset() { //it resets the gyro
-		FancyIMU.reset();
-		gyro.reset();
-	} 
-
-	public void sensorInit() {
-		gyro.calibrate();
-		FancyIMU.calibrate();
-		velX = velY = velZ = 0;
-	}
-	public void updateSensors() {
-		//ADXRS sensor data
-		xVal = accel.getX();
-		yVal = accel.getY();
-		zVal = accel.getZ();
-		angle = gyro.getAngle();
-		rate = gyro.getRate();
-		gyroConnected = gyro.isConnected();
-
-		//ADIS sensor data
-		accelX = FancyIMU.getAccelX();
-		accelY = FancyIMU.getAccelY();
-		accelZ = FancyIMU.getAccelZ();
-		fancyAngle=FancyIMU.getAngle();
-		angleX = FancyIMU.getAngleX();
-		angleY = FancyIMU.getAngleY();
-		angleZ = FancyIMU.getAngleZ();
-		pitch=FancyIMU.getPitch();
-		yaw = FancyIMU.getYaw();
-		roll =FancyIMU.getRoll();
-		fancyRate=FancyIMU.getRate();
-		rateX = FancyIMU.getRateX();
-		rateY = FancyIMU.getRateY();
-		rateZ = FancyIMU.getRateZ();
-
-		time = timer.get();
-		dt = time - prevTime;
-		velX += accelX * dt;
-		velY += accelY * dt;
-		velZ += accelZ * dt;
-		prevTime = time;
-
-		gravAngle = Math.acos(accelX) * 180/Math.PI;
-	}
-
-	public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
-		return runOnce(button, buttonPair) ? !toggle : toggle;
-	}
-
-	public boolean runOnce(boolean pressed, boolean[] buttonPair) {	//first in buttonPair is run, second is completed
-		boolean completed = buttonPair[0];
-		if (pressed && !completed) {
-			buttonPair[0] = true;
-			buttonPair[1] = true;
-		} else {
-			if (!pressed && completed) {
-				buttonPair[0] = false;
-			}
-			if (buttonPair[1]) {buttonPair[1] = false;}
-		}
-		return buttonPair[1];
-	}
-
-	public void joystickDeadZone() {		//Set dead zone for joysticks
-		double deadZoneValue=.16;
-		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
-			joystickLXAxis = 0;
-		} /*else {
-			joystickLXAxis = (joystickLXAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
-		} */
-		if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
-			joystickLYAxis = 0;
-		} /*else {
-			joystickLYAxis = (joystickLYAxis -deadZoneValue)/(1-deadZoneValue);
-		} */
-		if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
-			joystickRXAxis = 0;
-		} /*else {
-			joystickRXAxis = (joystickRXAxis -deadZoneValue)/(1-deadZoneValue);
-		} 
-		*/if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
-			joystickRYAxis = 0;
-		} 
-		/*else {
-			joystickRYAxis = (joystickRYAxis -deadZoneValue)/(1-deadZoneValue);
-		}*/
-	}
-
-	public void updateController() {		//updates all controller features
-		//joystick updates
-		joystickLXAxis = controller.getRawAxis(0);		//returns a value [-1,1]
-		joystickLYAxis = controller.getRawAxis(1);		//returns a value [-1,1]
-		joystickRXAxis = controller.getRawAxis(4);		//returns a value [-1,1]
-		joystickRYAxis = controller.getRawAxis(5);		//returns a value [-1,1]
-		joystickLPress = controller.getRawButton(9);	//returns a value {0,1}
-		joystickRPress = controller.getRawButton(10);	//returns a value {0,1}
-        joystickDeadZone();
-
-		//trigger updates
-		triggerL = controller.getRawAxis(2);		//returns a value [0,1]
-		triggerR = controller.getRawAxis(3);		//returns a value [0,1]
-		
-		//bumper updates
-		bumperL = controller.getRawButton(5);		//returns a value {0,1}
-		bumperR = controller.getRawButton(6);		//returns a value {0,1}
-		
-		//button updates
-		buttonX = controller.getRawButton(3);		//returns a value {0,1}
-		buttonY = controller.getRawButton(4);		//returns a value {0,1}
-		buttonA = controller.getRawButton(1);		//returns a value {0,1}
-		buttonB = controller.getRawButton(2);		//returns a value {0,1}
-		
-		buttonBack = controller.getRawButton(7);	//returns a value {0,1}
-		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
-		
-		//toggle checks
-		fastBool = toggle(buttonB, fastBool, pairB);	//toggles boolean if button is pressed
-		driveNormal = toggle(buttonA, driveNormal, pairA);
-		if (runOnce(buttonY, pairY)) {gyroReset(); System.out.print("Gyro Reset");}
-		
-		//d-pad/POV updates
-		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
-	}
-	
 	public void update() {					//updates everything
-		updateController();
+		controls.updateController();
 
 		//Calls updateSensors every 10 updates
 		track = (track+1) % check;
 		if (track == 0) {
-			updateSensors();
+			sensors.updateSensors();
 		}
 	}
 
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
 		//SmartDashboard.putNumber("Time Remaining", GameTime);
-		SmartDashboard.putBoolean("Fast Mode", fastBool);
-		if (driveNormal) {
+		SmartDashboard.putBoolean("Fast Mode", robotDrive.fastBool);
+		if (robotDrive.driveNormal) {
 			SmartDashboard.putString("Drive mode","Tank");
 		} else {
 			SmartDashboard.putString("Drive mode","Straight");
 		}
 
-		SmartDashboard.putNumber("Left Joystick Y:",joystickLYAxis);
-		SmartDashboard.putNumber("Right Joystick Y:",joystickRYAxis);
+		SmartDashboard.putNumber("Left Joystick Y:",controls.joystickLYAxis);
+		SmartDashboard.putNumber("Right Joystick Y:",controls.joystickRYAxis);
 
-		SmartDashboard.putBoolean("Old Gyro Connected?", gyroConnected);
+		SmartDashboard.putBoolean("Old Gyro Connected?", sensors.gyroConnected);
 
 		//Sensor data
-		SmartDashboard.putNumber("Old X acceleration", xVal);
-		SmartDashboard.putNumber("Old Y acceleration", yVal);
-		SmartDashboard.putNumber("Old Z acceleration", zVal);
-		SmartDashboard.putNumber("Old angle of robot", angle);
-		SmartDashboard.putNumber("Old angular velocity", rate);
+		SmartDashboard.putNumber("Old X acceleration", sensors.xVal);
+		SmartDashboard.putNumber("Old Y acceleration", sensors.yVal);
+		SmartDashboard.putNumber("Old Z acceleration", sensors.zVal);
+		SmartDashboard.putNumber("Old angle of robot", sensors.angle);
+		SmartDashboard.putNumber("Old angular velocity", sensors.rate);
 		
 		//ADIS sensor data
-		SmartDashboard.putNumber("X acceleration", accelX);
-		SmartDashboard.putNumber("Y acceleration", accelY);
-		SmartDashboard.putNumber("Z acceleration", accelZ);
-		SmartDashboard.putNumber("Angle", fancyAngle);
-		SmartDashboard.putNumber("X angle", angleX);
-		SmartDashboard.putNumber("Y angle", angleY);
-		SmartDashboard.putNumber("Z angle", angleZ);
-		SmartDashboard.putNumber("Pitch", pitch);
-		SmartDashboard.putNumber("Yaw", yaw);
-		SmartDashboard.putNumber("Roll", roll);
-		SmartDashboard.putNumber("Rate", fancyRate);
-		SmartDashboard.putNumber("X rate", rateX);
-		SmartDashboard.putNumber("Y rate", rateY);
-		SmartDashboard.putNumber("Z rate", rateZ);
+		SmartDashboard.putNumber("X acceleration", sensors.accelX);
+		SmartDashboard.putNumber("Y acceleration", sensors.accelY);
+		SmartDashboard.putNumber("Z acceleration", sensors.accelZ);
+		SmartDashboard.putNumber("Angle", sensors.fancyAngle);
+		SmartDashboard.putNumber("X angle", sensors.angleX);
+		SmartDashboard.putNumber("Y angle", sensors.angleY);
+		SmartDashboard.putNumber("Z angle", sensors.angleZ);
+		SmartDashboard.putNumber("Pitch", sensors.pitch);
+		SmartDashboard.putNumber("Yaw", sensors.yaw);
+		SmartDashboard.putNumber("Roll", sensors.roll);
+		SmartDashboard.putNumber("Rate", sensors.fancyRate);
+		SmartDashboard.putNumber("X rate", sensors.rateX);
+		SmartDashboard.putNumber("Y rate", sensors.rateY);
+		SmartDashboard.putNumber("Z rate", sensors.rateZ);
 		
-		SmartDashboard.putNumber("latest time interval", dt);
-		SmartDashboard.putNumber("X velocity", velX);
-		SmartDashboard.putNumber("Y velocity", velY);
-		SmartDashboard.putNumber("Z velocity", velZ);
-		SmartDashboard.putNumber("Gravity Angle from Vertical", gravAngle);
-		SmartDashboard.putNumber("Center Thing", centerX);
-		SmartDashboard.putNumber("Temperature: ", FancyIMU.getTemperature());
+		SmartDashboard.putNumber("latest time interval", sensors.dt);
+		SmartDashboard.putNumber("X velocity", sensors.velX);
+		SmartDashboard.putNumber("Y velocity", sensors.velY);
+		SmartDashboard.putNumber("Z velocity", sensors.velZ);
+		SmartDashboard.putNumber("Gravity Angle from Vertical", sensors.gravAngle);
+		SmartDashboard.putNumber("Center Thing", camera.centerX);
+		SmartDashboard.putNumber("Temperature: ", sensors.FancyIMU.getTemperature());
 	}
 	// start of lift proto (?) code. Will probably need changes.
 	public void liftUp() {
-		if (buttonX){
+		if (controls.buttonX){
 			motorLift.set(1);
 			//timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
 		}
@@ -344,37 +109,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void liftDown() {
 		motorLift.set(-1);
 		//timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
-	}
-
-	public void tankDrive() {				//left joystick controls left wheels, right joystick controls right wheels
-		//Differential Drive solution - much more elegant
-		if (fastBool) {
-			driver.tankDrive(-joystickLYAxis, -joystickRYAxis);
-		} else {
-			driver.tankDrive(-.75*joystickLYAxis, -.75*joystickRYAxis);
-		}
-	}
-	public void driveStraight(){
-		boolean useFancy = true;
-		double turningValue = 0;
-		if (useFancy) {
-			//ADIS16448 IMU; set useFancy to true to activate.
-			turningValue = (kAngleSetPoint-yaw) * kP;
-			//turningValue = (kAngleSetPoint-angleX); //Pretty sure we should use yaw or anglex but idk which
-		} else {
-			//ADXRS450; set useFancy to false to activate.
-			turningValue = (kAngleSetPoint-angle) * kP;
-		}
-
-		//Invert direction of turn if we are going backwards
-		turningValue = Math.copySign(turningValue, joystickLYAxis);
-
-		//Drive.
-		if (fastBool) {
-			driver.arcadeDrive(joystickLYAxis, turningValue);
-		} else {
-			driver.arcadeDrive(joystickLYAxis/2,turningValue);
-		}
 	}
 
     public static OI oi;
@@ -387,61 +121,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
         chooser.setDefaultOption("Autonomous Command", new AutonomousCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 		
-		sensorInit(); //Calibrates sensors
-		driver.setRightSideInverted(true);
+		sensors.sensorInit(); //Calibrates sensors
+		robotDrive.driver.setRightSideInverted(true);
 		
 		timer.start();
 
-		//Camera Stuff
+		camera.cameraInit();
 
-		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-		camera.setFPS(fps);
-
-		new Thread(() -> {
-			//Creates a UsbCamera on the default port and streams output on MjpegServer [1]
-			//equivalent to "".startAutomaticCapture(0), which is equivalent to "".startAutomaticCapture("USB Camera 0", 0)
-
-			//Creates an image input (sink) that takes video from the primary feed (UsbCamera camera)
-			//equivalent to "".getVideo(camera)
-			CvSink cvSink = CameraServer.getInstance().getVideo();
-
-			//Creates an image stream (source) MjpegServer [2] with the name "Blur"
-			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", IMG_WIDTH, IMG_HEIGHT);
-			
-			Mat source = new Mat(); //unreleated to CvSource
-			Mat output = new Mat();
-
-			while (!Thread.interrupted()) {
-				//Applies the 'Imgproc.COLOR_BGR2GRAY' filter to a frame from 'cvSink' and puts the result on 'outputStream'
-				cvSink.grabFrame(source);
-				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-				outputStream.putFrame(output);
-			}
-		}).start();
-
-		visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
-			if (!pipeline.findBlobsOutput().empty()) {
-				Rect r = Imgproc.boundingRect(pipeline.findBlobsOutput());
-				synchronized (imgLock) {
-					centerX = r.x + (r.width / 2);
-				}
-			}
-		});
-		visionThread.start();
-
-		/*NetworkTableInstance inst = NetworkTableInstance.getDefault();
-		NetworkTable table = inst.getTable("GRIP/myContours Report");
-		double[] defaultValue = new double[0];
-		while(true) {
-			double[] areas = table.getEntry("area").getDoubleArray(defaultValue);
-			System.out.print("areas: ");
-			for (double area : areas) {
-				System.out.print(area + " ");
-			}
-			System.out.println();
-			Timer.delay(1);
-		}*/
     }
 
     /**
@@ -576,11 +262,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		if (autonomousCommand != null) autonomousCommand.cancel();
 
 		//Rumble controller for half a second
-		controller.setRumble(Joystick.RumbleType.kRightRumble, 0.5);
-		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0.5);
-		Timer.delay(0.5);
-		controller.setRumble(Joystick.RumbleType.kRightRumble, 0);
-		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
+		controls.rumble(0.5);
 	}
 
     @Override
@@ -588,10 +270,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		Scheduler.getInstance().run();
 		update();
 		dashboardOutput();
-		if (driveNormal) {
-			tankDrive();
+		if (robotDrive.driveNormal) {
+			robotDrive.tankDrive();
 		} else {
-			driveStraight();
+			robotDrive.driveStraight();
 		}
     }
 }
