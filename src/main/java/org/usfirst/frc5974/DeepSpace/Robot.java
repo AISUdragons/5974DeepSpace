@@ -42,14 +42,14 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 
-import edu.wpi.first.networktables.NetworkTable;
+/*import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.vision.VisionRunner;
+import edu.wpi.first.vision.VisionRunner;*/
 import edu.wpi.first.vision.VisionThread;
 import org.opencv.core.Rect;
 import org.usfirst.frc5974.grip.GripPipeline;
-import java.util.Set;
+//import java.util.Set;
 
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
@@ -108,11 +108,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	private static final int IMG_WIDTH = 240;
 	private static final int IMG_HEIGHT = 180;
 	private static final int fps = 20;
-	/*private VisionThread visionThread;
+	private VisionThread visionThread;
 	private double centerX = 0.0;
-	private DifferentialDrive driver;
 	private final Object imgLock = new Object();
-	UsbCamera camera = new UsbCamera(String name, String path)*/
+	//UsbCamera camera = new UsbCamera(String name, String path)*/
 
 	//Sensor Stuff
 	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
@@ -411,18 +410,17 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			}
 		}).start();
 
-		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
-			if (!pipeline.filterContoursOutput.isEmpty()) {
-				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
+		visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
+			if (!pipeline.findBlobsOutput().empty()) {
+				Rect r = Imgproc.boundingRect(pipeline.findBlobsOutput());
 				synchronized (imgLock) {
 					centerX = r.x + (r.width / 2);
 				}
 			}
 		});
 		visionThread.start();
-		//drive = new RobotDrive(1, 2);
 
-		NetworkTableInstance inst = NetworkTableInstance.getDefault();
+		/*NetworkTableInstance inst = NetworkTableInstance.getDefault();
 		NetworkTable table = inst.getTable("GRIP/myContours Report");
 		double[] defaultValue = new double[0];
 		while(true) {
