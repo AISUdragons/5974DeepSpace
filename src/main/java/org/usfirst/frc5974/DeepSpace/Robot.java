@@ -336,14 +336,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		motorLift.set(-1);
 		timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
 	}
-	// end of proto code.
 
 	public void tankDrive() {				//left joystick controls left wheels, right joystick controls right wheels
 		//Differential Drive solution - much more elegant
 		if (fastBool) {
-			driver.tankDrive(joystickLYAxis, joystickRYAxis);
+			driver.tankDrive(-joystickLYAxis, -joystickRYAxis);
 		} else {
-			driver.tankDrive(joystickLYAxis/2,joystickRYAxis/2);
+			driver.tankDrive(-joystickLYAxis/2,-joystickRYAxis/2);
 		}
 	}
 	public void driveStraight(){
@@ -380,7 +379,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		sensorInit(); //Calibrates sensors
-		driver.setRightSideInverted(false);
+		driver.setRightSideInverted(true);
 		
 		//Camera Stuff
 
