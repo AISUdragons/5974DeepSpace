@@ -100,14 +100,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	Timer timer = new Timer();
 	int track = 0;
-	int check = 10;
+	int check = 25;
 
 	boolean pressed = false;
 
 	//Camera Stuff
 	private static final int IMG_WIDTH = 240;
 	private static final int IMG_HEIGHT = 180;
-	private static final int fps = 30;
+	private static final int fps = 20;
 	/*private VisionThread visionThread;
 	private double centerX = 0.0;
 	private DifferentialDrive driver;
@@ -154,6 +154,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double prevTime = 0;
 	double dt;
 
+	double gravAngle;
+
 	public void gyroReset() { //it resets the gyro
 		FancyIMU.reset();
 		gyro.reset();
@@ -189,12 +191,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		rateY = FancyIMU.getRateY();
 		rateZ = FancyIMU.getRateZ();
 
-		time = timer.get();
+		/*time = timer.get();
 		dt = time - prevTime;
 		velX += accelX * dt;
 		velY += accelY * dt;
 		velZ += accelZ * dt;
-		prevTime = time;
+		prevTime = time;*/
+
+		gravAngle = Math.acos(accelX);
 	}
 
 	public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
@@ -314,10 +318,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("X rate", rateX);
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
+		
 		SmartDashboard.putNumber("latest time interval", dt);
 		SmartDashboard.putNumber("X velocity", velX);
 		SmartDashboard.putNumber("Y velocity", velY);
 		SmartDashboard.putNumber("Z velocity", velZ);
+		SmartDashboard.putNumber("Gravity Angle from Vertical", gravAngle);
 	}
 	// start of lift proto (?) code. Will probably need changes.
 	public void liftUp() {
@@ -374,7 +380,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		sensorInit(); //Calibrates sensors
-		driver.setRightSideInverted(true);
+		driver.setRightSideInverted(false);
 		
 		//Camera Stuff
 
