@@ -42,14 +42,14 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 
-import edu.wpi.first.networktables.NetworkTable;
+/*import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.vision.VisionRunner;
+import edu.wpi.first.vision.VisionRunner;*/
 import edu.wpi.first.vision.VisionThread;
 import org.opencv.core.Rect;
 import org.usfirst.frc5974.grip.GripPipeline;
-import java.util.Set;
+//import java.util.Set;
 
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
@@ -102,12 +102,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	//Camera Stuff
 	private static final int IMG_WIDTH = 240;
 	private static final int IMG_HEIGHT = 180;
-	private static final int fps = 30;
-	/*private VisionThread visionThread;
+	private static final int fps = 20;
+	private VisionThread visionThread;
 	private double centerX = 0.0;
-	private DifferentialDrive driver;
 	private final Object imgLock = new Object();
-	UsbCamera camera = new UsbCamera(String name, String path)*/
+	//UsbCamera camera = new UsbCamera(String name, String path)*/
 
 	//Sensor Stuff
 	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
@@ -192,8 +191,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		velZ += accelZ * dt;
 		prevTime = time;
 
-
-		gravAngle = Math.acos(accelX);
+		gravAngle = Math.acos(accelX) * 180/Math.PI;
 	}
 
 	public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
@@ -216,21 +214,25 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		double deadZoneValue=.16;
 		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
 			joystickLXAxis = 0;
-		} else {
+		} /*else {
 			joystickLXAxis = (joystickLXAxis -deadZoneValue)/(1-deadZoneValue); // We may need to change this.
-		} if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
+		} */
+		if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
 			joystickLYAxis = 0;
-		} else {
+		} /*else {
 			joystickLYAxis = (joystickLYAxis -deadZoneValue)/(1-deadZoneValue);
-		} if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
+		} */
+		if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
 			joystickRXAxis = 0;
-		} else {
+		} /*else {
 			joystickRXAxis = (joystickRXAxis -deadZoneValue)/(1-deadZoneValue);
-		} if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
+		} 
+		*/if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
 			joystickRYAxis = 0;
-		} else {
+		} 
+		/*else {
 			joystickRYAxis = (joystickRYAxis -deadZoneValue)/(1-deadZoneValue);
-		}
+		}*/
 	}
 
 	public void updateController() {		//updates all controller features
@@ -261,9 +263,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
 		
 		//toggle checks
-		fastBool = toggle(buttonY, fastBool, pairY);	//toggles boolean if button is pressed
+		fastBool = toggle(buttonB, fastBool, pairB);	//toggles boolean if button is pressed
 		driveNormal = toggle(buttonA, driveNormal, pairA);
-		if (runOnce(buttonY, pairY)) {gyroReset();}
+		if (runOnce(buttonY, pairY)) {gyroReset(); System.out.print("Gyro Reset");}
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
@@ -305,6 +307,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			SmartDashboard.putString("Drive mode","Straight");
 		}
+
+		SmartDashboard.putNumber("Left Joystick Y:",joystickLYAxis);
+		SmartDashboard.putNumber("Right Joystick Y:",joystickRYAxis);
+
 		SmartDashboard.putBoolean("Old Gyro Connected?", gyroConnected);
 
 		//Sensor data
@@ -329,14 +335,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("X rate", rateX);
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
-
+		
 		SmartDashboard.putNumber("latest time interval", dt);
 		SmartDashboard.putNumber("X velocity", velX);
 		SmartDashboard.putNumber("Y velocity", velY);
 		SmartDashboard.putNumber("Z velocity", velZ);
-
 		SmartDashboard.putNumber("Gravity Angle from Vertical", gravAngle);
-
+		SmartDashboard.putNumber("Center Thing", centerX);
+		SmartDashboard.putNumber("Temperature: ", FancyIMU.getTemperature());
 	}
 	// start of lift proto (?) code. Will probably need changes.
 	Timer liftTimer = new Timer();
@@ -356,7 +362,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		if (fastBool) {
 			driver.tankDrive(-joystickLYAxis, -joystickRYAxis);
 		} else {
-			driver.tankDrive(-joystickLYAxis/2,-joystickRYAxis/2);
+			driver.tankDrive(-.75*joystickLYAxis, -.75*joystickRYAxis);
 		}
 	}
 	public void driveStraight(){
@@ -395,6 +401,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		sensorInit(); //Calibrates sensors
 		driver.setRightSideInverted(true);
 		
+		timer.start();
+
 		//Camera Stuff
 
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
@@ -423,18 +431,17 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			}
 		}).start();
 
-		/*visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
-			if (!pipeline.filterContoursOutput.isEmpty()) {
-				Rect r = Imgproc.boundingRect(pipeline.filterContourOutput().get(0));
+		visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
+			if (!pipeline.findBlobsOutput().empty()) {
+				Rect r = Imgproc.boundingRect(pipeline.findBlobsOutput());
 				synchronized (imgLock) {
 					centerX = r.x + (r.width / 2);
 				}
 			}
 		});
 		visionThread.start();
-		//drive = new RobotDrive(1, 2);
 
-		NetworkTableInstance inst = NetworkTableInstance.getDefault();
+		/*NetworkTableInstance inst = NetworkTableInstance.getDefault();
 		NetworkTable table = inst.getTable("GRIP/myContours Report");
 		double[] defaultValue = new double[0];
 		while(true) {
@@ -585,8 +592,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		Timer.delay(0.5);
 		controller.setRumble(Joystick.RumbleType.kRightRumble, 0);
 		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
-		
-		timer.start();
 	}
 
     @Override
