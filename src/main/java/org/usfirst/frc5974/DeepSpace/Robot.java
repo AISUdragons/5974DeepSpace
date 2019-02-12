@@ -269,7 +269,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
-		
+
 		if (buttonY && !pressed){ //resets gyros to 0
 			gyroReset();
 			pressed = true;
@@ -596,6 +596,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
     @Override
     public void teleopPeriodic() {
+		double t0=0;
+		if(motorRB.get()==0&&buttonA){
+			t0=timer.get();
+			motorRB.set(1);
+		}
+		if(timer.get()-t0>1){
+			motorRB.set(0);
+		}
+
 		Scheduler.getInstance().run();
 		update();
 		dashboardOutput();
