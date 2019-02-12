@@ -13,6 +13,8 @@ Y: Reset gyro
 
 */
 
+import java.util.Timer; // timer thing for lifts
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -89,25 +91,20 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	boolean buttonStart;			//start button
 	boolean buttonBack;			    //back button
 	
-	boolean[] pairX = {false, false};
-	boolean[] pairY = {false, false};
-	boolean[] pairA = {false, false};
-	boolean[] pairB = {false, false};
-
 	//Drive Variables
 	boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
 	boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
 
 	Timer timer = new Timer();
 	int track = 0;
-	int check = 25;
+	int check = 10;
 
 	boolean pressed = false;
 
 	//Camera Stuff
 	private static final int IMG_WIDTH = 240;
 	private static final int IMG_HEIGHT = 180;
-	private static final int fps = 20;
+	private static final int fps = 30;
 	/*private VisionThread visionThread;
 	private double centerX = 0.0;
 	private DifferentialDrive driver;
@@ -154,8 +151,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	double prevTime = 0;
 	double dt;
 
-	double gravAngle;
-
 	public void gyroReset() { //it resets the gyro
 		FancyIMU.reset();
 		gyro.reset();
@@ -191,32 +186,24 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		rateY = FancyIMU.getRateY();
 		rateZ = FancyIMU.getRateZ();
 
-		/*time = timer.get();
+		time = timer.get();
 		dt = time - prevTime;
 		velX += accelX * dt;
 		velY += accelY * dt;
 		velZ += accelZ * dt;
-		prevTime = time;*/
-
-		gravAngle = Math.acos(accelX);
+		prevTime = time;
 	}
 
-	public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
-		return runOnce(button, buttonPair) ? !toggle : toggle;
-	}
-
-	public boolean runOnce(boolean pressed, boolean[] buttonPair) {	//first in buttonPair is run, second is completed
-		boolean completed = buttonPair[0];
-		if (pressed && !completed) {
-			buttonPair[0] = true;
-			buttonPair[1] = true;
-		} else {
-			if (!pressed && completed) {
-				buttonPair[0] = false;
+	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
+		//When the button is pushed, once it is released, its toggle is changed
+		if (pressed) {
+			toggle = !toggle;
+			while (pressed) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
+									// This is a pretty small amount of code though, so it shouldn't be an issue?
+				pressed = controller.getRawButton(portNum);
 			}
-			if (buttonPair[1]) {buttonPair[1] = false;}
 		}
-		return buttonPair[1];
+		return toggle;
 	}
 
 	public void joystickDeadZone() {		//Set dead zone for joysticks
@@ -268,12 +255,18 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
 		
 		//toggle checks
-		fastBool = toggle(buttonB, fastBool, pairB);	//toggles boolean if button is pressed
-		driveNormal = toggle(buttonA, driveNormal, pairA);
-		if (runOnce(buttonY, pairY)) {gyroReset();}
+		fastBool = checkButton(buttonB, fastBool, 2);	//toggles boolean if button is pressed
+		driveNormal = checkButton(buttonA, driveNormal, 1);
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
+		
+		if (buttonY && !pressed){ //resets gyros to 0
+			gyroReset();
+			pressed = true;
+		} else if (!buttonY && pressed) {
+			pressed = false;
+		}
 	}
 	
 	public void update() {					//updates everything
@@ -318,23 +311,20 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("X rate", rateX);
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
-		
 		SmartDashboard.putNumber("latest time interval", dt);
 		SmartDashboard.putNumber("X velocity", velX);
 		SmartDashboard.putNumber("Y velocity", velY);
 		SmartDashboard.putNumber("Z velocity", velZ);
-		SmartDashboard.putNumber("Gravity Angle from Vertical", gravAngle);
 	}
 	// start of lift proto (?) code. Will probably need changes.
+	Timer liftTimer = new Timer();
 	public void liftUp() {
-		if (buttonX){
-			motorLift.set(1);
-			timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
-		}
+		motorLift.set(1);
+		motorLift.set(0);
 	}
 	public void liftDown() {
 		motorLift.set(-1);
-		timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
+		motorLift.set(0);
 	}
 	// end of proto code.
 
