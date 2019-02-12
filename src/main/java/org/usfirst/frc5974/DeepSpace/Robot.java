@@ -323,6 +323,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Y velocity", velY);
 		SmartDashboard.putNumber("Z velocity", velZ);*/
 		SmartDashboard.putNumber("Gravity Angle from Vertical", gravAngle);
+		SmartDashboard.putNumber("Center Thing", centerX);
 	}
 	// start of lift proto (?) code. Will probably need changes.
 	public void liftUp() {
