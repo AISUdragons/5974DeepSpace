@@ -268,7 +268,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
 		
 		//toggle checks
-		fastBool = toggle(buttonB, fastBool, pairB);	//toggles boolean if button is pressed
+		fastBool = toggle(buttonY, fastBool, pairY);	//toggles boolean if button is pressed
 		driveNormal = toggle(buttonA, driveNormal, pairA);
 		if (runOnce(buttonY, pairY)) {gyroReset();}
 		
@@ -380,7 +380,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		sensorInit(); //Calibrates sensors
-		driver.setRightSideInverted(true);
+		driver.setRightSideInverted(false);
 		
 		//Camera Stuff
 
