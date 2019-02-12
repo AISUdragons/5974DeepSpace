@@ -380,7 +380,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		sensorInit(); //Calibrates sensors
-		driver.setRightSideInverted(true);
+		driver.setRightSideInverted(false);
 		
 		//Camera Stuff
 
