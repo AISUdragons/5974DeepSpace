@@ -197,7 +197,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		velZ += accelZ * dt;
 		prevTime = time;
 
-		gravAngle = Math.acos(accelX);
+		gravAngle = Math.acos(accelX) * 180/Math.PI;
 	}
 
 	public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
@@ -269,7 +269,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		//toggle checks
 		fastBool = toggle(buttonB, fastBool, pairB);	//toggles boolean if button is pressed
 		driveNormal = toggle(buttonA, driveNormal, pairA);
-		if (runOnce(buttonY, pairY)) {gyroReset();}
+		if (runOnce(buttonY, pairY)) {gyroReset(); System.out.print("Gyro Reset");}
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
@@ -318,12 +318,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Y rate", rateY);
 		SmartDashboard.putNumber("Z rate", rateZ);
 		
-		/*SmartDashboard.putNumber("latest time interval", dt);
+		SmartDashboard.putNumber("latest time interval", dt);
 		SmartDashboard.putNumber("X velocity", velX);
 		SmartDashboard.putNumber("Y velocity", velY);
-		SmartDashboard.putNumber("Z velocity", velZ);*/
+		SmartDashboard.putNumber("Z velocity", velZ);
 		SmartDashboard.putNumber("Gravity Angle from Vertical", gravAngle);
 		SmartDashboard.putNumber("Center Thing", centerX);
+		SmartDashboard.putNumber("Temperature: ", FancyIMU.getTemperature());
 	}
 	// start of lift proto (?) code. Will probably need changes.
 	public void liftUp() {
