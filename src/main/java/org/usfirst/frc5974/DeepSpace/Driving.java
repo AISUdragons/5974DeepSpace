@@ -34,17 +34,18 @@ public class Driving{
 			driver.tankDrive(-.75*controls.joystickLYAxis, -.75*controls.joystickRYAxis);
 		}
 	}
+
 	public void driveStraight(){
-		boolean useFancy = true;
+		//boolean useFancy = true;
 		double turningValue = 0;
-		if (useFancy) {
+		/*if (useFancy) {
 			//ADIS16448 IMU; set useFancy to true to activate.
 			turningValue = (sensors.kAngleSetPoint-sensors.yaw) * sensors.kP;
 			//turningValue = (kAngleSetPoint-angleX); //Pretty sure we should use yaw or anglex but idk which
 		} else {
 			//ADXRS450; set useFancy to false to activate.
 			turningValue = (sensors.kAngleSetPoint-sensors.angle) * sensors.kP;
-		}
+		}*/
 
 		//Invert direction of turn if we are going backwards
 		turningValue = Math.copySign(turningValue, controls.joystickLYAxis);

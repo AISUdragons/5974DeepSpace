@@ -2,12 +2,12 @@ package org.usfirst.frc5974.DeepSpace;
 
 import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+//import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Sensors{
-    ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+    //ADXRS450_Gyro gyro = new ADXRS450_Gyro();
     BuiltInAccelerometer accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
     Timer timer = new Timer();
 	double xVal;
@@ -22,7 +22,7 @@ public class Sensors{
 	public static final double kP = 0.005; //proportional turning constant. not sure what this is, ngl
 
 	//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
-	private static final double kVoltsPerDegreePerSecond=0.0128;
+	//private static final double kVoltsPerDegreePerSecond=0.0128;
 
 	public static final ADIS16448_IMU FancyIMU = new ADIS16448_IMU();
 	double accelX;
@@ -51,22 +51,22 @@ public class Sensors{
 
 	public void gyroReset() { //it resets the gyro
 		FancyIMU.reset();
-		gyro.reset();
+		//gyro.reset();
 	} 
 
 	public void sensorInit() {
-		gyro.calibrate();
+		//gyro.calibrate();
 		FancyIMU.calibrate();
 		velX = velY = velZ = 0;
 	}
 	public void updateSensors() {
 		//ADXRS sensor data
-		xVal = accel.getX();
+		/*xVal = accel.getX();
 		yVal = accel.getY();
 		zVal = accel.getZ();
 		angle = gyro.getAngle();
 		rate = gyro.getRate();
-		gyroConnected = gyro.isConnected();
+		gyroConnected = gyro.isConnected();*/
 
 		//ADIS sensor data
 		accelX = FancyIMU.getAccelX();

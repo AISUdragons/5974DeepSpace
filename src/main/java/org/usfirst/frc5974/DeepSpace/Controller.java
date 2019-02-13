@@ -3,12 +3,10 @@ package org.usfirst.frc5974.DeepSpace;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 
-import org.usfirst.frc5974.DeepSpace.Driving;
 import org.usfirst.frc5974.DeepSpace.Sensors;
 
 public class Controller{
 
-    Driving robotDrive = new Driving();
     Sensors sensors = new Sensors();
 
     //Variables for the Controller
@@ -110,11 +108,6 @@ public class Controller{
 		
 		buttonBack = controller.getRawButton(7);	//returns a value {0,1}
 		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
-		
-		//toggle checks
-		robotDrive.fastBool = toggle(buttonB, robotDrive.fastBool, pairB);	//toggles boolean if button is pressed
-		robotDrive.driveNormal = toggle(buttonA, robotDrive.driveNormal, pairA);
-		if (runOnce(buttonY, pairY)) {sensors.gyroReset(); System.out.print("Gyro Reset");}
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}

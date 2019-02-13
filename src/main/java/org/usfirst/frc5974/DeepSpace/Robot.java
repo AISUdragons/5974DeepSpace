@@ -62,6 +62,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		if (track == 0) {
 			sensors.updateSensors();
 		}
+
+		//toggle checks
+		robotDrive.fastBool = controls.toggle(controls.buttonB, robotDrive.fastBool, controls.pairB);	//toggles boolean if button is pressed
+		robotDrive.driveNormal = controls.toggle(controls.buttonA, robotDrive.driveNormal, controls.pairA);
+		if (controls.runOnce(controls.buttonY, controls.pairY)) {sensors.gyroReset(); System.out.print("Gyro Reset");}
 	}
 
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
@@ -79,11 +84,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putBoolean("Old Gyro Connected?", sensors.gyroConnected);
 
 		//Sensor data
-		SmartDashboard.putNumber("Old X acceleration", sensors.xVal);
+		/*SmartDashboard.putNumber("Old X acceleration", sensors.xVal);
 		SmartDashboard.putNumber("Old Y acceleration", sensors.yVal);
 		SmartDashboard.putNumber("Old Z acceleration", sensors.zVal);
 		SmartDashboard.putNumber("Old angle of robot", sensors.angle);
-		SmartDashboard.putNumber("Old angular velocity", sensors.rate);
+		SmartDashboard.putNumber("Old angular velocity", sensors.rate);*/
 		
 		//ADIS sensor data
 		SmartDashboard.putNumber("X acceleration", sensors.accelX);
@@ -107,7 +112,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Z velocity", sensors.velZ);
 		SmartDashboard.putNumber("Gravity Angle from Vertical", sensors.gravAngle);
 		SmartDashboard.putNumber("Center Thing", camera.centerX);
-		SmartDashboard.putNumber("Temperature: ", sensors.FancyIMU.getTemperature());
+		//SmartDashboard.putNumber("Temperature: ", sensors.FancyIMU.getTemperature());
 	}
 	// start of lift proto (?) code. Will probably need changes.
 	Timer liftTimer = new Timer();
