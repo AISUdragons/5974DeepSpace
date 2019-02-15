@@ -54,5 +54,9 @@ public void updateLift()
                 motorLift.setSpeed(0);
             }
         }
+        else
+        {
+            motorLift.setSpeed(0);
+        }
     }
 }
