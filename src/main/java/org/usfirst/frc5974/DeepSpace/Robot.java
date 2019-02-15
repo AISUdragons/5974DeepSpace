@@ -34,6 +34,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	Driving robotDrive = new Driving();
 	Controller controls = new Controller();
 	Camera camera = new Camera();
+	Lift lift = new Lift();
 	
 	Command autonomousCommand;
     SendableChooser<Command> chooser = new SendableChooser<>();
@@ -56,6 +57,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 	public void update() {					//updates everything
 		controls.updateController();
+
+		//Updates the lift values
+		lift.updateLift();
 
 		//Calls updateSensors every 10 updates
 		track = (track+1) % check;
@@ -152,7 +156,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
      */
     @Override
     public void disabledInit(){
-
+		lift.kill = true;
     }
 
     @Override
