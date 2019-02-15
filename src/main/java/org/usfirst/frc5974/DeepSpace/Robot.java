@@ -7,9 +7,13 @@ package org.usfirst.frc5974.DeepSpace;
 /*CONTROLS
 
 Joystick Y axes: drive
+
 B: fast mode
 A: drive straight
 Y: Reset gyro
+
+Right trigger: Lift up
+Left trigger: Lift down
 
 */
 
@@ -25,7 +29,7 @@ import org.usfirst.frc5974.DeepSpace.commands.*;
 
 import edu.wpi.first.wpilibj.Timer;
 
-import edu.wpi.first.wpilibj.VictorSP;
+//import edu.wpi.first.wpilibj.VictorSP; //Only need this if we're driving a motor in this class. We're not right now, so I'll comment it out.
 
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
@@ -39,27 +43,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	Command autonomousCommand;
     SendableChooser<Command> chooser = new SendableChooser<>();
 
-	VictorSP motorLift = new VictorSP(4); // lift motor
-
 	Timer timer = new Timer();
 	int track = 0;
 	int check = 10;
-	
-	/*
-	if(motorLift.get()==0&&buttonA){
-		double t0=timer.get();
-		motorLift.set(1)
-	}
-	if(timer.get()-t0>1){
-		motorLift.set(0);
-	}
-	*/
 
 	public void update() {					//updates everything
 		controls.updateController();
-
-		//Updates the lift values
-		lift.updateLift();
 
 		//Calls updateSensors every 10 updates
 		track = (track+1) % check;
@@ -70,7 +59,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		//toggle checks
 		robotDrive.fastBool = controls.toggle(controls.buttonB, robotDrive.fastBool, controls.pairB);	//toggles boolean if button is pressed
 		robotDrive.driveNormal = controls.toggle(controls.buttonA, robotDrive.driveNormal, controls.pairA);
-		if (controls.runOnce(controls.buttonY, controls.pairY)) {sensors.gyroReset(); System.out.print("Gyro Reset");}
+		if (controls.runOnce(controls.buttonY, controls.pairY)) {
+			sensors.gyroReset(); System.out.println("Gyro Reset");
+		}
 	}
 
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
@@ -118,18 +109,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Center Thing", camera.centerX);
 		//SmartDashboard.putNumber("Temperature: ", sensors.FancyIMU.getTemperature());
 	}
-	// start of lift proto (?) code. Will probably need changes.
-	Timer liftTimer = new Timer();
-	public void liftUp() {
-		if (controls.buttonX){
-			motorLift.set(1);
-			//timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
-		}
-	}
-	public void liftDown() {
-		motorLift.set(-1);
-		//timer.delay(0.5); // set 0.5 to whatever is necessary to get the lift to the correct height.
-	}
 
     public static OI oi;
 
@@ -143,6 +122,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		sensors.sensorInit(); //Calibrates sensors
 		robotDrive.driver.setRightSideInverted(true);
+		lift.encoder.setDistancePerPulse(1); //TODO: Update encoder distance to the actual value
 		
 		timer.start();
 
@@ -287,6 +267,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
     @Override
     public void teleopPeriodic() {
+
+		/*
+		Not sure what this code does, so I'll just comment it out for now.
 		double t0=0;
 		if(robotDrive.motorRB.get()==0&&controls.buttonA){
 			t0=timer.get();
@@ -295,6 +278,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		if(timer.get()-t0>1){
 			robotDrive.motorRB.set(0);
 		}
+		*/
 
 		Scheduler.getInstance().run();
 		update();
@@ -304,5 +288,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			robotDrive.driveStraight();
 		}
+		lift.triggerLift(); //Operate the lift based on triggers.
     }
 }
