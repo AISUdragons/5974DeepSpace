@@ -16,13 +16,6 @@ public class Lift{
     int channelB = 1;
     Encoder encoder = new Encoder(channelA,channelB);
 
-    //Simulator doesn't support limit switches so, yeet
-    boolean switchBottom = false;
-    boolean switchL1 = false;
-    boolean switchL2 = false;
-    boolean switchL3 = false;
-    boolean switchTop = false;
-
     //Variables
     double speedModifier = .5; //change this to make lift move faster or slower
     int targetLevel = 0; //level it's supposed to go to
@@ -31,45 +24,33 @@ public class Lift{
     double liftSpeed = 0; //the value we set motorLift to
     int liftMode = 0; //0 is trigger, 1 is switch, 2 is encoder. We can probably remove the extra code once we know which one we're using.
 
-    public void updateKeyboard(){
-        if(keyboard.getRawButton(27)){ //0
-            switchBottom=true;
-        }
-        if(keyboard.getRawButton(28)){ //1
-            switchL1=true;
-        }
-        if(keyboard.getRawButton(29)){ //2
-            switchL2=true;
-        }
-        if(keyboard.getRawButton(30)){ //3
-            switchL3=true;
-        }
-        if(keyboard.getRawButton(31)){ //4
-            switchTop=true;
-        }
-    }
     public void updateLevel(){
         //Update bumper - user input for which level to go to.
         if(controls.bumperR&&targetLevel<3){
             //if bumper R is pressed and target level is less than 3, increase target level
             targetLevel++;
+            System.out.println("Target++");
         }
         else if(controls.bumperL&&targetLevel>0){
             //if bumper L is pressed and target level is more than 0, decrease target level
             targetLevel--;
+            System.out.println("Target--");
         }
 
         //Kill if lift hits top or bottom limit switches.
-        if(switchBottom){
+        if(controls.switchBottom){
             liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
             //This ensures the lift speed will be positive.
+            System.out.println("bottom");
         }
-        if(switchTop){
+        if(controls.switchTop){
             liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
+            System.out.println("top");
         }
         
         //Update limit switches for every level
-        if(switchL1){ //If the limit switch for L1 is hit:
+        if(controls.switchL1){ //If the limit switch for L1 is hit:
+            System.out.println("1");
             if(currentLevel<1){ //If the current level is less than L1:
                 currentLevel++; //Increase current level
             }
@@ -77,7 +58,8 @@ public class Lift{
                 currentLevel--; //Decrease current level.
             }
         }
-        if(switchL2){ //Same as above.
+        if(controls.switchL2){ //Same as above.
+            System.out.println("2");
             if(currentLevel<2){
                 currentLevel++;
             }
@@ -85,7 +67,8 @@ public class Lift{
                 currentLevel--;
             }
         }
-        if(switchL3){
+        if(controls.switchL3){
+            System.out.println("3");
             if(currentLevel<3){
                 currentLevel++;
             }
@@ -110,6 +93,7 @@ public class Lift{
     }
 
     public void limitLift(){ //Operate lift based on limit switches
+        updateLevel();
         if(targetLevel<currentLevel){
             liftSpeed=speedModifier; //go up
         }

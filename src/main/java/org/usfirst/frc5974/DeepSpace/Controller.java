@@ -11,6 +11,7 @@ public class Controller{
 
     //Variables for the Controller
 	Joystick controller = new Joystick(0);	//controller
+	Joystick keyboard = new Joystick(1); //keyboard (simulate limit switches)
 	double joystickLXAxis;			//left joystick x-axis
 	double joystickLYAxis;			//left joystick y-axis
 	double joystickRXAxis;			//right joystick x-axis
@@ -28,6 +29,13 @@ public class Controller{
 	boolean joystickRPress;		    //right joystick button press
 	boolean buttonStart;			//start button
 	boolean buttonBack;			    //back button
+
+    //Simulator doesn't support limit switches so, yeet
+    boolean switchBottom = false;
+    boolean switchL1 = false;
+    boolean switchL2 = false;
+    boolean switchL3 = false;
+    boolean switchTop = false;
 	
 	boolean[] pairX = {false, false};
 	boolean[] pairY = {false, false};
@@ -111,6 +119,12 @@ public class Controller{
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
+
+		switchBottom = keyboard.getRawButton(1);
+     	switchL1 = keyboard.getRawButton(2);
+     	switchL2 = keyboard.getRawButton(3);
+     	switchL3 = keyboard.getRawButton(4);
+     	switchTop = keyboard.getRawButton(5);
     }
     
     public void rumble(double duration){
