@@ -237,13 +237,16 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		liftSpeed=-speedModifier; //go down
 }
 else if(targetLevel>currentLevel){
-		liftSpeed=-speedModifier; //go up
+		liftSpeed=speedModifier; //go up
 }
 else if(targetLevel==currentLevel){
 		liftSpeed=0; //stop
 }
 		lift.motorLift.set(liftSpeed);
 		//robotDrive.driver.tankDrive(controls.joystickLYAxis,controls.joystickRYAxis);
+		if(controls.buttonX){
+			System.out.println("Target level: "+targetLevel+"\nCurrent level: "+currentLevel);
+		}
 		robotDrive.tankDriver(controls.joystickLYAxis,controls.joystickRYAxis);
     }
 }
