@@ -2,7 +2,7 @@ package org.usfirst.frc5974.DeepSpace;
 
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.DigitalInput; //limit switches
+import edu.wpi.first.wpilibj.DigitalInput; //limit switch
 
 public class Lift{
     VictorSP motorLift = new VictorSP(4);
