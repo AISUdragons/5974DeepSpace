@@ -2,27 +2,26 @@ package org.usfirst.frc5974.DeepSpace;
 
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.DigitalInput; //limit switches
+import edu.wpi.first.wpilibj.Joystick;
 
 import org.usfirst.frc5974.DeepSpace.Controller;
 
 public class Lift{
     VictorSP motorLift = new VictorSP(4);
     Controller controls = new Controller();
-    
+    Joystick keyboard = new Joystick(1); //Hopefully this will end up being the keyboard
+
     //Encoder constructor
     int channelA = 0;
     int channelB = 1;
     Encoder encoder = new Encoder(channelA,channelB);
 
-    //Limit switch constructors
-    /*
-    DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
-    DigitalInput switchL1 = new DigitalInput(1);
-    DigitalInput switchL2 = new DigitalInput(2);
-    DigitalInput switchL3 = new DigitalInput(3);
-    DigitalInput switchTop = new DigitalInput(4);
-    */
+    //Simulator doesn't support limit switches so, yeet
+    boolean switchBottom = false;
+    boolean switchL1 = false;
+    boolean switchL2 = false;
+    boolean switchL3 = false;
+    boolean switchTop = false;
 
     //Variables
     double speedModifier = .5; //change this to make lift move faster or slower
@@ -32,6 +31,23 @@ public class Lift{
     double liftSpeed = 0; //the value we set motorLift to
     int liftMode = 0; //0 is trigger, 1 is switch, 2 is encoder. We can probably remove the extra code once we know which one we're using.
 
+    public void updateKeyboard(){
+        if(keyboard.getRawButton(27)){ //0
+            switchBottom=true;
+        }
+        if(keyboard.getRawButton(28)){ //1
+            switchL1=true;
+        }
+        if(keyboard.getRawButton(29)){ //2
+            switchL2=true;
+        }
+        if(keyboard.getRawButton(30)){ //3
+            switchL3=true;
+        }
+        if(keyboard.getRawButton(31)){ //4
+            switchTop=true;
+        }
+    }
     public void updateLevel(){
         //Update bumper - user input for which level to go to.
         if(controls.bumperR&&targetLevel<3){
@@ -44,17 +60,16 @@ public class Lift{
         }
 
         //Kill if lift hits top or bottom limit switches.
-        /*
-        if(switchBottom.get()){
+        if(switchBottom){
             liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
             //This ensures the lift speed will be positive.
         }
-        if(switchTop.get()){
+        if(switchTop){
             liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
         }
         
         //Update limit switches for every level
-        if(switchL1.get()){ //If the limit switch for L1 is hit:
+        if(switchL1){ //If the limit switch for L1 is hit:
             if(currentLevel<1){ //If the current level is less than L1:
                 currentLevel++; //Increase current level
             }
@@ -62,7 +77,7 @@ public class Lift{
                 currentLevel--; //Decrease current level.
             }
         }
-        if(switchL2.get()){ //Same as above.
+        if(switchL2){ //Same as above.
             if(currentLevel<2){
                 currentLevel++;
             }
@@ -70,7 +85,7 @@ public class Lift{
                 currentLevel--;
             }
         }
-        if(switchL3.get()){
+        if(switchL3){
             if(currentLevel<3){
                 currentLevel++;
             }
@@ -78,7 +93,6 @@ public class Lift{
                 currentLevel--;
             }
         }
-*/
     }
 
     public void triggerLift(double down,double up) { //This is what we'll use if we can't get limit switches or encoders set up - completely user controlled.
