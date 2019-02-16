@@ -11,21 +11,6 @@ mDigitalIO:
 - mHandle: 1
   mName: Digital IO 1
   mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-- mHandle: 2
-  mName: switchBottom
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-- mHandle: 3
-  mName: switchL1
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-- mHandle: 4
-  mName: switchL2
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-- mHandle: 5
-  mName: switchL3
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-- mHandle: 6
-  mName: switchTop
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
 mEncoders:
 - mConnectedSpeedControllerHandle: -1
   mHandle: 0
