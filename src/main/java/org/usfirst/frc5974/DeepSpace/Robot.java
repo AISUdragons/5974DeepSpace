@@ -157,18 +157,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     @Override
     public void teleopPeriodic() {
 
-		/*
-		Not sure what this code does, so I'll just comment it out for now.
-		double t0=0;
-		if(robotDrive.motorRB.get()==0&&controls.buttonA){
-			t0=timer.get();
-			robotDrive.motorRB.set(1);
-		}
-		if(timer.get()-t0>1){
-			robotDrive.motorRB.set(0);
-		}
-		*/
-
 		Scheduler.getInstance().run();
 
 		update();
@@ -178,7 +166,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			robotDrive.driveStraight();
 		}
-		
+
 		lift.runLift(); //Operate the lift. Currently based on triggers; change mode in Lift.java.
     }
 }
