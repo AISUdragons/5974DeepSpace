@@ -140,7 +140,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			joystickLXAxis = 0;
 		} else {
 			joystickLXAxis = (joystickLXAxis - 0.075)/0.925; // We may need to change this.
-		} if (joystickLYAxis <= 0.075 && joystickLYAxis >= -0.075) {
+		} if (joystickLYAxis <= 0.1 && joystickLYAxis >= -0.1) { //Left Y was having deadzone problems, I increased from .075 to .1 on 02/01
 			joystickLYAxis = 0;
 		} else {
 			joystickLYAxis = (joystickLYAxis - 0.075)/0.925; // We may need to change this.
@@ -153,6 +153,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			joystickRYAxis = (joystickRYAxis - 0.075)/0.925; // We may need to change this.
 		}
+		
 	}
 
 	public void updateTimer() {	//sets change in time between the current running of a periodic function and the previous running
