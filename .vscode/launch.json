@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - SimulatorMain",
+            "request": "launch",
+            "mainClass": "SimulatorMain",
+            "projectName": "5974DeepSpace"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"
