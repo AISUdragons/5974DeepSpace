@@ -30,7 +30,9 @@ public class Controller{
 	boolean[] pairX = {false, false};
 	boolean[] pairY = {false, false};
 	boolean[] pairA = {false, false};
-    boolean[] pairB = {false, false};
+	boolean[] pairB = {false, false};
+	boolean[] pairBumperR = {false,false};
+	boolean[] pairBumperL = {false,false};
     
     boolean pressed = false;
 	

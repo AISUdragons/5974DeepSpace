@@ -95,6 +95,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 		SmartDashboard.putNumber("Center Thing", camera.centerX);
 		//SmartDashboard.putNumber("Temperature: ", sensors.FancyIMU.getTemperature());
+
+		SmartDashboard.putNumber("Lift Target Level",lift.targetLevel);
+		SmartDashboard.putNumber("Lift Current Level",lift.currentLevel);
 	}
 
     public static OI oi;

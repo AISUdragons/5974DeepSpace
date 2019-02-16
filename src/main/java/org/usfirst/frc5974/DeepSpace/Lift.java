@@ -30,11 +30,11 @@ public class Lift{
 
     public void updateLevel(){
         //Update bumper - user input for which level to go to.
-        if(controls.bumperR&&targetLevel<3){
+        if(controls.runOnce(controls.bumperR,controls.pairBumperR)&&targetLevel<3){
             //if bumper R is pressed and target level is less than 3, increase target level
             targetLevel++;
         }
-        else if(controls.bumperL&&targetLevel>0){
+        else if(controls.runOnce(controls.bumperL,controls.pairBumperL)&&targetLevel>0){
             //if bumper L is pressed and target level is more than 0, decrease target level
             targetLevel--;
         }
@@ -43,9 +43,11 @@ public class Lift{
         if(switchBottom.get()){
             liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
             //This ensures the lift speed will be positive.
+            currentLevel = 0;
         }
         if(switchTop.get()){
             liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
+            currentLevel = 4;
         }
         
         //Update limit switches for every level
@@ -93,10 +95,10 @@ public class Lift{
 
     public void limitLift(){ //Operate lift based on limit switches
         if(targetLevel<currentLevel){
-            liftSpeed=speedModifier; //go up
+            liftSpeed=-speedModifier; //go down
         }
         else if(targetLevel>currentLevel){
-            liftSpeed=-speedModifier; //go down
+            liftSpeed=speedModifier; //go up
         }
         else if(targetLevel==currentLevel){
             liftSpeed=0; //stop
