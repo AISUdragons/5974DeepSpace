@@ -26,12 +26,12 @@ public class Lift{
 
     public void updateLevel(){
         //Update bumper - user input for which level to go to.
-        if(controls.bumperR&&targetLevel<3){
+        if(controls.runOnce(controls.bumperR,controls.pairBumperR)&&targetLevel<3){
             //if bumper R is pressed and target level is less than 3, increase target level
             targetLevel++;
             System.out.println("Target++");
         }
-        else if(controls.bumperL&&targetLevel>0){
+        else if(controls.runOnce(controls.bumperL,controls.pairBumperL)&&targetLevel>0){
             //if bumper L is pressed and target level is more than 0, decrease target level
             targetLevel--;
             System.out.println("Target--");
