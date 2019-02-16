@@ -168,5 +168,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 
 		lift.runLift(); //Operate the lift. Currently based on triggers; change mode in Lift.java.
-    }
+		}
+		
 }
