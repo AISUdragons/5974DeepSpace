@@ -136,7 +136,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
      */
     @Override
     public void disabledInit(){
-		lift.kill = true;
+		lift.liftSpeed=0;
     }
 
     @Override
@@ -288,6 +288,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			robotDrive.driveStraight();
 		}
-		lift.triggerLift(); //Operate the lift based on triggers.
+		lift.runLift(); //Operate the lift based on triggers.
     }
 }
