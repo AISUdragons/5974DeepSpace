@@ -1,0 +1,6 @@
+2019-02-16 14:24:22 DEBUG DefaultSpiSimulatorFactory:78 - Simulator type not specified for port 1.  Nothing will be created
+2019-02-16 14:24:22 DEBUG DefaultSpiSimulatorFactory:78 - Simulator type not specified for port 2.  Nothing will be created
+2019-02-16 14:24:22 DEBUG DefaultSpiSimulatorFactory:78 - Simulator type not specified for port 3.  Nothing will be created
+2019-02-16 14:24:22 DEBUG DefaultSpiSimulatorFactory:78 - Simulator type not specified for port 4.  Nothing will be created
+2019-02-16 14:24:22 DEBUG DefaultI2CSimulatorFactory:65 - Simulator type not specified for port 0.  Nothing will be created
+2019-02-16 14:24:22 DEBUG DefaultI2CSimulatorFactory:65 - Simulator type not specified for port 1.  Nothing will be created

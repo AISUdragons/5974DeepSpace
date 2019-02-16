@@ -81,16 +81,16 @@ public class Lift{
 */
     }
 
-    public void triggerLift() { //This is what we'll use if we can't get limit switches or encoders set up - completely user controlled.
-        if(controls.triggerR>0&&controls.triggerL==0){
+    public void triggerLift(double down,double up) { //This is what we'll use if we can't get limit switches or encoders set up - completely user controlled.
+        if(down>0&&up==0){
             //Move up if right trigger is pressed and left isn't
-            liftSpeed = controls.triggerL*speedModifier;
+            liftSpeed = up*speedModifier;
         }
-        else if(controls.triggerL>0&&controls.triggerR==0){
+        else if(up>0&&down==0){
             //Move down if left trigger is pressed and right isn't
-            liftSpeed = -controls.triggerL*speedModifier;
+            liftSpeed = -down*speedModifier;
         }
-        else if(controls.triggerL==0&&controls.triggerR==0){
+        else if(down==0&&up==0){
             liftSpeed=0;
         }
     }
@@ -123,7 +123,7 @@ public class Lift{
         updateLevel(); //limit switches and target level (from bumpers)
 
         if(liftMode==0){
-            triggerLift();
+            //triggerLift();
         }
         else if(liftMode==1){
             limitLift();
