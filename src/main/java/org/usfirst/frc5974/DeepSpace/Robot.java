@@ -149,6 +149,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
 		//If we want to do anything autonomously, we should probably put it in here.
+		robotDrive.motorsLeft.set(1);
+		robotDrive.motorsRight.set(1);
+		lift.motorLift.set(1);
     }
 
     @Override
@@ -167,12 +170,24 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 		update();
 		dashboardOutput();
+		/*
 		if (robotDrive.driveNormal) {
 			robotDrive.tankDrive();
 		} else {
 			robotDrive.driveStraight();
 		}
-
+		*/
+		if(controls.triggerR<0&&controls.triggerL==0){
+			lift.liftSpeed=-controls.triggerR;
+		}
+		else if(controls.triggerL>0&&controls.triggerR==0){
+			lift.liftSpeed=-controls.triggerL;
+		}
+		else if(controls.triggerL==0&&controls.triggerR==0){
+			lift.liftSpeed=0;
+		}
 		lift.runLift(); //Operate the lift. Currently based on triggers; change mode in Lift.java.
+		//robotDrive.driver.tankDrive(controls.joystickLYAxis,controls.joystickRYAxis);
+		robotDrive.tankDriver(controls.joystickLYAxis,controls.joystickRYAxis);
     }
 }

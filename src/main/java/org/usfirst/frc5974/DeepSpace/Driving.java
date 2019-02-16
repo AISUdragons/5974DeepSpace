@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
+import org.usfirst.frc5974.DeepSpace.Controller;
+import org.usfirst.frc5974.DeepSpace.Sensors;
+
 public class Driving{
     Controller controls = new Controller();
     Sensors sensors = new Sensors();
@@ -24,11 +27,11 @@ public class Driving{
 	boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
 	double slowModifier = 0.75; //Set slow mode speed
 
-    public void tankDrive() {				//left joystick controls left wheels, right joystick controls right wheels
+    public void tankDriver(double left, double right) {				//left joystick controls left wheels, right joystick controls right wheels
 		if (fastBool) {
-			driver.tankDrive(-controls.joystickLYAxis, -controls.joystickRYAxis);
+			driver.tankDrive(-left, -right);
 		} else {
-			driver.tankDrive(-slowModifier*controls.joystickLYAxis, -slowModifier*controls.joystickRYAxis);
+			driver.tankDrive(-slowModifier*left, -slowModifier*right);
 		}
 	}
 

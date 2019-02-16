@@ -1,0 +1,14 @@
+2019-02-16 14:22:03 DEBUG JniLibraryResourceLoader:76 - Loading native librarywpiutil
+2019-02-16 14:22:03 DEBUG JniLibraryResourceLoader:76 - Loading native librarywpiHal
+2019-02-16 14:22:03 DEBUG JniLibraryResourceLoader:76 - Loading native libraryhalsim_adx_gyro_accelerometer
+2019-02-16 14:22:03 DEBUG JniLibraryResourceLoader:76 - Loading native librarynavx_simulator
+2019-02-16 14:22:03 DEBUG JniLibraryResourceLoader:76 - Loading native libraryadx_family
+2019-02-16 14:22:03 DEBUG JniLibraryResourceLoader:76 - Loading native libraryCTRE_PhoenixCCI
+2019-02-16 14:22:03 INFO  SimulatorConfigReaderV1:71 - Loading C:\Users\mechanical.dragons\Documents\GitHub\5974DeepSpace\simulator_config\simulator_config.yml
+2019-02-16 14:22:03 DEBUG Simulator:259 - Created default simulator
+2019-02-16 14:22:04 ERROR JoystickDiscoverer:133 - Unknown joystick name Controller (XBOX 360 For Windows)
+2019-02-16 14:22:04 ERROR JoystickDiscoverer:133 - Unknown joystick name Controller (Gamepad F310)
+2019-02-16 14:22:04 INFO  Simulator:216 - Starting Robot Code
+2019-02-16 14:22:04 ERROR SpiCallbackJni:51 - No SPI simulator registered for port 4
+2019-02-16 14:22:04 ERROR SpiCallbackJni:51 - No SPI simulator registered for port 4
+2019-02-16 14:22:04 INFO  Simulator:307 - Starting simulator
