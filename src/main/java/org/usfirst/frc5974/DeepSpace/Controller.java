@@ -10,7 +10,7 @@ public class Controller{
     Sensors sensors = new Sensors();
 
     //Variables for the Controller
-	Joystick controller = new Joystick(1);	//controller
+	Joystick controller = new Joystick(0);	//controller
 	double joystickLXAxis;			//left joystick x-axis
 	double joystickLYAxis;			//left joystick y-axis
 	double joystickRXAxis;			//right joystick x-axis
