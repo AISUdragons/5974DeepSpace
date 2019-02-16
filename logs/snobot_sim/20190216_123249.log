@@ -1,0 +1,33 @@
+2019-02-16 12:32:50 DEBUG JniLibraryResourceLoader:76 - Loading native librarywpiutil
+2019-02-16 12:32:50 DEBUG JniLibraryResourceLoader:76 - Loading native librarywpiHal
+2019-02-16 12:32:50 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libwpiHal.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libwpiHal.dylib, 1): Library not loaded: libwpiutil.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libwpiHal.dylib
+  Reason: image not found
+2019-02-16 12:32:50 DEBUG JniLibraryResourceLoader:76 - Loading native libraryhalsim_adx_gyro_accelerometer
+2019-02-16 12:32:50 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libhalsim_adx_gyro_accelerometer.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libhalsim_adx_gyro_accelerometer.dylib, 1): Library not loaded: libwpiHal.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libhalsim_adx_gyro_accelerometer.dylib
+  Reason: image not found
+2019-02-16 12:32:50 DEBUG JniLibraryResourceLoader:76 - Loading native librarynavx_simulator
+2019-02-16 12:32:50 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libnavx_simulator.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libnavx_simulator.dylib, 1): Library not loaded: libwpiHal.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libnavx_simulator.dylib
+  Reason: image not found
+2019-02-16 12:32:50 DEBUG JniLibraryResourceLoader:76 - Loading native libraryadx_family
+2019-02-16 12:32:50 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libadx_family.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libadx_family.dylib, 1): Library not loaded: libhalsim_adx_gyro_accelerometer.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libadx_family.dylib
+  Reason: image not found
+2019-02-16 12:32:50 DEBUG JniLibraryResourceLoader:76 - Loading native libraryCTRE_PhoenixCCI
+2019-02-16 12:32:50 INFO  SimulatorConfigReaderV1:71 - Loading /Users/carter/git/5974DeepSpace/simulator_config/simulator_config.yml
+2019-02-16 12:32:50 DEBUG Simulator:259 - Created default simulator
+2019-02-16 12:32:50 INFO  Simulator:216 - Starting Robot Code
+2019-02-16 12:32:50 FATAL Main:50 - Class not found exception.  You either have an error in your properties file, or the project is not set up to be able to find the robot project you are attempting to create
+error: java.lang.ClassNotFoundException: org.usfirst.frc5974.DeepSpace
+java.lang.ClassNotFoundException: org.usfirst.frc5974.DeepSpace
+	at jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:583) ~[?:?]
+	at jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178) ~[?:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:521) ~[?:?]
+	at java.lang.Class.forName0(Native Method) ~[?:?]
+	at java.lang.Class.forName(Class.java:315) ~[?:?]
+	at com.snobot.simulator.robot_container.JavaRobotContainer.constructRobot(JavaRobotContainer.java:24) ~[snobot_sim_gui-2019-0.0.1-RC.jar:?]
+	at com.snobot.simulator.Simulator.createRobot(Simulator.java:235) ~[snobot_sim_gui-2019-0.0.1-RC.jar:?]
+	at com.snobot.simulator.Simulator.startSimulation(Simulator.java:299) ~[snobot_sim_gui-2019-0.0.1-RC.jar:?]
+	at com.snobot.simulator.Main.main(Main.java:46) [snobot_sim_gui-2019-0.0.1-RC.jar:?]

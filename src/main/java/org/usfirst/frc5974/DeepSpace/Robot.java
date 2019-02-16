@@ -27,13 +27,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 import edu.wpi.first.wpilibj.Timer;
 
+import org.usfirst.frc5974.DeepSpace.Sensors;
+import org.usfirst.frc5974.DeepSpace.Driving;
+import org.usfirst.frc5974.DeepSpace.Controller;
+//import org.usfirst.frc5974.DeepSpace.Camera;
+import org.usfirst.frc5974.DeepSpace.Lift;
+
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
 	//Subsystems
 	Sensors sensors = new Sensors();
 	Driving robotDrive = new Driving();
 	Controller controls = new Controller();
-	Camera camera = new Camera();
+	//Camera camera = new Camera();
 	Lift lift = new Lift();
 	
 	//Sendable chooser on SmartDashboard - we can use this to choose different autonomous options, etc from smartdash
@@ -93,7 +99,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Z velocity", sensors.velZ);
 		SmartDashboard.putNumber("Gravity Angle from Vertical", sensors.gravAngle);
 
-		SmartDashboard.putNumber("Center Thing", camera.centerX);
+		//SmartDashboard.putNumber("Center Thing", camera.centerX);
 		//SmartDashboard.putNumber("Temperature: ", sensors.FancyIMU.getTemperature());
 	}
 
@@ -113,7 +119,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		timer.start();
 
-		camera.cameraInit(); //Initialize camera/image processing
+		//camera.cameraInit(); //Initialize camera/image processing
 
     }
 

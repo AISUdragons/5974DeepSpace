@@ -1,0 +1,32 @@
+2019-02-16 12:42:28 DEBUG JniLibraryResourceLoader:76 - Loading native librarywpiutil
+2019-02-16 12:42:28 DEBUG JniLibraryResourceLoader:76 - Loading native librarywpiHal
+2019-02-16 12:42:28 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libwpiHal.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libwpiHal.dylib, 1): Library not loaded: libwpiutil.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libwpiHal.dylib
+  Reason: image not found
+2019-02-16 12:42:28 DEBUG JniLibraryResourceLoader:76 - Loading native libraryhalsim_adx_gyro_accelerometer
+2019-02-16 12:42:28 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libhalsim_adx_gyro_accelerometer.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libhalsim_adx_gyro_accelerometer.dylib, 1): Library not loaded: libwpiHal.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libhalsim_adx_gyro_accelerometer.dylib
+  Reason: image not found
+2019-02-16 12:42:28 DEBUG JniLibraryResourceLoader:76 - Loading native librarynavx_simulator
+2019-02-16 12:42:28 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libnavx_simulator.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libnavx_simulator.dylib, 1): Library not loaded: libwpiHal.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libnavx_simulator.dylib
+  Reason: image not found
+2019-02-16 12:42:28 DEBUG JniLibraryResourceLoader:76 - Loading native libraryadx_family
+2019-02-16 12:42:28 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libadx_family.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libadx_family.dylib, 1): Library not loaded: libhalsim_adx_gyro_accelerometer.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libadx_family.dylib
+  Reason: image not found
+2019-02-16 12:42:28 DEBUG JniLibraryResourceLoader:76 - Loading native libraryCTRE_PhoenixCCI
+2019-02-16 12:42:28 INFO  SimulatorConfigReaderV1:71 - Loading /Users/carter/git/5974DeepSpace/simulator_config/simulator_config.yml
+2019-02-16 12:42:29 DEBUG Simulator:259 - Created default simulator
+2019-02-16 12:42:29 INFO  Simulator:216 - Starting Robot Code
+2019-02-16 12:42:29 ERROR SpiCallbackJni:51 - No SPI simulator registered for port 4
+2019-02-16 12:42:29 INFO  SpiCallbackJni:56 - Shutting down SPI port 4
+2019-02-16 12:42:29 WARN  PwmCallbackJni:39 - Simulator on port 1 was not registerd before starting the robot
+2019-02-16 12:42:29 WARN  PwmCallbackJni:39 - Simulator on port 0 was not registerd before starting the robot
+2019-02-16 12:42:29 WARN  PwmCallbackJni:39 - Simulator on port 3 was not registerd before starting the robot
+2019-02-16 12:42:29 WARN  PwmCallbackJni:39 - Simulator on port 2 was not registerd before starting the robot
+2019-02-16 12:42:29 WARN  PwmCallbackJni:39 - Simulator on port 4 was not registerd before starting the robot
+2019-02-16 12:42:29 WARN  DigitalCallbackJni:39 - Simulator on port 0 was not registerd before starting the robot
+2019-02-16 12:42:29 WARN  DigitalCallbackJni:39 - Simulator on port 1 was not registerd before starting the robot
+2019-02-16 12:42:29 WARN  EncoderCallbackJni:38 - Simulator on port 0 was not registerd before starting the robot
+2019-02-16 12:42:29 INFO  Simulator:307 - Starting simulator

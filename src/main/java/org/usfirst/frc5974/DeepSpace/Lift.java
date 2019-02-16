@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DigitalInput; //limit switches
 
+import org.usfirst.frc5974.DeepSpace.Controller;
+
 public class Lift{
     VictorSP motorLift = new VictorSP(4);
     Controller controls = new Controller();
@@ -14,11 +16,13 @@ public class Lift{
     Encoder encoder = new Encoder(channelA,channelB);
 
     //Limit switch constructors
+    /*
     DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
     DigitalInput switchL1 = new DigitalInput(1);
     DigitalInput switchL2 = new DigitalInput(2);
     DigitalInput switchL3 = new DigitalInput(3);
     DigitalInput switchTop = new DigitalInput(4);
+    */
 
     //Variables
     double speedModifier = .5; //change this to make lift move faster or slower
@@ -40,6 +44,7 @@ public class Lift{
         }
 
         //Kill if lift hits top or bottom limit switches.
+        /*
         if(switchBottom.get()){
             liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
             //This ensures the lift speed will be positive.
@@ -73,7 +78,7 @@ public class Lift{
                 currentLevel--;
             }
         }
-
+*/
     }
 
     public void triggerLift() { //This is what we'll use if we can't get limit switches or encoders set up - completely user controlled.
