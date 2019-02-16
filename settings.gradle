@@ -20,6 +20,8 @@ pluginManagement {
         maven {
             name 'frcHome'
             url frcHomeMaven
+            url "https://login.gradle.org/plugin/jaci.openrio.gradle.GradleRIO"
+            url "https://login.gradle.org/plugin/com.snobot.simulator.plugin.SnobotSimulatorPlugin"
         }
     }
 }

@@ -1,0 +1,18 @@
+2019-02-16 12:11:22 DEBUG JniLibraryResourceLoader:76 - Loading native librarywpiutil
+2019-02-16 12:11:22 DEBUG JniLibraryResourceLoader:76 - Loading native librarywpiHal
+2019-02-16 12:11:22 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libwpiHal.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libwpiHal.dylib, 1): Library not loaded: libwpiutil.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libwpiHal.dylib
+  Reason: image not found
+2019-02-16 12:11:22 DEBUG JniLibraryResourceLoader:76 - Loading native libraryhalsim_adx_gyro_accelerometer
+2019-02-16 12:11:22 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libhalsim_adx_gyro_accelerometer.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libhalsim_adx_gyro_accelerometer.dylib, 1): Library not loaded: libwpiHal.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libhalsim_adx_gyro_accelerometer.dylib
+  Reason: image not found
+2019-02-16 12:11:22 DEBUG JniLibraryResourceLoader:76 - Loading native librarynavx_simulator
+2019-02-16 12:11:22 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libnavx_simulator.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libnavx_simulator.dylib, 1): Library not loaded: libwpiHal.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libnavx_simulator.dylib
+  Reason: image not found
+2019-02-16 12:11:22 DEBUG JniLibraryResourceLoader:76 - Loading native libraryadx_family
+2019-02-16 12:11:22 ERROR JniLibraryResourceLoader:82 - java.lang.UnsatisfiedLinkError: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libadx_family.dylib: dlopen(/Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libadx_family.dylib, 1): Library not loaded: libhalsim_adx_gyro_accelerometer.dylib
+  Referenced from: /Users/carter/git/5974DeepSpace/build/tmp/snobotSimJava/libadx_family.dylib
+  Reason: image not found
+2019-02-16 12:11:22 DEBUG JniLibraryResourceLoader:76 - Loading native libraryCTRE_PhoenixCCI

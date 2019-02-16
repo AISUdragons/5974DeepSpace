@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2019.2.1"
     //Simulation stuff hopefully
-    id "jaci.openrio.gradle.GradleRIO" version "2019.1.1"// Should point to the at https://login.gradle.org/plugin/jaci.openrio.gradle.GradleRIO
+    //id "jaci.openrio.gradle.GradleRIO" version "2019.1.1"// Should point to the at https://login.gradle.org/plugin/jaci.openrio.gradle.GradleRIO
     id "com.snobot.simulator.plugin.SnobotSimulatorPlugin" version "2019-0.2.0" apply false // Should point to the latest version at https://login.gradle.org/plugin/com.snobot.simulator.plugin.SnobotSimulatorPlugin
 }
 
@@ -37,6 +37,13 @@ deploy {
     }
 }
 
+
+//Simulator
+apply plugin: com.snobot.simulator.plugin.SnobotSimulatorPlugin
+configurations {
+    snobotSimCompile
+}
+
 // Set this to true to enable desktop support.
 def includeDesktopSupport = false
 
@@ -53,6 +60,9 @@ dependencies {
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
     testCompile 'junit:junit:4.12'
+
+    // SnobotSim
+    snobotSimCompile snobotSimJava()
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
