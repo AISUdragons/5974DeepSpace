@@ -186,12 +186,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		if(controls.runOnce(controls.bumperR,controls.pairBumperR)&&targetLevel<3){
 			//if bumper R is pressed and target level is less than 3, increase target level
 			targetLevel++;
-			System.out.println("Target++");
+			System.out.println("Target:"+targetLevel+"\nCurrent:"+currentLevel);
 	}
 	else if(controls.runOnce(controls.bumperL,controls.pairBumperL)&&targetLevel>0){
 			//if bumper L is pressed and target level is more than 0, decrease target level
 			targetLevel--;
-			System.out.println("Target--");
+			System.out.println("Target:"+targetLevel+"\nCurrent:"+currentLevel);
 	}
 
 	//Kill if lift hits top or bottom limit switches.
@@ -234,10 +234,10 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			}
 	}
 	if(targetLevel<currentLevel){
-		liftSpeed=speedModifier; //go up
+		liftSpeed=-speedModifier; //go down
 }
 else if(targetLevel>currentLevel){
-		liftSpeed=-speedModifier; //go down
+		liftSpeed=-speedModifier; //go up
 }
 else if(targetLevel==currentLevel){
 		liftSpeed=0; //stop
