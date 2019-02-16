@@ -4,18 +4,16 @@ import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DigitalInput; //limit switches
 
-import org.usfirst.frc5974.DeepSpace.Controller;
-
 public class Lift{
     VictorSP motorLift = new VictorSP(4);
     Controller controls = new Controller();
     
-    //Encoder init
+    //Encoder constructor
     int channelA = 0;
     int channelB = 1;
     Encoder encoder = new Encoder(channelA,channelB);
 
-    //Limit switch init
+    //Limit switch constructors
     DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
     DigitalInput switchL1 = new DigitalInput(1);
     DigitalInput switchL2 = new DigitalInput(2);
@@ -23,17 +21,17 @@ public class Lift{
     DigitalInput switchTop = new DigitalInput(4);
 
     //Variables
-    double speedModifier = .5;
-    int targetLevel = 0;
-    double currentLevel = 0;
-    int[] heights = {0,1,2,3}; //heights for each goal
-    double liftSpeed = 0;
-    int liftMode = 0; //0 is trigger, 1 is switch, 2 is encoder. We can probably remove the extra code once we know which one we're using
+    double speedModifier = .5; //change this to make lift move faster or slower
+    int targetLevel = 0; //level it's supposed to go to
+    double currentLevel = 0; //level it's currently at
+    int[] heights = {0,1,2,3}; //heights for each goal (only used in encoder mode)
+    double liftSpeed = 0; //the value we set motorLift to
+    int liftMode = 0; //0 is trigger, 1 is switch, 2 is encoder. We can probably remove the extra code once we know which one we're using.
 
     public void updateLevel(){
-        //Update bumper - user input for which level to go to
+        //Update bumper - user input for which level to go to.
         if(controls.bumperR&&targetLevel<3){
-            //if bumper R is pressed and target level is less than 4, increase target level
+            //if bumper R is pressed and target level is less than 3, increase target level
             targetLevel++;
         }
         else if(controls.bumperL&&targetLevel>0){
@@ -51,19 +49,19 @@ public class Lift{
         }
         
         //Update limit switches for every level
-        if(switchL1.get()){
-            if(currentLevel<1){
-                currentLevel++;
+        if(switchL1.get()){ //If the limit switch for L1 is hit:
+            if(currentLevel<1){ //If the current level is less than L1:
+                currentLevel++; //Increase current level
             }
-            else{
-                currentLevel--;
+            else if(currentLevel>1){ //If the current level is greater than L1:
+                currentLevel--; //Decrease current level.
             }
         }
-        if(switchL2.get()){
+        if(switchL2.get()){ //Same as above.
             if(currentLevel<2){
                 currentLevel++;
             }
-            else{
+            else if(currentLevel>2){
                 currentLevel--;
             }
         }
@@ -71,7 +69,7 @@ public class Lift{
             if(currentLevel<3){
                 currentLevel++;
             }
-            else{
+            else if(currentLevel>3){
                 currentLevel--;
             }
         }
@@ -94,13 +92,13 @@ public class Lift{
 
     public void limitLift(){ //Operate lift based on limit switches
         if(targetLevel<currentLevel){
-            liftSpeed=speedModifier;
+            liftSpeed=speedModifier; //go up
         }
         else if(targetLevel>currentLevel){
-            liftSpeed=speedModifier;
+            liftSpeed=-speedModifier; //go down
         }
         else if(targetLevel==currentLevel){
-            liftSpeed=0;
+            liftSpeed=0; //stop
         }
     }
 

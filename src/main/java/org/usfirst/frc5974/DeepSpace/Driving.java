@@ -1,8 +1,5 @@
 package org.usfirst.frc5974.DeepSpace;
 
-import org.usfirst.frc5974.DeepSpace.Sensors;
-import org.usfirst.frc5974.DeepSpace.Controller;
-
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -14,38 +11,31 @@ public class Driving{
     //Ports start at 0, not 1.
 	VictorSP motorRB = new VictorSP(1); //motor right back
 	VictorSP motorRF = new VictorSP(0); //motor right front 
-	SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB);
+	SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB); //Groups the right motors together into one object
 
 	VictorSP motorLB = new VictorSP(3); //motor left back
 	VictorSP motorLF = new VictorSP(2); //motor left front
-	SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB);
+	SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB); //Groups the left motors together into one object
 	
 	DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
 
     //Drive Variables
 	boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
 	boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
+	double slowModifier = 0.75; //Set slow mode speed
 
     public void tankDrive() {				//left joystick controls left wheels, right joystick controls right wheels
-		//Differential Drive solution - much more elegant
 		if (fastBool) {
 			driver.tankDrive(-controls.joystickLYAxis, -controls.joystickRYAxis);
 		} else {
-			driver.tankDrive(-.75*controls.joystickLYAxis, -.75*controls.joystickRYAxis);
+			driver.tankDrive(-slowModifier*controls.joystickLYAxis, -slowModifier*controls.joystickRYAxis);
 		}
 	}
 
 	public void driveStraight(){
-		//boolean useFancy = true;
 		double turningValue = 0;
-		/*if (useFancy) {
-			//ADIS16448 IMU; set useFancy to true to activate.
-			turningValue = (sensors.kAngleSetPoint-sensors.yaw) * sensors.kP;
-			//turningValue = (kAngleSetPoint-angleX); //Pretty sure we should use yaw or anglex but idk which
-		} else {
-			//ADXRS450; set useFancy to false to activate.
-			turningValue = (sensors.kAngleSetPoint-sensors.angle) * sensors.kP;
-		}*/
+		
+		turningValue = (sensors.kAngleSetPoint-sensors.yaw) * sensors.kP;
 
 		//Invert direction of turn if we are going backwards
 		turningValue = Math.copySign(turningValue, controls.joystickLYAxis);
@@ -54,7 +44,7 @@ public class Driving{
 		if (fastBool) {
 			driver.arcadeDrive(-controls.joystickLYAxis, turningValue);
 		} else {
-			driver.arcadeDrive(-.75*controls.joystickLYAxis,turningValue);
+			driver.arcadeDrive(-slowModifier*controls.joystickLYAxis,turningValue);
 		}
 	}
 }

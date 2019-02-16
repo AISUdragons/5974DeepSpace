@@ -1,6 +1,5 @@
 package org.usfirst.frc5974.DeepSpace;
 
-
 // Last year's github: https://github.com/AISUMechanicalDragons/FIRSTPowerUp5974
 // **If copying/pasting code, it MUST be from there.**
 
@@ -8,21 +7,17 @@ package org.usfirst.frc5974.DeepSpace;
 
 Joystick Y axes: drive
 
-B: fast mode
-A: drive straight
+B: fast mode toggle
+A: drive straight toggle
 Y: Reset gyro
 
-Right trigger: Lift up
-Left trigger: Lift down
+Right trigger: Lift up (user controlled)
+Left trigger: Lift down (user controlled)
 
-Optional lift controls (enable in Lift.java):
-Right bumper: Lift to higher level
-Left bumper: Lift to lower level
-
+Optional lift controls (enable in Lift.java): (need limit switches to work correctly)
+Right bumper: Lift to higher level (automatic)
+Left bumper: Lift to lower level (automatic)
 */
-
-import org.usfirst.frc5974.DeepSpace.Sensors;
-import org.usfirst.frc5974.DeepSpace.Driving;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -30,24 +25,24 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
-
 import edu.wpi.first.wpilibj.Timer;
-
-//import edu.wpi.first.wpilibj.VictorSP; //Only need this if we're driving a motor in this class. We're not right now, so I'll comment it out.
-
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
+	//Subsystems
 	Sensors sensors = new Sensors();
 	Driving robotDrive = new Driving();
 	Controller controls = new Controller();
 	Camera camera = new Camera();
 	Lift lift = new Lift();
 	
+	//Sendable chooser on SmartDashboard - we can use this to choose different autonomous options, etc from smartdash
 	Command autonomousCommand;
     SendableChooser<Command> chooser = new SendableChooser<>();
 
 	Timer timer = new Timer();
+
+	//For tracking iterative updates
 	int track = 0;
 	int check = 10;
 
@@ -69,25 +64,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
-		//SmartDashboard.putNumber("Time Remaining", GameTime);
 		SmartDashboard.putBoolean("Fast Mode", robotDrive.fastBool);
 		if (robotDrive.driveNormal) {
 			SmartDashboard.putString("Drive mode","Tank");
 		} else {
 			SmartDashboard.putString("Drive mode","Straight");
 		}
-
-		SmartDashboard.putNumber("Left Joystick Y:",controls.joystickLYAxis);
-		SmartDashboard.putNumber("Right Joystick Y:",controls.joystickRYAxis);
-
-		SmartDashboard.putBoolean("Old Gyro Connected?", sensors.gyroConnected);
-
-		//Sensor data
-		/*SmartDashboard.putNumber("Old X acceleration", sensors.xVal);
-		SmartDashboard.putNumber("Old Y acceleration", sensors.yVal);
-		SmartDashboard.putNumber("Old Z acceleration", sensors.zVal);
-		SmartDashboard.putNumber("Old angle of robot", sensors.angle);
-		SmartDashboard.putNumber("Old angular velocity", sensors.rate);*/
 		
 		//ADIS sensor data
 		SmartDashboard.putNumber("X acceleration", sensors.accelX);
@@ -110,6 +92,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putNumber("Y velocity", sensors.velY);
 		SmartDashboard.putNumber("Z velocity", sensors.velZ);
 		SmartDashboard.putNumber("Gravity Angle from Vertical", sensors.gravAngle);
+
 		SmartDashboard.putNumber("Center Thing", camera.centerX);
 		//SmartDashboard.putNumber("Temperature: ", sensors.FancyIMU.getTemperature());
 	}
@@ -125,12 +108,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		
 		sensors.sensorInit(); //Calibrates sensors
-		robotDrive.driver.setRightSideInverted(true);
-		lift.encoder.setDistancePerPulse(1); //TODO: Update encoder distance to the actual value
+		robotDrive.driver.setRightSideInverted(true); //Right side is inverted
+		//lift.encoder.setDistancePerPulse(1); //Only need to run this if we actually get an encoder working
 		
 		timer.start();
 
-		camera.cameraInit();
+		camera.cameraInit(); //Initialize camera/image processing
 
     }
 
@@ -153,111 +136,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
         autonomousCommand = chooser.getSelected();
         // schedule the autonomous command (example)
 		if (autonomousCommand != null) autonomousCommand.start();
-		/*
-		The placement of the following section of code may be wrong, but it seems to work here. Also, the plan for autonomous movement is purely a first draft.
-
-		I plan for it to grab a ball from the depot, then put it in the front right slot of the cargo ship. Depending on how long this takes, I may have it grab another
-		cargo ball and put it into the slot right next to it. However, as of now, I'm not sure how fast it can move and grab/deposit cargo. The robot will probably start
-		on the second tier, on the right platform when facing the glass from the field. A primitive map, with * being a filled cargo slot and 0 being an empty one.
-		The numbers are the platforms.
-		|     1 2
-		|000  1 3
-		|0**  1 3
-		|     1 2 <-- our robot
-		*/
-		/*float firstmove;
-		float turntime1;
-		float secondmove;
-		float turntime2;
-		float thirdmove;
-		float turntime3;
-		float turnaround;
-		public void Autonomous() {
-			//get down from platform two. assume I'm facing forward just in front of the plaform
-			motorLB.set(1);
-			motorRB.set(1);
-			motorLF.set(1);
-			motorRF.set(1);
-
-			timer.delay(firstmove); // I'm not completely sure what Java means by the green underline on the timer.delay(); lines.
-			motorLB.set(0);
-			motorLF.set(0);
-			timer.delay(turntime1);
-			motorLB.set(1);
-			motorRB.set(1);
-			timer.delay(secondmove);
-			motorLB.set(0);
-			motorLF.set(0);
-			motorRB.set(0);
-			motorRF.set(0);
-			//grab the cargo ball
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turnaround);
-			motorLB.set(1);
-			motorRB.set(1);
-			motorRF.set(1);
-			motorLF.set(1);
-			timer.delay(thirdmove);
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turntime3);
-			motorLB.set(0);
-			motorRB.set(0);
-			motorRF.set(0);
-			motorLF.set(0);
-			//put the ball in the cargo slot
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turnaround);
-			motorLB.set(1);
-			motorRB.set(1);
-			motorRF.set(1);
-			motorLF.set(1);
-			timer.delay(thirdmove);
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turntime3);
-			motorLB.set(0);
-			motorRB.set(0);
-			motorRF.set(0);
-			motorLF.set(0);
-			// grab another cargo ball
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turnaround);
-			motorLB.set(1);
-			motorRB.set(1);
-			motorRF.set(1);
-			motorLF.set(1);
-			timer.delay(thirdmove);
-			motorLB.set(1);
-			motorRB.set(-1);
-			motorRF.set(-1);
-			motorLF.set(1);
-			timer.delay(turntime3);
-			motorLB.set(0);
-			motorRB.set(0);
-			motorRF.set(0);
-			motorLF.set(0);
-			// put it in again. this may be all the time we have
-		}*/
-		//Autonomous();
+		//The autonomous comments/psuedocode were here - I took it out, it'll be in the github if you want it back.
     }
 
     @Override
     public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+		//If we want to do anything autonomously, we should probably put it in here.
     }
 
     @Override
@@ -285,6 +170,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		*/
 
 		Scheduler.getInstance().run();
+
 		update();
 		dashboardOutput();
 		if (robotDrive.driveNormal) {
@@ -292,6 +178,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			robotDrive.driveStraight();
 		}
+		
 		lift.runLift(); //Operate the lift. Currently based on triggers; change mode in Lift.java.
     }
 }
