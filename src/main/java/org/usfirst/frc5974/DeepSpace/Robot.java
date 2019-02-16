@@ -52,6 +52,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	int track = 0;
 	int check = 10;
 
+	int targetLevel=0;
+	double liftSpeed=0;
+	int currentLevel=0;
+	double speedModifier=0.5;
+
 	public void update() {					//updates everything
 		controls.updateController();
 
@@ -177,8 +182,67 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			robotDrive.driveStraight();
 		}
 		*/
-		lift.limitLift();
-		lift.runLift(); //Operate the lift. Currently based on triggers; change mode in Lift.java.
+
+		if(controls.bumperR&&targetLevel<3){
+			//if bumper R is pressed and target level is less than 3, increase target level
+			targetLevel++;
+			System.out.println("Target++");
+	}
+	else if(controls.bumperL&&targetLevel>0){
+			//if bumper L is pressed and target level is more than 0, decrease target level
+			targetLevel--;
+			System.out.println("Target--");
+	}
+
+	//Kill if lift hits top or bottom limit switches.
+	if(controls.switchBottom){
+			liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
+			//This ensures the lift speed will be positive.
+			System.out.println("bottom");
+	}
+	if(controls.switchTop){
+			liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
+			System.out.println("top");
+	}
+	
+	//Update limit switches for every level
+	if(controls.switchL1){ //If the limit switch for L1 is hit:
+			System.out.println("1");
+			if(currentLevel<1){ //If the current level is less than L1:
+					currentLevel++; //Increase current level
+			}
+			else if(currentLevel>1){ //If the current level is greater than L1:
+					currentLevel--; //Decrease current level.
+			}
+	}
+	if(controls.switchL2){ //Same as above.
+			System.out.println("2");
+			if(currentLevel<2){
+					currentLevel++;
+			}
+			else if(currentLevel>2){
+					currentLevel--;
+			}
+	}
+	if(controls.switchL3){
+			System.out.println("3");
+			if(currentLevel<3){
+					currentLevel++;
+			}
+			else if(currentLevel>3){
+					currentLevel--;
+			}
+	}
+	if(targetLevel<currentLevel){
+		liftSpeed=speedModifier; //go up
+}
+else if(targetLevel>currentLevel){
+		liftSpeed=-speedModifier; //go down
+}
+else if(targetLevel==currentLevel){
+		liftSpeed=0; //stop
+}
+		lift.motorLift.set(liftSpeed);
 		//robotDrive.driver.tankDrive(controls.joystickLYAxis,controls.joystickRYAxis);
 		robotDrive.tankDriver(controls.joystickLYAxis,controls.joystickRYAxis);
     }
