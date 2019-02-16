@@ -109,7 +109,7 @@ public class Lift{
         else if(encoder.getDistance()>heights[targetLevel]){
             liftSpeed=-speedModifier;
         }
-        else if(encoder.getDistance()==heights[targetLevel]){ //it won't be exact, so you'll probably have to change this to a distance-1<target height<distance+1 type of thing. 
+        else if(encoder.getDistance()<heights[targetLevel]+.5&&encoder.getDistance()>heights[targetLevel]-.5){
             liftSpeed=0;
         }
     }
