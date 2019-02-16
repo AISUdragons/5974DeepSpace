@@ -15,6 +15,10 @@ Y: Reset gyro
 Right trigger: Lift up
 Left trigger: Lift down
 
+Optional lift controls (enable in Lift.java):
+Right bumper: Lift to higher level
+Left bumper: Lift to lower level
+
 */
 
 import org.usfirst.frc5974.DeepSpace.Sensors;
@@ -288,6 +292,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		} else {
 			robotDrive.driveStraight();
 		}
-		lift.runLift(); //Operate the lift based on triggers.
+		lift.runLift(); //Operate the lift. Currently based on triggers; change mode in Lift.java.
     }
 }
