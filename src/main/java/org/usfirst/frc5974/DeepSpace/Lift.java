@@ -6,32 +6,28 @@ import edu.wpi.first.wpilibj.DigitalInput; //limit switches
 
 import org.usfirst.frc5974.DeepSpace.Controller;
 
-public class Lift
-{
+public class Lift{
+    VictorSP motorLift = new VictorSP(4);
+    Controller controls = new Controller();
+    
+    //Encoder init
     int channelA = 0;
     int channelB = 1;
     Encoder encoder = new Encoder(channelA,channelB);
 
+    //Limit switch init
     DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
     DigitalInput switchL1 = new DigitalInput(1);
     DigitalInput switchL2 = new DigitalInput(2);
     DigitalInput switchL3 = new DigitalInput(3);
     DigitalInput switchTop = new DigitalInput(4);
-    
-    VictorSP motorLift = new VictorSP(4);
-    Controller controls = new Controller();
-    private double distanceModifier = 1;
-    private double speedModifier = .5;
 
+    //Variables
+    double speedModifier = .5;
     int targetLevel = 0;
-    boolean kill = false;
     double currentLevel = 0;
-    int baseLevel = 0;
-    double position = 0;
-    double distanceTraveled = 0;
-    final int[] heights = {0,1,2,3}; //heights for each goal TODO: update goal heights to actual (only if using encoder)
+    int[] heights = {0,1,2,3}; //heights for each goal
     double liftSpeed = 0;
-
     int liftMode = 0; //0 is trigger, 1 is switch, 2 is encoder. We can probably remove the extra code once we know which one we're using
 
     public void updateLevel(){
@@ -138,42 +134,4 @@ public class Lift
     }
 }
 
-        /*
-        Servo-based code (won't work)
-        //Only runs if kill is false
-        if (!kill){
-            //Makes sure that prevRPpos is one update behind Position
-            previousPosition = Position;
-            Position = motorLift.getPosition();
-            
-            //Manages baseLevel
-            if (motorLift.getSpeed() > 0 && Position < previousPosition){
-                baseLevel ++;
-            }
-            else if (motorLift.getSpeed() < 0 && Position > previousPosition)
-            {
-                baseLevel --; 
-            }
-
-            //Sets currentLevel
-            currentLevel = baseLevel + Position;
-
-            //Moves the motor if currentLevel is not equal to targetLevel
-            if (currentLevel > targetLevel+0.1)
-            {
-                motorLift.setSpeed(1*speedModifier);
-            }
-            else if (currentLevel < targetLevel-0.1)
-            {
-                motorLift.setSpeed(-1*speedModifier);
-            }
-            else
-            {
-                motorLift.setSpeed(0);
-            }
-        }
-        else
-        {
-            motorLift.setSpeed(0);
-        }
-        */
+//I deleted basically everything that was here previously. If you want it back, check Github :P
