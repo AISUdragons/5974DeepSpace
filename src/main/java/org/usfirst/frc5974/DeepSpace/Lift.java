@@ -5,8 +5,11 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DigitalInput; //limit switch
 
 public class Lift{
-    VictorSP motorLift = new VictorSP(4);
     Controller controls = new Controller();
+    
+    VictorSP motorLift = new VictorSP(4);
+    VictorSP motorGrabLeft = new VictorSP(5);
+    VictorSP motorGrabRight = new VictorSP(6);
     
     //Encoder constructor
     int channelA = 0;
@@ -22,6 +25,7 @@ public class Lift{
 
     //Variables
     double speedModifier = .5; //change this to make lift move faster or slower
+    double grabSpeed = 1; //grabber/intake motor speed
     int targetLevel = 0; //level it's supposed to go to
     double currentLevel = 0; //level it's currently at
     int[] heights = {0,1,2,3}; //heights for each goal (only used in encoder mode)
@@ -132,6 +136,38 @@ public class Lift{
 
         motorLift.set(liftSpeed); 
 
+        //Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
+        if(controls.buttonX&&currentLevel==0){
+            intake();
+        }
+        else if(controls.buttonX&&currentLevel>0){
+            shoot();
+        }
+        else if(!controls.buttonX){
+            motorGrabLeft.set(0);
+            motorGrabRight.set(0);
+        }
+        //However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
+        if(controls.buttonBack){
+            intake();
+        }
+        if(controls.buttonStart){
+            shoot();
+        }
+        if(!controls.buttonBack&&!controls.buttonStart){
+            motorGrabLeft.set(0);
+            motorGrabRight.set(0);
+        }
+    }
+
+    public void intake(){
+        motorGrabLeft.set(grabSpeed);
+        motorGrabRight.set(-grabSpeed);
+    }
+
+    public void shoot(){
+        motorGrabLeft.set(-grabSpeed);
+        motorGrabRight.set(grabSpeed);
     }
 }
 

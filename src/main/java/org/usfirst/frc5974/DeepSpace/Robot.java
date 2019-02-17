@@ -10,9 +10,11 @@ Joystick Y axes: drive
 B: fast mode toggle
 A: drive straight toggle
 Y: Reset gyro
+X: If lift on floor, suck ball in. If in the air, shoot ball.
 
 Right trigger: Lift up (user controlled)
 Left trigger: Lift down (user controlled)
+
 
 Optional lift controls (enable in Lift.java): (need limit switches to work correctly)
 Right bumper: Lift to higher level (automatic)
@@ -170,7 +172,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			robotDrive.driveStraight();
 		}
 
-		lift.runLift(); //Operate the lift. Currently based on triggers; change mode in Lift.java.
+		lift.runLift(); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.
 		}
 		
 }

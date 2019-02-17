@@ -44,7 +44,7 @@ public class Controller{
 		//When the button is pushed, once it is released, its toggle is changed
 		if (pressed) {
 			toggle = !toggle;
-			while (pressed) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
+			while (pressed) {		//While loops can be problematic in Timed Robot because timing may slip.
 									// This is a pretty small amount of code though, so it shouldn't be an issue?
 				pressed = controller.getRawButton(portNum);
 			}
