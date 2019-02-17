@@ -5,20 +5,25 @@ package org.usfirst.frc5974.DeepSpace;
 
 /*CONTROLS
 
-Joystick Y axes: drive
+Drive:
+	Joystick Y axes: tank drive
+	B: Fast mode toggle
+	A: Drive straight toggle (drive using left joystick Y axis) **doesn't really work
 
-B: fast mode toggle
-A: drive straight toggle
-Y: Reset gyro
-X: If lift on floor, suck ball in. If in the air, shoot ball.
+Lift:
+	Right trigger: Lift up (user controlled)
+	Left trigger: Lift down (user controlled)
+	Optional (enable in Lift.java): (need limit switches to work correctly)
+	Right bumper: Lift to higher level (automatic)
+	Left bumper: Lift to lower level (automatic)
+	
+Intake:
+	X: If lift on floor, suck ball in. If in the air, shoot ball. (Needs limit switches)
+	Back: Intake or shoot (toggle)
 
-Right trigger: Lift up (user controlled)
-Left trigger: Lift down (user controlled)
-
-
-Optional lift controls (enable in Lift.java): (need limit switches to work correctly)
-Right bumper: Lift to higher level (automatic)
-Left bumper: Lift to lower level (automatic)
+Miscellaneous:
+	Y: Reset gyro
+	Start: Activate tier climber
 */
 
 import edu.wpi.first.wpilibj.TimedRobot;

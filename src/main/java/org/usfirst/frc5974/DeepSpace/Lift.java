@@ -31,6 +31,9 @@ public class Lift{
     int[] heights = {0,1,2,3}; //heights for each goal (only used in encoder mode)
     double liftSpeed = 0; //the value we set motorLift to
     int liftMode = 0; //0 is trigger, 1 is switch, 2 is encoder. We can probably remove the extra code once we know which one we're using.
+    boolean hasBall = false;
+    boolean intakeActive=false;
+    boolean shootActive=false;
 
     public void updateLevel(){
         //Update bumper - user input for which level to go to.
@@ -148,15 +151,28 @@ public class Lift{
             motorGrabRight.set(0);
         }
         //However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
-        if(controls.buttonBack){
+
+        if(controls.buttonBack&&!hasBall){
             intake();
+            intakeActive=true;
         }
-        if(controls.buttonStart){
+        if(controls.buttonBack&&hasBall){
             shoot();
+            shootActive=true;
         }
-        if(!controls.buttonBack&&!controls.buttonStart){
-            motorGrabLeft.set(0);
-            motorGrabRight.set(0);
+        if(!controls.buttonBack){
+            if(intakeActive){
+                motorGrabLeft.set(0);
+                motorGrabRight.set(0);
+                intakeActive=false;
+                hasBall=true;
+            }
+            if(shootActive){
+                motorGrabLeft.set(0);
+                motorGrabRight.set(0);
+                shootActive=false;
+                hasBall=false;
+            }
         }
     }
 
