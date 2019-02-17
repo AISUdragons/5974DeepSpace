@@ -5,16 +5,16 @@ import edu.wpi.first.wpilibj.VictorSP;
 import org.usfirst.frc5974.DeepSpace.Controller;
 
 public class Climber{
-    VictorSP climbMotor = new VictorSP(7);
+    VictorSP motorClimb = new VictorSP(7);
     Controller controls = new Controller();
     double climbSpeed = 1;
 
     public void climb(){
         if(controls.buttonStart){
-            climbMotor.set(climbSpeed);
+            motorClimb.set(climbSpeed);
         }
         else if(!controls.buttonStart){
-            climbMotor.set(0);
+            motorClimb.set(0);
         }
     }
 }
