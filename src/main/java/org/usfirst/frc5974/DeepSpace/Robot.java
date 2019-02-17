@@ -201,10 +201,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
 			//This ensures the lift speed will be positive.
 			System.out.println("bottom");
+			currentLevel--;
 	}
 	if(controls.switchTop){
 			liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
 			System.out.println("top");
+			currentLevel++;
 	}
 	
 	//Update limit switches for every level
@@ -251,13 +253,50 @@ else if(targetLevel==currentLevel){
 		}
 		robotDrive.tankDriver(controls.joystickLYAxis,controls.joystickRYAxis);
 
+		//Climb
 		if(controls.buttonStart){
             climber.motorClimb.set(climber.climbSpeed);
         }
         else if(!controls.buttonStart){
             climber.motorClimb.set(0);
 		}
+
+		//Intake stuff
+		if(controls.buttonX&&currentLevel==0){
+            lift.intake();
+        }
+        else if(controls.buttonX&&currentLevel>0){
+            lift.shoot();
+        }
+        else if(!controls.buttonX){
+            lift.motorGrabLeft.set(0);
+            lift.motorGrabRight.set(0);
+        }
+        //However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
+        if(controls.buttonBack&&!lift.hasBall){
+            lift.intake();
+            lift.intakeActive=true;
+        }
+        if(controls.buttonBack&&lift.hasBall){
+            lift.shoot();
+            lift.shootActive=true;
+        }
+        if(!controls.buttonBack){
+            if(lift.intakeActive){
+                lift.motorGrabLeft.set(0);
+                lift.motorGrabRight.set(0);
+                lift.intakeActive=false;
+                lift.hasBall=true;
+            }
+            if(lift.shootActive){
+                lift.motorGrabLeft.set(0);
+				lift. motorGrabRight.set(0);
+                lift.shootActive=false;
+                lift.hasBall=false;
+            }
+        }
+    
 		
-		
+
     }
 }
