@@ -12,7 +12,7 @@ public class Lift{
     VictorSP motorGrabRight = new VictorSP(6);
 
     Controller controls = new Controller();
-    Joystick keyboard = new Joystick(1); //Hopefully this will end up being the keyboard
+    Joystick keyboard = new Joystick(1); //Keyboard (for simulation only)
 
     //Encoder constructor
     int channelA = 0;

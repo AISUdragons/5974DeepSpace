@@ -201,12 +201,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
 			//This ensures the lift speed will be positive.
 			System.out.println("bottom");
-			currentLevel--;
+			currentLevel=0;
 	}
 	if(controls.switchTop){
 			liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
 			System.out.println("top");
-			currentLevel++;
+			currentLevel=4;
 	}
 	
 	//Update limit switches for every level
