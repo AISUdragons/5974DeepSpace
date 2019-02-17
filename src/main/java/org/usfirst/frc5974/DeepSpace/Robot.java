@@ -32,6 +32,7 @@ import org.usfirst.frc5974.DeepSpace.Driving;
 import org.usfirst.frc5974.DeepSpace.Controller;
 //import org.usfirst.frc5974.DeepSpace.Camera;
 import org.usfirst.frc5974.DeepSpace.Lift;
+import org.usfirst.frc5974.DeepSpace.Climber;
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
@@ -41,6 +42,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	Controller controls = new Controller();
 	//Camera camera = new Camera();
 	Lift lift = new Lift();
+	Climber climber = new Climber();
 	
 	//Sendable chooser on SmartDashboard - we can use this to choose different autonomous options, etc from smartdash
 	Command autonomousCommand;
@@ -248,5 +250,14 @@ else if(targetLevel==currentLevel){
 			System.out.println("Target level: "+targetLevel+"\nCurrent level: "+currentLevel);
 		}
 		robotDrive.tankDriver(controls.joystickLYAxis,controls.joystickRYAxis);
+
+		if(controls.buttonStart){
+            climber.motorClimb.set(climber.climbSpeed);
+        }
+        else if(!controls.buttonStart){
+            climber.motorClimb.set(0);
+		}
+		
+		
     }
 }
