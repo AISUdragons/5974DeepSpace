@@ -30,7 +30,9 @@ public class Controller{
 	boolean[] pairX = {false, false};
 	boolean[] pairY = {false, false};
 	boolean[] pairA = {false, false};
-    boolean[] pairB = {false, false};
+	boolean[] pairB = {false, false};
+	boolean[] pairBumperR = {false,false};
+	boolean[] pairBumperL = {false,false};
     
     boolean pressed = false;
 	
@@ -42,7 +44,7 @@ public class Controller{
 		//When the button is pushed, once it is released, its toggle is changed
 		if (pressed) {
 			toggle = !toggle;
-			while (pressed) {		//TODO while loops can be problematic in Timed Robot because timing may slip.
+			while (pressed) {		//While loops can be problematic in Timed Robot because timing may slip.
 									// This is a pretty small amount of code though, so it shouldn't be an issue?
 				pressed = controller.getRawButton(portNum);
 			}

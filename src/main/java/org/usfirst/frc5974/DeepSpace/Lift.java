@@ -5,8 +5,11 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DigitalInput; //limit switch
 
 public class Lift{
-    VictorSP motorLift = new VictorSP(4);
     Controller controls = new Controller();
+    
+    VictorSP motorLift = new VictorSP(4);
+    VictorSP motorGrabLeft = new VictorSP(5);
+    VictorSP motorGrabRight = new VictorSP(6);
     
     //Encoder constructor
     int channelA = 0;
@@ -22,19 +25,23 @@ public class Lift{
 
     //Variables
     double speedModifier = .5; //change this to make lift move faster or slower
+    double grabSpeed = 1; //grabber/intake motor speed
     int targetLevel = 0; //level it's supposed to go to
     double currentLevel = 0; //level it's currently at
     int[] heights = {0,1,2,3}; //heights for each goal (only used in encoder mode)
     double liftSpeed = 0; //the value we set motorLift to
     int liftMode = 0; //0 is trigger, 1 is switch, 2 is encoder. We can probably remove the extra code once we know which one we're using.
+    boolean hasBall = false;
+    boolean intakeActive=false;
+    boolean shootActive=false;
 
     public void updateLevel(){
         //Update bumper - user input for which level to go to.
-        if(controls.bumperR&&targetLevel<3){
+        if(controls.runOnce(controls.bumperR,controls.pairBumperR)&&targetLevel<3){
             //if bumper R is pressed and target level is less than 3, increase target level
             targetLevel++;
         }
-        else if(controls.bumperL&&targetLevel>0){
+        else if(controls.runOnce(controls.bumperL,controls.pairBumperL)&&targetLevel>0){
             //if bumper L is pressed and target level is more than 0, decrease target level
             targetLevel--;
         }
@@ -43,9 +50,11 @@ public class Lift{
         if(switchBottom.get()){
             liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
             //This ensures the lift speed will be positive.
+            currentLevel = 0;
         }
         if(switchTop.get()){
             liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
+            currentLevel = 4;
         }
         
         //Update limit switches for every level
@@ -93,10 +102,10 @@ public class Lift{
 
     public void limitLift(){ //Operate lift based on limit switches
         if(targetLevel<currentLevel){
-            liftSpeed=speedModifier; //go up
+            liftSpeed=-speedModifier; //go down
         }
         else if(targetLevel>currentLevel){
-            liftSpeed=-speedModifier; //go down
+            liftSpeed=speedModifier; //go up
         }
         else if(targetLevel==currentLevel){
             liftSpeed=0; //stop
@@ -130,6 +139,51 @@ public class Lift{
 
         motorLift.set(liftSpeed); 
 
+        //Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
+        if(controls.buttonX&&currentLevel==0){
+            intake();
+        }
+        else if(controls.buttonX&&currentLevel>0){
+            shoot();
+        }
+        else if(!controls.buttonX){
+            motorGrabLeft.set(0);
+            motorGrabRight.set(0);
+        }
+        //However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
+
+        if(controls.buttonBack&&!hasBall){
+            intake();
+            intakeActive=true;
+        }
+        if(controls.buttonBack&&hasBall){
+            shoot();
+            shootActive=true;
+        }
+        if(!controls.buttonBack){
+            if(intakeActive){
+                motorGrabLeft.set(0);
+                motorGrabRight.set(0);
+                intakeActive=false;
+                hasBall=true;
+            }
+            if(shootActive){
+                motorGrabLeft.set(0);
+                motorGrabRight.set(0);
+                shootActive=false;
+                hasBall=false;
+            }
+        }
+    }
+
+    public void intake(){
+        motorGrabLeft.set(grabSpeed);
+        motorGrabRight.set(-grabSpeed);
+    }
+
+    public void shoot(){
+        motorGrabLeft.set(-grabSpeed);
+        motorGrabRight.set(grabSpeed);
     }
 }
 
