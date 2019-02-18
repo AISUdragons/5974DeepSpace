@@ -32,6 +32,7 @@ import org.usfirst.frc5974.DeepSpace.Driving;
 import org.usfirst.frc5974.DeepSpace.Controller;
 //import org.usfirst.frc5974.DeepSpace.Camera;
 import org.usfirst.frc5974.DeepSpace.Lift;
+import org.usfirst.frc5974.DeepSpace.Climber;
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
@@ -41,6 +42,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	Controller controls = new Controller();
 	//Camera camera = new Camera();
 	Lift lift = new Lift();
+	Climber climber = new Climber();
 	
 	//Sendable chooser on SmartDashboard - we can use this to choose different autonomous options, etc from smartdash
 	Command autonomousCommand;
@@ -182,71 +184,29 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			robotDrive.driveStraight();
 		}
 		*/
-
-		if(controls.runOnce(controls.bumperR,controls.pairBumperR)&&targetLevel<3){
-			//if bumper R is pressed and target level is less than 3, increase target level
-			targetLevel++;
-			System.out.println("Target:"+targetLevel+"\nCurrent:"+currentLevel);
-	}
-	else if(controls.runOnce(controls.bumperL,controls.pairBumperL)&&targetLevel>0){
-			//if bumper L is pressed and target level is more than 0, decrease target level
-			targetLevel--;
-			System.out.println("Target:"+targetLevel+"\nCurrent:"+currentLevel);
-	}
-
-	//Kill if lift hits top or bottom limit switches.
-	if(controls.switchBottom){
-			liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
-			//This ensures the lift speed will be positive.
-			System.out.println("bottom");
-	}
-	if(controls.switchTop){
-			liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
-			System.out.println("top");
-	}
-	
-	//Update limit switches for every level
-	if(controls.switchL1){ //If the limit switch for L1 is hit:
-			System.out.println("1");
-			if(currentLevel<1){ //If the current level is less than L1:
-					currentLevel++; //Increase current level
-			}
-			else if(currentLevel>1){ //If the current level is greater than L1:
-					currentLevel--; //Decrease current level.
-			}
-	}
-	if(controls.switchL2){ //Same as above.
-			System.out.println("2");
-			if(currentLevel<2){
-					currentLevel++;
-			}
-			else if(currentLevel>2){
-					currentLevel--;
-			}
-	}
-	if(controls.switchL3){
-			System.out.println("3");
-			if(currentLevel<3){
-					currentLevel++;
-			}
-			else if(currentLevel>3){
-					currentLevel--;
-			}
-	}
-	if(targetLevel<currentLevel){
-		liftSpeed=-speedModifier; //go down
-}
-else if(targetLevel>currentLevel){
-		liftSpeed=speedModifier; //go up
-}
-else if(targetLevel==currentLevel){
-		liftSpeed=0; //stop
-}
-		lift.motorLift.set(liftSpeed);
-		//robotDrive.driver.tankDrive(controls.joystickLYAxis,controls.joystickRYAxis);
-		if(controls.buttonX){
-			System.out.println("Target level: "+targetLevel+"\nCurrent level: "+currentLevel);
+		
+		if(controls.triggerL>0){
+			System.out.println("triggerL");
 		}
-		robotDrive.tankDriver(controls.joystickLYAxis,controls.joystickRYAxis);
+		if(controls.triggerR<0){
+			System.out.println("triggerR");
+		}
+		
+		/*
+		if(controls.triggerR<0&&controls.triggerL==0){
+            //Move up if right trigger is pressed and left isn't
+            //System.out.println(down);
+            lift.motorLift.set(-controls.triggerR*speedModifier);
+        }
+        else if(controls.triggerL>0&&controls.triggerR==0){
+            //Move down if left trigger is pressed and right isn't
+            //System.out.println();
+            lift.motorLift.set(-controls.triggerL*speedModifier);
+        }
+        else if(controls.triggerL==0&&controls.triggerR==0){
+            lift.motorLift.set(0);
+        }*/
+		
+
     }
 }

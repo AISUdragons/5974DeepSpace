@@ -8,8 +8,11 @@ import org.usfirst.frc5974.DeepSpace.Controller;
 
 public class Lift{
     VictorSP motorLift = new VictorSP(4);
+    VictorSP motorGrabLeft = new VictorSP(5);
+    VictorSP motorGrabRight = new VictorSP(6);
+
     Controller controls = new Controller();
-    Joystick keyboard = new Joystick(1); //Hopefully this will end up being the keyboard
+    Joystick keyboard = new Joystick(1); //Keyboard (for simulation only)
 
     //Encoder constructor
     int channelA = 0;
@@ -23,6 +26,10 @@ public class Lift{
     int[] heights = {0,1,2,3}; //heights for each goal (only used in encoder mode)
     double liftSpeed = 0; //the value we set motorLift to
     int liftMode = 0; //0 is trigger, 1 is switch, 2 is encoder. We can probably remove the extra code once we know which one we're using.
+    double grabSpeed = 1;
+    boolean hasBall = false;
+    boolean intakeActive=false;
+    boolean shootActive=false;
 
     public void updateLevel(){
         //Update bumper - user input for which level to go to.
@@ -78,17 +85,19 @@ public class Lift{
         }
     }
 
-    public void triggerLift(double down,double up) { //This is what we'll use if we can't get limit switches or encoders set up - completely user controlled.
-        if(down>0&&up==0){
+    public double triggerLift(double down,double up) { //This is what we'll use if we can't get limit switches or encoders set up - completely user controlled.
+        if(down>0){
             //Move up if right trigger is pressed and left isn't
-            liftSpeed = up*speedModifier;
+            System.out.println(down);
+            return -up*speedModifier;
         }
-        else if(up>0&&down==0){
+        else if(up<0){
             //Move down if left trigger is pressed and right isn't
-            liftSpeed = -down*speedModifier;
+            System.out.println(up);
+            return -down*speedModifier;
         }
-        else if(down==0&&up==0){
-            liftSpeed=0;
+        else{
+            return 0;
         }
     }
 
@@ -132,6 +141,50 @@ public class Lift{
 
         motorLift.set(liftSpeed); 
 
+         //Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
+         if(controls.buttonX&&currentLevel==0){
+            intake();
+        }
+        else if(controls.buttonX&&currentLevel>0){
+            shoot();
+        }
+        else if(!controls.buttonX){
+            motorGrabLeft.set(0);
+            motorGrabRight.set(0);
+        }
+        //However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
+        if(controls.buttonBack&&!hasBall){
+            intake();
+            intakeActive=true;
+        }
+        if(controls.buttonBack&&hasBall){
+            shoot();
+            shootActive=true;
+        }
+        if(!controls.buttonBack){
+            if(intakeActive){
+                motorGrabLeft.set(0);
+                motorGrabRight.set(0);
+                intakeActive=false;
+                hasBall=true;
+            }
+            if(shootActive){
+                motorGrabLeft.set(0);
+                motorGrabRight.set(0);
+                shootActive=false;
+                hasBall=false;
+            }
+        }
+    }
+
+    public void intake(){
+        motorGrabLeft.set(grabSpeed);
+        motorGrabRight.set(-grabSpeed);
+    }
+
+    public void shoot(){
+        motorGrabLeft.set(-grabSpeed);
+        motorGrabRight.set(grabSpeed);
     }
 }
 
