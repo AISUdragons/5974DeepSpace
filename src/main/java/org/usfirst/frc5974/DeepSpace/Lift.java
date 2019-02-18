@@ -152,8 +152,8 @@ public class Lift{
             motorGrabLeft.set(0);
             motorGrabRight.set(0);
         }
-        //However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
 
+        //However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
         if(controls.buttonBack&&!hasBall){
             intake();
             intakeActive=true;
