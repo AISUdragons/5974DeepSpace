@@ -91,10 +91,10 @@ public class Controller{
 			joystickRYAxis = 0;
 		} 
 
-		if(triggerL<=0.01){
+		if(triggerL<=0.0001){
 			triggerL=0;
 		}
-		if(triggerR>=-0.01){
+		if(triggerR>=-0.0001){
 			triggerR=0;
 		}
 	}
