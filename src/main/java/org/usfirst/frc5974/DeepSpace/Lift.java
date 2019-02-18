@@ -91,7 +91,7 @@ public class Lift{
         //From the simulator, it appears that triggerR is [-1,0] and triggerL is [0,1]. Might be different IRL though, so we'll have to test it.
         if(controls.triggerR<0&&controls.triggerL==0){
             //Move up if right trigger is pressed and left isn't
-            liftSpeed = -controls.triggerL*speedModifier; //Input is negative, so neg*neg=pos.
+            liftSpeed = -controls.triggerR*speedModifier; //Input is negative, so neg*neg=pos.
         }
         else if(controls.triggerL>0&&controls.triggerR==0){
             //Move down if left trigger is pressed and right isn't
