@@ -24,6 +24,7 @@ public class Lift{
     DigitalInput switchL2 = new DigitalInput(2);
     DigitalInput switchL3 = new DigitalInput(3);
     DigitalInput switchTop = new DigitalInput(4);
+    DigitalInput switchClimber = new DigitalInput(5);
 
     //Variables
     double speedModifier = .5; //change this to make lift move faster or slower
@@ -36,8 +37,15 @@ public class Lift{
     boolean hasBall = false;
     boolean intakeActive=false;
     boolean shootActive=false;
+    boolean climberUp = true; //Don't run lift when climber is stowed - it'll break
+    boolean[] pairClimber = {false,false};
 
     public void updateLevel(){
+        //Update climber position
+        if(controls.runOnce(switchClimber.get(),pairClimber)){
+            climberUp=!climberUp;
+        }
+
         //Update bumper - user input for which level to go to.
         if(controls.runOnce(controls.bumperR,controls.pairBumperR)&&targetLevel<3){
             //if bumper R is pressed and target level is less than 3, increase target level
@@ -139,7 +147,12 @@ public class Lift{
             encoderLift();
         }
 
-        motorLift.set(liftSpeed); 
+        if(climberUp){
+            motorLift.set(0);
+        }
+        else{
+            motorLift.set(liftSpeed); 
+        }
 
         //Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
         if(controls.buttonX&&currentLevel==0){
