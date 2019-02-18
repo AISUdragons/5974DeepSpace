@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DigitalInput; //limit switch
 
+import org.usfirst.frc5974.DeepSpace.Controller;
+
 public class Lift{
     Controller controls = new Controller();
     

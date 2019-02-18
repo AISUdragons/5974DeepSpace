@@ -3,6 +3,8 @@ package org.usfirst.frc5974.DeepSpace;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 
+import org.usfirst.frc5974.DeepSpace.Sensors;
+
 public class Controller{
 
     Sensors sensors = new Sensors();

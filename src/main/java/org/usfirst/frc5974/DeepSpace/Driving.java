@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
+import org.usfirst.frc5974.DeepSpace.Controller;
+import org.usfirst.frc5974.DeepSpace.Sensors;
+
 public class Driving{
     Controller controls = new Controller();
     Sensors sensors = new Sensors();

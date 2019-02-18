@@ -34,6 +34,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 import edu.wpi.first.wpilibj.Timer;
 
+import org.usfirst.frc5974.DeepSpace.Sensors;
+import org.usfirst.frc5974.DeepSpace.Driving;
+import org.usfirst.frc5974.DeepSpace.Controller;
+import org.usfirst.frc5974.DeepSpace.Camera;
+import org.usfirst.frc5974.DeepSpace.Lift;
+
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
 	//Subsystems
