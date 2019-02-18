@@ -30,6 +30,7 @@ public class Lift{
     boolean hasBall = false;
     boolean intakeActive=false;
     boolean shootActive=false;
+    boolean climberUp = true;
 
     public void updateLevel(){
         //Update bumper - user input for which level to go to.

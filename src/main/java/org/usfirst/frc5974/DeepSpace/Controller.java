@@ -35,7 +35,8 @@ public class Controller{
     boolean switchL1 = false;
     boolean switchL2 = false;
     boolean switchL3 = false;
-    boolean switchTop = false;
+	boolean switchTop = false;
+	boolean switchClimber;
 	
 	boolean[] pairX = {false, false};
 	boolean[] pairY = {false, false};
@@ -43,6 +44,7 @@ public class Controller{
 	boolean[] pairB = {false, false};
 	boolean[] pairBumperR = {false,false};
 	boolean[] pairBumperL = {false,false};
+	boolean[] pairClimber = {false,false};
     
     boolean pressed = false;
 	
@@ -132,7 +134,8 @@ public class Controller{
      	switchL1 = keyboard.getRawButton(2);
      	switchL2 = keyboard.getRawButton(3);
      	switchL3 = keyboard.getRawButton(4);
-     	switchTop = keyboard.getRawButton(5);
+		switchTop = keyboard.getRawButton(5);
+		switchClimber = keyboard.getRawButton(6);
     }
     
     public void rumble(double duration){
