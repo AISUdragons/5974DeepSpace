@@ -185,7 +185,32 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 		*/
 		
-		lift.motorLift.set(lift.triggerLift(controls.triggerL,controls.triggerR));
+		if(controls.triggerR<0&&controls.triggerL==0){
+            //Move up if right trigger is pressed and left isn't
+            lift.motorLift.set(-controls.triggerR*speedModifier); //Input is negative, so neg*neg=pos.
+        }
+        else if(controls.triggerL>0&&controls.triggerR==0){
+            //Move down if left trigger is pressed and right isn't
+            lift.motorLift.set(-controls.triggerL*speedModifier);
+        }
+        else if(controls.triggerL==0&&controls.triggerR==0){
+            lift.motorLift.set(0);
+		}
+		
+		/*
+		if(controls.triggerR<0&&controls.triggerL==0){
+            //Move up if right trigger is pressed and left isn't
+            //System.out.println(down);
+            lift.motorLift.set(-controls.triggerR*speedModifier);
+        }
+        else if(controls.triggerL>0&&controls.triggerR==0){
+            //Move down if left trigger is pressed and right isn't
+            //System.out.println();
+            lift.motorLift.set(-controls.triggerL*speedModifier);
+        }
+        else if(controls.triggerL==0&&controls.triggerR==0){
+            lift.motorLift.set(0);
+        }*/
 		
 
     }
