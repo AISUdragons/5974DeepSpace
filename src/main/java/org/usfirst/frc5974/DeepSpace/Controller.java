@@ -82,6 +82,13 @@ public class Controller{
 		if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
 			joystickRYAxis = 0;
 		} 
+
+		if(triggerL<=0.0001){
+			triggerL=0;
+		}
+		if(triggerR>=-0.0001){
+			triggerR=0;
+		}
 	}
 
 	public void updateController() {		//updates all controller features
@@ -92,11 +99,10 @@ public class Controller{
 		joystickRYAxis = controller.getRawAxis(5);		//returns a value [-1,1]
 		joystickLPress = controller.getRawButton(9);	//returns a value {0,1}
 		joystickRPress = controller.getRawButton(10);	//returns a value {0,1}
-        joystickDeadZone();
-
 		//trigger updates
 		triggerL = controller.getRawAxis(2);		//returns a value [0,1]
 		triggerR = controller.getRawAxis(3);		//returns a value [0,1]
+        joystickDeadZone();
 		
 		//bumper updates
 		bumperL = controller.getRawButton(5);		//returns a value {0,1}
