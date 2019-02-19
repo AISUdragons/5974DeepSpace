@@ -1,40 +1,42 @@
-package org.usfirst.frc5974.DeepSpace;
+package org.usfirst.frc5974.DeepSpace.subsystems;
+
+import org.usfirst.frc5974.DeepSpace.Robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 
-import org.usfirst.frc5974.DeepSpace.Sensors;
+//import org.usfirst.frc5974.DeepSpace.Sensors;
 
-public class Controller{
+public class Controller extends Robot{
 
-    Sensors sensors = new Sensors();
+    //Sensors sensors = new Sensors();
 
     //Variables for the Controller
 	Joystick controller = new Joystick(0);	//controller
-	double joystickLXAxis;			//left joystick x-axis
-	double joystickLYAxis;			//left joystick y-axis
-	double joystickRXAxis;			//right joystick x-axis
-	double joystickRYAxis;			//right joystick y-axis
-	double triggerL;				//left trigger
-	double triggerR;				//right trigger
-	boolean bumperL;				//left bumper
-	boolean bumperR;				//right bumper
-	boolean buttonX;				//x button
-	boolean buttonY;				//y button
-	boolean buttonA;				//a button
-	boolean buttonB;				//b button
+	public double joystickLXAxis;			//left joystick x-axis
+	public double joystickLYAxis;			//left joystick y-axis
+	public double joystickRXAxis;			//right joystick x-axis
+	public double joystickRYAxis;			//right joystick y-axis
+	public double triggerL;				//left trigger
+	public double triggerR;				//right trigger
+	public boolean bumperL;				//left bumper
+	public boolean bumperR;				//right bumper
+	public boolean buttonX;				//x button
+	public boolean buttonY;				//y button
+	public boolean buttonA;				//a button
+	public boolean buttonB;				//b button
 	int dPad;					    //d-pad
-	boolean joystickLPress;		    //left joystick button press
-	boolean joystickRPress;		    //right joystick button press
-	boolean buttonStart;			//start button
-	boolean buttonBack;			    //back button
+	public boolean joystickLPress;		    //left joystick button press
+	public boolean joystickRPress;		    //right joystick button press
+	public boolean buttonStart;			//start button
+	public boolean buttonBack;			    //back button
 	
-	boolean[] pairX = {false, false};
-	boolean[] pairY = {false, false};
-	boolean[] pairA = {false, false};
-	boolean[] pairB = {false, false};
-	boolean[] pairBumperR = {false,false};
-	boolean[] pairBumperL = {false,false};
+	public boolean[] pairX = {false, false};
+	public boolean[] pairY = {false, false};
+	public boolean[] pairA = {false, false};
+	public boolean[] pairB = {false, false};
+	public boolean[] pairBumperR = {false,false};
+	public boolean[] pairBumperL = {false,false};
     
     boolean pressed = false;
 	

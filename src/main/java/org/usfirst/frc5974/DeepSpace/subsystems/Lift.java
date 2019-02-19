@@ -1,18 +1,17 @@
-package org.usfirst.frc5974.DeepSpace;
+package org.usfirst.frc5974.DeepSpace.subsystems;
 
-import org.usfirst.frc5974.DeepSpace.Controller;
-import org.usfirst.frc5974.DeepSpace.Sucker;
+import org.usfirst.frc5974.DeepSpace.Robot;
 
 public class Lift extends Robot{
-    Controller controls = new Controller();
-    Sucker sucker = new Sucker();
+    //Controller controls = new Controller();
+    //Sucker sucker = new Sucker();
 
     //Variables
-    double speedModifier = .5; //change this to make lift move faster or slower
-    int targetLevel = 0; //level it's supposed to go to
-    double currentLevel = 0; //level it's currently at
-    double liftSpeed = 0; //the value we set motorLift to
-    int liftMode = 0; //0 is trigger, 1 is limit switch.
+    public double speedModifier = .5; //change this to make lift move faster or slower
+    public int targetLevel = 0; //level it's supposed to go to
+    public double currentLevel = 0; //level it's currently at
+    public double liftSpeed = 0; //the value we set motorLift to
+    public int liftMode = 0; //0 is trigger, 1 is limit switch.
 
     public void updateLevel(boolean BL, boolean BR){
         //Update bumper - user input for which level to go to.

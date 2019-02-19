@@ -1,4 +1,6 @@
-package org.usfirst.frc5974.DeepSpace;
+package org.usfirst.frc5974.DeepSpace.subsystems;
+
+import org.usfirst.frc5974.DeepSpace.Robot;
 
 public class Sucker extends Robot{
 

@@ -1,4 +1,4 @@
-package org.usfirst.frc5974.DeepSpace;
+package org.usfirst.frc5974.DeepSpace.subsystems;
 
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;

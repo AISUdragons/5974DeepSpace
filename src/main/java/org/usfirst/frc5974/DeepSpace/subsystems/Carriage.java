@@ -1,11 +1,10 @@
-package org.usfirst.frc5974.DeepSpace;
+package org.usfirst.frc5974.DeepSpace.subsystems;
 
-import org.usfirst.frc5974.DeepSpace.Lift;
-import org.usfirst.frc5974.DeepSpace.Sucker;
+import org.usfirst.frc5974.DeepSpace.Robot;
 
 public class Carriage extends Robot{
-    Lift lift = new Lift();
-    Sucker sucker = new Sucker();
+    //Lift lift = new Lift();
+    //Sucker sucker = new Sucker();
     
     double grabSpeed = 1; //grabber/intake motor speed
     boolean hasBall = false;

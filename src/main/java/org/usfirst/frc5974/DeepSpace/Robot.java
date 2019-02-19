@@ -75,58 +75,53 @@ import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
-import org.usfirst.frc5974.DeepSpace.Sensors;
-import org.usfirst.frc5974.DeepSpace.Driving;
-import org.usfirst.frc5974.DeepSpace.Controller;
-import org.usfirst.frc5974.DeepSpace.Camera;
-import org.usfirst.frc5974.DeepSpace.Lift;
-import org.usfirst.frc5974.DeepSpace.Sucker;
-import org.usfirst.frc5974.DeepSpace.Carriage;
+import org.usfirst.frc5974.DeepSpace.subsystems.*;
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
 	//Subsystems
-	Sensors sensors = new Sensors();
-	Driving robotDrive = new Driving();
-	Controller controls = new Controller();
-	Camera camera = new Camera();
-	Lift lift = new Lift();
-	Sucker sucker = new Sucker();
-	Carriage carriage = new Carriage();
+	public Sensors sensors = new Sensors();
+	public Driving robotDrive = new Driving();
+	public Controller controls = new Controller();
+	public Camera camera = new Camera();
+	public Lift lift = new Lift();
+	public Sucker sucker = new Sucker();
+	public Carriage carriage = new Carriage();
 
 	//PWM motor controllers
-		//Drive
-		VictorSP motorRF = new VictorSP(0); //motor right front 
-		VictorSP motorRB = new VictorSP(1); //motor right back
-		SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB); //Groups the right motors together into one object
 
-		VictorSP motorLF = new VictorSP(2); //motor left front
-		VictorSP motorLB = new VictorSP(3); //motor left back
-		SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB); //Groups the left motors together into one object
+		public VictorSP motorRF = new VictorSP(0); //motor right front 
+		public VictorSP motorRB = new VictorSP(1); //motor right back
+		public SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB); //Groups the right motors together into one object
+
+		public VictorSP motorLF = new VictorSP(2); //motor left front
+		public VictorSP motorLB = new VictorSP(3); //motor left back
+		public SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB); //Groups the left motors together into one object
+
 
 		//Lift
-		VictorSP motorLift = new VictorSP(4);
+		public VictorSP motorLift = new VictorSP(4);
 
 		//Carriage
-		VictorSP motorGrabL = new VictorSP(5);
-		VictorSP motorGrabR = new VictorSP(6);
+		public VictorSP motorGrabL = new VictorSP(5);
+		public VictorSP motorGrabR = new VictorSP(6);
 
 		//Sucker
 		//These will have 2 motor controllers each.
-		VictorSP motorsSuckerBase = new VictorSP(7); 
-		VictorSP motorsSuckerSpinner = new VictorSP(8);
+		public VictorSP motorsSuckerBase = new VictorSP(7); 
+		public VictorSP motorsSuckerSpinner = new VictorSP(8);
 
 	//Digital inputs (limit switches)
 		//Lift
-		DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
-    DigitalInput switchL1 = new DigitalInput(1);
-    DigitalInput switchL2 = new DigitalInput(2);
-    DigitalInput switchL3 = new DigitalInput(3);
-		DigitalInput switchTop = new DigitalInput(4);
+		public DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
+    public DigitalInput switchL1 = new DigitalInput(1);
+    public DigitalInput switchL2 = new DigitalInput(2);
+    public DigitalInput switchL3 = new DigitalInput(3);
+		public DigitalInput switchTop = new DigitalInput(4);
 		
 		//Sucker
-		DigitalInput switchSucker = new DigitalInput(5);
-    DigitalInput switchBase = new DigitalInput(6);
+		public DigitalInput switchSucker = new DigitalInput(5);
+    public DigitalInput switchBase = new DigitalInput(6);
 	
 	//Sendable chooser on SmartDashboard - we can use this to choose different autonomous options, etc from smartdash
 	Command autonomousCommand;
@@ -160,6 +155,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 		
 		//ADIS sensor data
+		/* Tbh this just clutters everything up, so I'm going to comment it out for a bit
 		SmartDashboard.putNumber("X acceleration", sensors.accelX);
 		SmartDashboard.putNumber("Y acceleration", sensors.accelY);
 		SmartDashboard.putNumber("Z acceleration", sensors.accelZ);
@@ -183,6 +179,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 		SmartDashboard.putNumber("Center Thing", camera.centerX);
 		//SmartDashboard.putNumber("Temperature: ", sensors.FancyIMU.getTemperature());
+		*/
 
 		SmartDashboard.putNumber("Lift Target Level",lift.targetLevel);
 		SmartDashboard.putNumber("Lift Current Level",lift.currentLevel);
