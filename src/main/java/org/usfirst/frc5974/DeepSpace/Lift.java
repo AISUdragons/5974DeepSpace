@@ -10,14 +10,16 @@ public class Lift{
     Controller controls = new Controller();
     Sucker sucker = new Sucker();
     
-    VictorSP motorLift = new VictorSP(4);
+    //VictorSP motorLift = new VictorSP(4);
 
     //Limit switch constructors
+    /*
     DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
     DigitalInput switchL1 = new DigitalInput(1);
     DigitalInput switchL2 = new DigitalInput(2);
     DigitalInput switchL3 = new DigitalInput(3);
     DigitalInput switchTop = new DigitalInput(4);
+    */
 
     //Variables
     double speedModifier = .5; //change this to make lift move faster or slower
@@ -27,7 +29,7 @@ public class Lift{
     int liftMode = 0; //0 is trigger, 1 is limit switch.
 
     public void updateLevel(){
-
+        /*
         //Update bumper - user input for which level to go to.
         if(controls.runOnce(controls.bumperR,controls.pairBumperR)&&targetLevel<3){
             //if bumper R is pressed and target level is less than 3, increase target level
@@ -73,7 +75,7 @@ public class Lift{
             else if(currentLevel>3){
                 currentLevel--;
             }
-        }
+        }*/
 
     }
 
@@ -114,6 +116,6 @@ public class Lift{
             limitLift();
         }
 
-        motorLift.set(liftSpeed); 
+        //motorLift.set(liftSpeed); 
     }
 }

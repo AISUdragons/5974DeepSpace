@@ -102,7 +102,8 @@ public class Controller{
 		//trigger updates
 		triggerL = controller.getRawAxis(2);		//returns a value [0,1]
 		triggerR = controller.getRawAxis(3);		//returns a value [0,1]
-        joystickDeadZone();
+		joystickDeadZone();
+		//System.out.println(joystickLYAxis);
 		
 		//bumper updates
 		bumperL = controller.getRawButton(5);		//returns a value {0,1}

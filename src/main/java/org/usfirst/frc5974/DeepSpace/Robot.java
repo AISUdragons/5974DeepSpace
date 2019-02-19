@@ -167,7 +167,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		
 		timer.start();
 
-		camera.cameraInit(); //Initialize camera/image processing
+		//camera.cameraInit(); //Initialize camera/image processing
 
     }
 
@@ -218,7 +218,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		update();
 		dashboardOutput();
 
-		robotDrive.tankDrive();
+		robotDrive.tankDriver();
 		sucker.climb(); //On buttonX, bring the arm down and start spinning
 		carriage.runCarriage(); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
 		lift.runLift(); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.

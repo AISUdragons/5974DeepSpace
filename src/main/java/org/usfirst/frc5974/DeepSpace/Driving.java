@@ -27,9 +27,12 @@ public class Driving{
 	boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
 	double slowModifier = 0.75; //Set slow mode speed
 
-    public void tankDrive() {				//left joystick controls left wheels, right joystick controls right wheels
+	public void tankDriver() {				//left joystick controls left wheels, right joystick controls right wheels
+		controls.updateController();
 		if (fastBool) {
 			driver.tankDrive(-controls.joystickLYAxis, -controls.joystickRYAxis);
+			//System.out.println(controls.joystickLYAxis);
+		
 		} else {
 			driver.tankDrive(-slowModifier*controls.joystickLYAxis, -slowModifier*controls.joystickRYAxis);
 		}
