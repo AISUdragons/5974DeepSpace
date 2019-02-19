@@ -66,7 +66,6 @@ PWM assignments:
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -100,14 +99,18 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 //Motors
 	//Carriage motors
-		public VictorSP motorGrabL = new VictorSP(5);
-		public VictorSP motorGrabR = new VictorSP(6);
+		VictorSP motorGrabL = new VictorSP(3);
+		VictorSP motorGrabR = new VictorSP(4);
 	//Sucker motors
 		//These will have 2 motor controllers each.
-		public VictorSP motorsSuckerBase = new VictorSP(7); 
-		public VictorSP motorsSuckerSpinner = new VictorSP(8);
+		VictorSP motorSuckerBaseL = new VictorSP(5);
+		VictorSP motorSuckerBaseR = new VictorSP(6);
+		SpeedControllerGroup motorsSuckerBase = new SpeedControllerGroup(motorSuckerBaseL,motorSuckerBaseR);
+		VictorSP motorSuckerSpinL = new VictorSP(7); 
+		VictorSP motorSuckerSpinR = new VictorSP(8);
+		SpeedControllerGroup motorsSuckerSpinner = new SpeedControllerGroup(motorSuckerSpinL,motorSuckerSpinR);
 	//Lift motor
-		VictorSP motorLift = new VictorSP(4);
+		VictorSP motorLift = new VictorSP(2);
 	//Drive motors
 		//These have 2 motor controllers each
 		VictorSP motorsRight = new VictorSP(0);
@@ -115,8 +118,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 //Limit switches
 	//Sucker limit switches
-		public DigitalInput switchSucker = new DigitalInput(5);
-		public DigitalInput switchBase = new DigitalInput(6);
+		DigitalInput switchSucker = new DigitalInput(5);
+		DigitalInput switchBase = new DigitalInput(6);
 	//Lift limit switches
 		DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
 		DigitalInput switchL1 = new DigitalInput(1);
@@ -292,8 +295,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 	public void suckerSetup(){
 		motorsSuckerBase.set(pivotSpeed);
+		double moveSpeed = pivotSpeed;
 		if(switchSucker.get()){
-			motorsSuckerBase.set(0);
+			while(motorsSuckerBase.get()!=0){
+				motorsSuckerBase.set(moveSpeed-.1); //gradually slow when hit limit switch
+			}
 		}
 	}
 	public void succ(){
@@ -546,5 +552,5 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		runCarriage(buttonA, buttonBack); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
 		runLift(bumperL,bumperR,triggerL,triggerR,pairBumperL,pairBumperR); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.
 	}	
-	
+
 }
