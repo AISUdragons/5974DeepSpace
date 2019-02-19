@@ -1,25 +1,16 @@
-package org.usfirst.frc5974.DeepSpace.subsystems;
+package org.usfirst.frc5974.DeepSpace.commands;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.DigitalInput;
 
-public class Sucker extends Subsystem{
+import org.usfirst.frc5974.DeepSpace.Robot;
+import org.usfirst.frc5974.DeepSpace.subsystems.*;
 
-    double pivotSpeed;
-    double suckSpeed=.5;
-    double climbSpeed=.75;
+public class Suck extends Command{
 
-    		//Sucker
-		//These will have 2 motor controllers each.
-		public VictorSP motorsSuckerBase = new VictorSP(7); 
-		public VictorSP motorsSuckerSpinner = new VictorSP(8);
-		
-		//Sucker
-		public DigitalInput switchSucker = new DigitalInput(5);
-    public DigitalInput switchBase = new DigitalInput(6);
-
-    public void initDefaultCommand(){
+    public Sucker(){
+        requires(Robot.sucker);
     }
 
     public void succ(){
@@ -47,5 +38,10 @@ public class Sucker extends Subsystem{
             motorsSuckerSpinner.set(climbSpeed);
         }
         
+    }
+
+    @Override
+    protected boolean isFinished() {
+        return true;
     }
 }

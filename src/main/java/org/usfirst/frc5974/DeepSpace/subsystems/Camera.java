@@ -13,11 +13,13 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.vision.VisionRunner;*/
 import edu.wpi.first.vision.VisionThread;
+import edu.wpi.first.wpilibj.command.Subsystem;
+
 import org.opencv.core.Rect;
 import org.usfirst.frc5974.grip.GripPipeline;
 //import java.util.Set;
 
-public class Camera{
+public class Camera extends Subsystem{
 
 	private static final int IMG_WIDTH = 240;
 	private static final int IMG_HEIGHT = 180;
@@ -78,4 +80,9 @@ public class Camera{
 			Timer.delay(1);
 		}*/
     }
+
+	@Override
+	protected void initDefaultCommand() {
+
+	}
 }

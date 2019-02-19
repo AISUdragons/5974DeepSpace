@@ -1,11 +1,12 @@
 package org.usfirst.frc5974.DeepSpace.subsystems;
 
-import org.usfirst.frc5974.DeepSpace.Robot;
+import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.VictorSP;
 
-public class Lift extends Robot{
-    //Controller controls = new Controller();
-    //Sucker sucker = new Sucker();
+public class Lifter extends Subsystem{
 
+    Controller controls = new Controller();
     //Variables
     public double speedModifier = .5; //change this to make lift move faster or slower
     public int targetLevel = 0; //level it's supposed to go to
@@ -13,13 +14,26 @@ public class Lift extends Robot{
     public double liftSpeed = 0; //the value we set motorLift to
     public int liftMode = 0; //0 is trigger, 1 is limit switch.
 
-    public void updateLevel(boolean BL, boolean BR){
+    //Lift
+		public DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
+        public DigitalInput switchL1 = new DigitalInput(1);
+        public DigitalInput switchL2 = new DigitalInput(2);
+        public DigitalInput switchL3 = new DigitalInput(3);
+            public DigitalInput switchTop = new DigitalInput(4);
+
+            public VictorSP motorLift = new VictorSP(4);
+
+
+    public void initDefaultCommand(){
+    }
+
+    public void updateLevel(boolean BL, boolean BR, boolean[] PBL, boolean[] PBR){
         //Update bumper - user input for which level to go to.
-        if(controls.runOnce(BR,controls.pairBumperR)&&targetLevel<3){
+        if(controls.runOnce(BR,PBR)&&targetLevel<3){
             //if bumper R is pressed and target level is less than 3, increase target level
             targetLevel++;
         }
-        else if(controls.runOnce(BL,controls.pairBumperL)&&targetLevel>0){
+        else if(controls.runOnce(BL,PBL)&&targetLevel>0){
             //if bumper L is pressed and target level is more than 0, decrease target level
             targetLevel--;
         }
@@ -90,8 +104,8 @@ public class Lift extends Robot{
         }
     }
 
-    public void runLift(boolean BL, boolean BR, double TL, double TR){
-        updateLevel(BL,BR); //limit switches and target level (from bumpers)
+    public void runLift(boolean BL, boolean BR, double TL, double TR, boolean[] PBL, boolean[] PBR){
+        updateLevel(BL,BR,PBL,PBR); //limit switches and target level (from bumpers)
 
         if(liftMode==0){
             triggerLift(TL,TR);
@@ -102,4 +116,5 @@ public class Lift extends Robot{
 
         motorLift.set(liftSpeed); 
     }
+
 }

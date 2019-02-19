@@ -1,11 +1,11 @@
-package org.usfirst.frc5974.DeepSpace.subsystems;
+package org.usfirst.frc5974.DeepSpace.commands;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
-public class Driving extends Subsystem{
+public class Drive extends Command{
 
 	public VictorSP motorRF = new VictorSP(0); //motor right front 
 	public VictorSP motorRB = new VictorSP(1); //motor right back
@@ -34,6 +34,11 @@ public class Driving extends Subsystem{
 		} else {
 			driver.tankDrive(-slowModifier*L, -slowModifier*R);
 		}
+	}
+
+	@Override
+	protected boolean isFinished() {
+		return false;
 	}
 
 	/*public void driveStraight(){

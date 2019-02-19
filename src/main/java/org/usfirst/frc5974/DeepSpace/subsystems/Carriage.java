@@ -1,62 +1,39 @@
 package org.usfirst.frc5974.DeepSpace.subsystems;
 
-import org.usfirst.frc5974.DeepSpace.Robot;
+import org.usfirst.frc5974.DeepSpace.commands.Carry;
+import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
 
-public class Carriage extends Robot{
-    //Lift lift = new Lift();
-    //Sucker sucker = new Sucker();
+public class Carriage extends Subsystem{
     
     double grabSpeed = 1; //grabber/intake motor speed
     boolean hasBall = false;
     boolean intakeActive=false;
     boolean shootActive=false;
 
-    public void runCarriage(boolean a, boolean back){
-        //Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
-        if(a&&lift.currentLevel==0){
-            intake();
-        }
-        else if(a&&lift.currentLevel>0){
-            shoot();
-        }
-        else if(!a){
-            motorGrabL.set(0);
-            motorGrabR.set(0);
-        }
+    //Carriage
+	public VictorSP motorGrabL = new VictorSP(5);
+	public VictorSP motorGrabR = new VictorSP(6);
+    Controller controls = new Controller();
+    //Variables
+    public double speedModifier = .5; //change this to make lift move faster or slower
+    public int targetLevel = 0; //level it's supposed to go to
+    public double currentLevel = 0; //level it's currently at
+    public double liftSpeed = 0; //the value we set motorLift to
+    public int liftMode = 0; //0 is trigger, 1 is limit switch.
 
-        //However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
-        if(back&&!hasBall){
-            intake();
-            intakeActive=true;
-        }
-        if(back&&hasBall){
-            shoot();
-            shootActive=true;
-        }
-        if(!back){
-            if(intakeActive){
-                motorGrabL.set(0);
-                motorGrabR.set(0);
-                intakeActive=false;
-                hasBall=true;
-            }
-            if(shootActive){
-                motorGrabL.set(0);
-                motorGrabR.set(0);
-                shootActive=false;
-                hasBall=false;
-            }
-        }
-    }
+    //Lift
+		public DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
+        public DigitalInput switchL1 = new DigitalInput(1);
+        public DigitalInput switchL2 = new DigitalInput(2);
+        public DigitalInput switchL3 = new DigitalInput(3);
+        public DigitalInput switchTop = new DigitalInput(4);
+
+        public VictorSP motorLift = new VictorSP(4);
         
-    public void intake(){
-        motorGrabL.set(grabSpeed);
-        motorGrabR.set(-grabSpeed);
-        sucker.succ();
-    }
-
-    public void shoot(){
-        motorGrabL.set(-grabSpeed);
-        motorGrabR.set(grabSpeed);
+    @Override
+    protected void initDefaultCommand() {
+        setDefaultCommand(new Carry());
     }
 }

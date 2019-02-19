@@ -1,10 +1,10 @@
-package org.usfirst.frc5974.DeepSpace.subsystems;
+package org.usfirst.frc5974.DeepSpace.commands;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.command.Command;
 
-public class Controller extends Subsystem{
+public class Control extends Command{
 
     //Variables for the Controller
 	Joystick controller = new Joystick(0);	//controller
@@ -129,4 +129,9 @@ public class Controller extends Subsystem{
 		controller.setRumble(Joystick.RumbleType.kRightRumble, 0);
 		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
     }
+
+	@Override
+	protected boolean isFinished() {
+		return false;
+	}
 }

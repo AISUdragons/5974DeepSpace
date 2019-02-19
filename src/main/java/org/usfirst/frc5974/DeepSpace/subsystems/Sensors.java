@@ -1,13 +1,13 @@
 package org.usfirst.frc5974.DeepSpace.subsystems;
 
-import org.usfirst.frc5974.DeepSpace.Robot;
 import org.usfirst.frc5974.DeepSpace.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 //import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.Subsystem;
 
-public class Sensors extends Robot{
+public class Sensors extends Subsystem{
     //ADXRS450_Gyro gyro = new ADXRS450_Gyro();
     BuiltInAccelerometer accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
     Timer timer = new Timer();
@@ -50,6 +50,9 @@ public class Sensors extends Robot{
 
 	double gravAngle;
 
+	public void initDefaultCommand(){
+	}
+	
 	public void gyroReset() { //it resets the gyro
 		FancyIMU.reset();
 		//gyro.reset();

@@ -66,62 +66,55 @@ PWM assignments:
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 import org.usfirst.frc5974.DeepSpace.subsystems.*;
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
 	//Subsystems
-	public Sensors sensors = new Sensors();
-	public Driving robotDrive = new Driving();
-	public Controller controls = new Controller();
-	public Camera camera = new Camera();
-	public Lift lift = new Lift();
-	public Sucker sucker = new Sucker();
-	public Carriage carriage = new Carriage();
+ 	private static Sensors sensors;
+	public static Subsystem getSensors(){
+		return sensors;
+	}
+
+	private static Driving robotDrive;
+	public static Subsystem getDriving(){
+		return robotDrive;
+	}
+
+	private static Controller controls;
+	public static Subsystem getControls(){
+		return controls;
+	}
+
+	private static Camera camera;
+	public static Subsystem getCamera(){
+		return camera;
+	}
+
+	private static Lifter lift;
+	public static Subsystem getLift(){
+		return lift;
+	}
+
+	private static Sucker sucker;
+	public static Subsystem getSucker(){
+		return sucker;
+	}
+	
+	private static Carriage carriage;
+	public static Subsystem getCarriage(){
+		return carriage;
+	} 
+
 
 	//PWM motor controllers
-
-		public VictorSP motorRF = new VictorSP(0); //motor right front 
-		public VictorSP motorRB = new VictorSP(1); //motor right back
-		public SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB); //Groups the right motors together into one object
-
-		public VictorSP motorLF = new VictorSP(2); //motor left front
-		public VictorSP motorLB = new VictorSP(3); //motor left back
-		public SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB); //Groups the left motors together into one object
-
-
-		//Lift
-		public VictorSP motorLift = new VictorSP(4);
-
-		//Carriage
-		public VictorSP motorGrabL = new VictorSP(5);
-		public VictorSP motorGrabR = new VictorSP(6);
-
-		//Sucker
-		//These will have 2 motor controllers each.
-		public VictorSP motorsSuckerBase = new VictorSP(7); 
-		public VictorSP motorsSuckerSpinner = new VictorSP(8);
-
-	//Digital inputs (limit switches)
-		//Lift
-		public DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
-    public DigitalInput switchL1 = new DigitalInput(1);
-    public DigitalInput switchL2 = new DigitalInput(2);
-    public DigitalInput switchL3 = new DigitalInput(3);
-		public DigitalInput switchTop = new DigitalInput(4);
-		
-		//Sucker
-		public DigitalInput switchSucker = new DigitalInput(5);
-    public DigitalInput switchBase = new DigitalInput(6);
 	
 	//Sendable chooser on SmartDashboard - we can use this to choose different autonomous options, etc from smartdash
 	Command autonomousCommand;
@@ -254,7 +247,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 		robotDrive.tankDriver(controls.joystickLYAxis,controls.joystickRYAxis);
 		sucker.climb(controls.buttonX); //On buttonX, bring the arm down and start spinning
-		carriage.runCarriage(controls.buttonA, controls.buttonBack); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
-		lift.runLift(controls.bumperL,controls.bumperR,controls.triggerL,controls.triggerR); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.
+
+		//carriage.runCarriage(controls.buttonA, controls.buttonBack); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
+		lift.runLift(controls.bumperL,controls.bumperR,controls.triggerL,controls.triggerR,controls.pairBumperL,controls.pairBumperR); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.
 	}	
 }
