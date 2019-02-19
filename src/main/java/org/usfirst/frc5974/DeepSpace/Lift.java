@@ -1,25 +1,11 @@
 package org.usfirst.frc5974.DeepSpace;
 
-import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.DigitalInput; //limit switch
-
 import org.usfirst.frc5974.DeepSpace.Controller;
 import org.usfirst.frc5974.DeepSpace.Sucker;
 
-public class Lift{
+public class Lift extends Robot{
     Controller controls = new Controller();
     Sucker sucker = new Sucker();
-    
-    //VictorSP motorLift = new VictorSP(4);
-
-    //Limit switch constructors
-    /*
-    DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
-    DigitalInput switchL1 = new DigitalInput(1);
-    DigitalInput switchL2 = new DigitalInput(2);
-    DigitalInput switchL3 = new DigitalInput(3);
-    DigitalInput switchTop = new DigitalInput(4);
-    */
 
     //Variables
     double speedModifier = .5; //change this to make lift move faster or slower
@@ -28,14 +14,13 @@ public class Lift{
     double liftSpeed = 0; //the value we set motorLift to
     int liftMode = 0; //0 is trigger, 1 is limit switch.
 
-    public void updateLevel(){
-        /*
+    public void updateLevel(boolean BL, boolean BR){
         //Update bumper - user input for which level to go to.
-        if(controls.runOnce(controls.bumperR,controls.pairBumperR)&&targetLevel<3){
+        if(controls.runOnce(BR,controls.pairBumperR)&&targetLevel<3){
             //if bumper R is pressed and target level is less than 3, increase target level
             targetLevel++;
         }
-        else if(controls.runOnce(controls.bumperL,controls.pairBumperL)&&targetLevel>0){
+        else if(controls.runOnce(BL,controls.pairBumperL)&&targetLevel>0){
             //if bumper L is pressed and target level is more than 0, decrease target level
             targetLevel--;
         }
@@ -75,21 +60,21 @@ public class Lift{
             else if(currentLevel>3){
                 currentLevel--;
             }
-        }*/
+        }
 
     }
 
-    public void triggerLift() { //This is what we'll use if we can't get limit switches or encoders set up - completely user controlled.
+    public void triggerLift(double TL, double TR) { //This is what we'll use if we can't get limit switches or encoders set up - completely user controlled.
         //From the simulator, it appears that triggerR is [-1,0] and triggerL is [0,1]. Might be different IRL though, so we'll have to test it.
-        if(controls.triggerR<0&&controls.triggerL==0){
+        if(TR<0&&TL==0){
             //Move up if right trigger is pressed and left isn't
-            liftSpeed = -controls.triggerR*speedModifier; //Input is negative, so neg*neg=pos.
+            liftSpeed = -TR*speedModifier; //Input is negative, so neg*neg=pos.
         }
-        else if(controls.triggerL>0&&controls.triggerR==0){
+        else if(TL>0&&TR==0){
             //Move down if left trigger is pressed and right isn't
-            liftSpeed = -controls.triggerL*speedModifier;
+            liftSpeed = -TL*speedModifier;
         }
-        else if(controls.triggerL==0&&controls.triggerR==0){
+        else if(TL==0&&TR==0){
             liftSpeed=0;
         }
     }
@@ -106,16 +91,16 @@ public class Lift{
         }
     }
 
-    public void runLift(){
-        updateLevel(); //limit switches and target level (from bumpers)
+    public void runLift(boolean BL, boolean BR, double TL, double TR){
+        updateLevel(BL,BR); //limit switches and target level (from bumpers)
 
         if(liftMode==0){
-            triggerLift();
+            triggerLift(TL,TR);
         }
         else if(liftMode==1){
             limitLift();
         }
 
-        //motorLift.set(liftSpeed); 
+        motorLift.set(liftSpeed); 
     }
 }

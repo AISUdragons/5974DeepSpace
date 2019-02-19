@@ -120,7 +120,7 @@ public class Controller{
 		
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
-    }
+	}
     
     public void rumble(double duration){
         controller.setRumble(Joystick.RumbleType.kRightRumble, 0.5);

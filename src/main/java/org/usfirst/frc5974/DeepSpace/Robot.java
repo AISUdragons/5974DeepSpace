@@ -71,6 +71,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc5974.DeepSpace.commands.*;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 import org.usfirst.frc5974.DeepSpace.Sensors;
 import org.usfirst.frc5974.DeepSpace.Driving;
@@ -90,6 +93,40 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	Lift lift = new Lift();
 	Sucker sucker = new Sucker();
 	Carriage carriage = new Carriage();
+
+	//PWM motor controllers
+		//Drive
+		VictorSP motorRF = new VictorSP(0); //motor right front 
+		VictorSP motorRB = new VictorSP(1); //motor right back
+		SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB); //Groups the right motors together into one object
+
+		VictorSP motorLF = new VictorSP(2); //motor left front
+		VictorSP motorLB = new VictorSP(3); //motor left back
+		SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB); //Groups the left motors together into one object
+
+		//Lift
+		VictorSP motorLift = new VictorSP(4);
+
+		//Carriage
+		VictorSP motorGrabL = new VictorSP(5);
+		VictorSP motorGrabR = new VictorSP(6);
+
+		//Sucker
+		//These will have 2 motor controllers each.
+		VictorSP motorsSuckerBase = new VictorSP(7); 
+		VictorSP motorsSuckerSpinner = new VictorSP(8);
+
+	//Digital inputs (limit switches)
+		//Lift
+		DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
+    DigitalInput switchL1 = new DigitalInput(1);
+    DigitalInput switchL2 = new DigitalInput(2);
+    DigitalInput switchL3 = new DigitalInput(3);
+		DigitalInput switchTop = new DigitalInput(4);
+		
+		//Sucker
+		DigitalInput switchSucker = new DigitalInput(5);
+    DigitalInput switchBase = new DigitalInput(6);
 	
 	//Sendable chooser on SmartDashboard - we can use this to choose different autonomous options, etc from smartdash
 	Command autonomousCommand;
@@ -218,9 +255,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		update();
 		dashboardOutput();
 
-		robotDrive.tankDriver();
-		sucker.climb(); //On buttonX, bring the arm down and start spinning
-		carriage.runCarriage(); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
-		lift.runLift(); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.
+		robotDrive.tankDriver(controls.joystickLYAxis,controls.joystickRYAxis);
+		sucker.climb(controls.buttonX); //On buttonX, bring the arm down and start spinning
+		carriage.runCarriage(controls.buttonA, controls.buttonBack); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
+		lift.runLift(controls.bumperL,controls.bumperR,controls.triggerL,controls.triggerR); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.
 	}	
 }

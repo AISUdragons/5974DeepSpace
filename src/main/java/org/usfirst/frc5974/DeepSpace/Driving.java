@@ -1,24 +1,11 @@
 package org.usfirst.frc5974.DeepSpace;
 
-import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
-import org.usfirst.frc5974.DeepSpace.Controller;
 import org.usfirst.frc5974.DeepSpace.Sensors;
 
-public class Driving{
-    Controller controls = new Controller();
+public class Driving extends Robot{
     Sensors sensors = new Sensors();
-
-    //Ports start at 0, not 1.
-	VictorSP motorRB = new VictorSP(1); //motor right back
-	VictorSP motorRF = new VictorSP(0); //motor right front 
-	SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB); //Groups the right motors together into one object
-
-	VictorSP motorLB = new VictorSP(3); //motor left back
-	VictorSP motorLF = new VictorSP(2); //motor left front
-	SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB); //Groups the left motors together into one object
 	
 	DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
 
@@ -27,18 +14,17 @@ public class Driving{
 	boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
 	double slowModifier = 0.75; //Set slow mode speed
 
-	public void tankDriver() {				//left joystick controls left wheels, right joystick controls right wheels
-		controls.updateController();
+	public void tankDriver(double L, double R) {				//left joystick controls left wheels, right joystick controls right wheels
 		if (fastBool) {
-			driver.tankDrive(-controls.joystickLYAxis, -controls.joystickRYAxis);
+			driver.tankDrive(-L, -R);
 			//System.out.println(controls.joystickLYAxis);
 		
 		} else {
-			driver.tankDrive(-slowModifier*controls.joystickLYAxis, -slowModifier*controls.joystickRYAxis);
+			driver.tankDrive(-slowModifier*L, -slowModifier*R);
 		}
 	}
 
-	public void driveStraight(){
+	/*public void driveStraight(){
 		double turningValue = 0;
 		
 		turningValue = (sensors.kAngleSetPoint-sensors.yaw) * sensors.kP;
@@ -53,4 +39,5 @@ public class Driving{
 			driver.arcadeDrive(-slowModifier*controls.joystickLYAxis,turningValue);
 		}
 	}
+	*/
 }

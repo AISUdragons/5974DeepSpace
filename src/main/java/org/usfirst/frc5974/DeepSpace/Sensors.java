@@ -17,7 +17,7 @@ public class Sensors{
 	double rate;
     boolean gyroConnected;
     
-    	//This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
+    //This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
 	public static final double kAngleSetPoint = 0.0; //straight ahead
 	public static final double kP = 0.005; //proportional turning constant. not sure what this is, ngl
 
