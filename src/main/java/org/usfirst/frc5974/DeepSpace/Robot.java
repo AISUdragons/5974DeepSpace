@@ -26,6 +26,36 @@ Miscellaneous:
 	Start: Activate tier climber
 */
 
+/*11 motors, 10 PWM ports. neat
+Drive:
+	RB
+	RF
+	LB
+	LF
+Lift:
+	Up/down
+Carriage:
+	Intake left
+	Intake right
+Climber:
+	Pivot left
+	Pivot right
+Sucker: 
+	Spinner left
+	Spinner right
+
+PWM assignments:
+	0 motorRB: Drive: RB
+	1 motorRF: Drive: RF
+	2 motorLB: Drive: LB
+	3 motorLF: Drive: LF
+	4 motorLift: Lift: up/down
+	5 motorGrabLeft: Lift: Intake left
+	6 motorGrabRight: Lift: Intake right
+	*7 motorsClimberBase: Climber: Pivot left + pivot right
+	*8 motorsClimberSpinner: Climber: Spinner left + spinner right
+*/
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
