@@ -3,57 +3,65 @@ package org.usfirst.frc5974.DeepSpace;
 // Last year's github: https://github.com/AISUMechanicalDragons/FIRSTPowerUp5974
 // **If copying/pasting code, it MUST be from there.**
 
-/*CONTROLS
+/*Master todo list once the robot is built:
+Carriage:
+	Double check PWM ports
+	Set grabSpeed
+	Test
+Driving:
+	Double check PWM ports
+	Test
+Lift:
+	Double check PWM port
+	Double check DIO ports
+	Set liftMode
+	Set speedModifier
+Robot:
 
+Sensors:
+
+Sucker:
+	Double check PWM ports
+	Double check DIO port
+	Set pivotSpeed
+	Set suckSpeed
+*/
+
+/*CONTROLS
 Drive:
 	Joystick Y axes: tank drive
 	B: Fast mode toggle
-	A: Drive straight toggle (drive using left joystick Y axis) **doesn't really work
-
 Lift:
 	Right trigger: Lift up (user controlled)
 	Left trigger: Lift down (user controlled)
-	Optional (enable in Lift.java): (need limit switches to work correctly)
+	[Limit switch dependent:]
 	Right bumper: Lift to higher level (automatic)
 	Left bumper: Lift to lower level (automatic)
-	
-Intake:
-	X: If lift on floor, suck ball in. If in the air, shoot ball. (Needs limit switches)
+Carriage:
 	Back: Intake or shoot (toggle)
+	[Limit switch dependent:]
+	A: If lift on floor, suck ball in. If in the air, shoot ball.
+Sucker:
+	X: Climb tier
 
-Miscellaneous:
-	Y: Reset gyro
-	Start: Activate tier climber
+Free: Y, Start, dPad. Could also free up lift controls maybe
 */
 
-/*11 motors, 10 PWM ports. neat
-Drive:
-	RB
-	RF
-	LB
-	LF
-Lift:
-	Up/down
-Carriage:
-	Intake left
-	Intake right
-Climber:
-	Pivot left
-	Pivot right
-Sucker: 
-	Spinner left
-	Spinner right
-
+/*
 PWM assignments:
-	0 motorRB: Drive: RB
-	1 motorRF: Drive: RF
-	2 motorLB: Drive: LB
-	3 motorLF: Drive: LF
-	4 motorLift: Lift: up/down
-	5 motorGrabLeft: Lift: Intake left
-	6 motorGrabRight: Lift: Intake right
-	*7 motorsClimberBase: Climber: Pivot left + pivot right
-	*8 motorsClimberSpinner: Climber: Spinner left + spinner right
+	Driving:
+		0 motorRB: Drive: RF
+		1 motorRF: Drive: RB
+		2 motorLB: Drive: LF
+		3 motorLF: Drive: LB
+	Lift:
+		4 motorLift: Lift: up/down
+	Carriage:
+		5 motorGrabL: Lift: Intake left
+		6 motorGrabR: Lift: Intake right
+	Sucker:
+		*7 motorsClimberBase: Climber: Pivot left + pivot right
+		*8 motorsClimberSpinner: Climber: Spinner left + spinner right
 */
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -69,6 +77,8 @@ import org.usfirst.frc5974.DeepSpace.Driving;
 import org.usfirst.frc5974.DeepSpace.Controller;
 import org.usfirst.frc5974.DeepSpace.Camera;
 import org.usfirst.frc5974.DeepSpace.Lift;
+import org.usfirst.frc5974.DeepSpace.Sucker;
+import org.usfirst.frc5974.DeepSpace.Carriage;
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
 
@@ -78,6 +88,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	Controller controls = new Controller();
 	Camera camera = new Camera();
 	Lift lift = new Lift();
+	Sucker sucker = new Sucker();
+	Carriage carriage = new Carriage();
 	
 	//Sendable chooser on SmartDashboard - we can use this to choose different autonomous options, etc from smartdash
 	Command autonomousCommand;
@@ -100,10 +112,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 		//toggle checks
 		robotDrive.fastBool = controls.toggle(controls.buttonB, robotDrive.fastBool, controls.pairB);	//toggles boolean if button is pressed
-		robotDrive.driveNormal = controls.toggle(controls.buttonA, robotDrive.driveNormal, controls.pairA);
-		if (controls.runOnce(controls.buttonY, controls.pairY)) {
-			sensors.gyroReset(); System.out.println("Gyro Reset");
-		}
 	}
 
 	public void dashboardOutput() {			//sends and displays data to smart dashboard
@@ -186,34 +194,33 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     }
 
     @Override
-    public void autonomousPeriodic() {
+  public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
 		//If we want to do anything autonomously, we should probably put it in here.
-    }
+  }
 
     @Override
-    public void teleopInit() {
-        // This line stops auto once teleop starts.
+  public void teleopInit() {
+    // This line stops auto once teleop starts.
 		if (autonomousCommand != null) autonomousCommand.cancel();
 
 		//Rumble controller for half a second
 		controls.rumble(0.5);
+		camera.cameraInit();
+		sucker.setup(); //Set sucker to limit switch to prepare for gameplay
 	}
 
     @Override
-    public void teleopPeriodic() {
+  public void teleopPeriodic() {
 
 		Scheduler.getInstance().run();
 
 		update();
 		dashboardOutput();
-		if (robotDrive.driveNormal) {
-			robotDrive.tankDrive();
-		} else {
-			robotDrive.driveStraight();
-		}
 
+		robotDrive.tankDrive();
+		sucker.climb(); //On buttonX, bring the arm down and start spinning
+		carriage.runCarriage(); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
 		lift.runLift(); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.
-		}
-		
+	}	
 }

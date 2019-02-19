@@ -1,22 +1,16 @@
 package org.usfirst.frc5974.DeepSpace;
 
 import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DigitalInput; //limit switch
 
 import org.usfirst.frc5974.DeepSpace.Controller;
+import org.usfirst.frc5974.DeepSpace.Sucker;
 
 public class Lift{
     Controller controls = new Controller();
+    Sucker sucker = new Sucker();
     
     VictorSP motorLift = new VictorSP(4);
-    VictorSP motorGrabLeft = new VictorSP(5);
-    VictorSP motorGrabRight = new VictorSP(6);
-    
-    //Encoder constructor
-    int channelA = 0;
-    int channelB = 1;
-    Encoder encoder = new Encoder(channelA,channelB);
 
     //Limit switch constructors
     DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
@@ -24,27 +18,15 @@ public class Lift{
     DigitalInput switchL2 = new DigitalInput(2);
     DigitalInput switchL3 = new DigitalInput(3);
     DigitalInput switchTop = new DigitalInput(4);
-    DigitalInput switchClimber = new DigitalInput(5);
 
     //Variables
     double speedModifier = .5; //change this to make lift move faster or slower
-    double grabSpeed = 1; //grabber/intake motor speed
     int targetLevel = 0; //level it's supposed to go to
     double currentLevel = 0; //level it's currently at
-    int[] heights = {0,1,2,3}; //heights for each goal (only used in encoder mode)
     double liftSpeed = 0; //the value we set motorLift to
-    int liftMode = 0; //0 is trigger, 1 is switch, 2 is encoder. We can probably remove the extra code once we know which one we're using.
-    boolean hasBall = false;
-    boolean intakeActive=false;
-    boolean shootActive=false;
-    boolean climberUp = true; //Don't run lift when climber is stowed - it'll break
-    boolean[] pairClimber = {false,false};
+    int liftMode = 0; //0 is trigger, 1 is limit switch.
 
     public void updateLevel(){
-        //Update climber position
-        if(controls.runOnce(switchClimber.get(),pairClimber)){
-            climberUp=!climberUp;
-        }
 
         //Update bumper - user input for which level to go to.
         if(controls.runOnce(controls.bumperR,controls.pairBumperR)&&targetLevel<3){
@@ -122,18 +104,6 @@ public class Lift{
         }
     }
 
-    public void encoderLift(){ //Operate lift based on encoder (very unlikely this will happen)
-        if(encoder.getDistance()<heights[targetLevel]){
-            liftSpeed=speedModifier;
-        }
-        else if(encoder.getDistance()>heights[targetLevel]){
-            liftSpeed=-speedModifier;
-        }
-        else if(encoder.getDistance()<heights[targetLevel]+.5&&encoder.getDistance()>heights[targetLevel]-.5){
-            liftSpeed=0;
-        }
-    }
-
     public void runLift(){
         updateLevel(); //limit switches and target level (from bumpers)
 
@@ -143,63 +113,7 @@ public class Lift{
         else if(liftMode==1){
             limitLift();
         }
-        else if(liftMode==2){
-            encoderLift();
-        }
 
-        if(climberUp){
-            motorLift.set(0);
-        }
-        else{
-            motorLift.set(liftSpeed); 
-        }
-
-        //Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
-        if(controls.buttonX&&currentLevel==0){
-            intake();
-        }
-        else if(controls.buttonX&&currentLevel>0){
-            shoot();
-        }
-        else if(!controls.buttonX){
-            motorGrabLeft.set(0);
-            motorGrabRight.set(0);
-        }
-
-        //However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
-        if(controls.buttonBack&&!hasBall){
-            intake();
-            intakeActive=true;
-        }
-        if(controls.buttonBack&&hasBall){
-            shoot();
-            shootActive=true;
-        }
-        if(!controls.buttonBack){
-            if(intakeActive){
-                motorGrabLeft.set(0);
-                motorGrabRight.set(0);
-                intakeActive=false;
-                hasBall=true;
-            }
-            if(shootActive){
-                motorGrabLeft.set(0);
-                motorGrabRight.set(0);
-                shootActive=false;
-                hasBall=false;
-            }
-        }
-    }
-
-    public void intake(){
-        motorGrabLeft.set(grabSpeed);
-        motorGrabRight.set(-grabSpeed);
-    }
-
-    public void shoot(){
-        motorGrabLeft.set(-grabSpeed);
-        motorGrabRight.set(grabSpeed);
+        motorLift.set(liftSpeed); 
     }
 }
-
-//I deleted basically everything that was here previously. If you want it back, check Github :P
