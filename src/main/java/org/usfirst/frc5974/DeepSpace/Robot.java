@@ -125,6 +125,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		DigitalInput switchTop = new DigitalInput(4);
 		
 //Variables
+	//Camera variables
+		private static final int IMG_WIDTH = 240;
+		private static final int IMG_HEIGHT = 180;
+		private static final int fps = 20;
+		private VisionThread visionThread;
+		double centerX = 0.0;
+		private final Object imgLock = new Object();
 	//Sucker variables
 		double grabSpeed = 1; //grabber/intake motor speed
     boolean hasBall = false;
@@ -171,9 +178,19 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		boolean[] pairBumperL = {false,false};
 		boolean pressed = false;
 	
+	//Misc variables
+		Timer timer = new Timer();
+		//For tracking iterative updates
+		int track = 0;
+		int check = 10;
+		//Sendable chooser on SmartDashboard - we can use this to choose different autonomous options, etc from smartdash
+		Command autonomousCommand;
+		SendableChooser<Command> chooser = new SendableChooser<>();
+		public static OI oi;
+	
 	DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
 
-	//controller
+//Controller
 	Joystick controller = new Joystick(0);
 	public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
 		return runOnce(button, buttonPair) ? !toggle : toggle;
@@ -256,227 +273,171 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
 	}
 
-			//Sensors
-			//ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-			//BuiltInAccelerometer accel = new BuiltInAccelerometer(Accelerometer.Range.k4G);
-			Timer timer2 = new Timer();
-		double xVal;
-		double yVal;
-		double zVal;
-		double angle;
-		double rate;
-			boolean gyroConnected;
-			
-			//This is a code example from https://wiki.analog.com/first/adis16448_imu_frc/java.
-		public static final double kAngleSetPoint = 0.0; //straight ahead
-		public static final double kP = 0.005; //proportional turning constant. not sure what this is, ngl
-	
-		//gyro calibration constant, may need to be adjusted. 360 is set to correspond to one full revolution.
-		//private static final double kVoltsPerDegreePerSecond=0.0128;
-	
-		public static final ADIS16448_IMU FancyIMU = new ADIS16448_IMU();
-		double accelX;
-		double accelY;
-		double accelZ;
-		double fancyAngle;
-		double angleX;
-		double angleY;
-		double angleZ;
-		double pitch;
-		double yaw;
-		double roll;
-		double fancyRate;
-		double rateX;
-		double rateY;
-		double rateZ;
-	
-		double velX;
-		double velY;
-		double velZ;
-		double time;
-		double prevTime = 0;
-		double dt;
-	
-		double gravAngle;
-		
-		public void gyroReset() { //it resets the gyro
-			FancyIMU.reset();
-			//gyro.reset();
+
+//Driver
+	public void tankDriver(double L, double R) {	//left joystick controls left wheels, right joystick controls right wheels
+		if (fastBool) {
+			driver.tankDrive(-L, -R);
 		} 
-	
-		public void sensorInit() {
-			//gyro.calibrate();
-			FancyIMU.calibrate();
-			velX = velY = velZ = 0;
+		else {
+			driver.tankDrive(-slowModifier*L, -slowModifier*R);
 		}
-		public void updateSensors() {
-			//ADXRS sensor data
-			/*xVal = accel.getX();
-			yVal = accel.getY();
-			zVal = accel.getZ();
-			angle = gyro.getAngle();
-			rate = gyro.getRate();
-			gyroConnected = gyro.isConnected();*/
-	
-			//ADIS sensor data
-			accelX = FancyIMU.getAccelX();
-			accelY = FancyIMU.getAccelY();
-			accelZ = FancyIMU.getAccelZ();
-			fancyAngle=FancyIMU.getAngle();
-			angleX = FancyIMU.getAngleX();
-			angleY = FancyIMU.getAngleY();
-			angleZ = FancyIMU.getAngleZ();
-			pitch=FancyIMU.getPitch();
-			yaw = FancyIMU.getYaw();
-			roll =FancyIMU.getRoll();
-			fancyRate=FancyIMU.getRate();
-			rateX = FancyIMU.getRateX();
-			rateY = FancyIMU.getRateY();
-			rateZ = FancyIMU.getRateZ();
-	
-			time = timer.get();
-			dt = time - prevTime;
-			velX += accelX * dt;
-			velY += accelY * dt;
-			velZ += accelZ * dt;
-			prevTime = time;
-	
-			gravAngle = Math.acos(accelX) * 180/Math.PI;
-		}
-	
-	//Sendable chooser on SmartDashboard - we can use this to choose different autonomous options, etc from smartdash
-	Command autonomousCommand;
-    SendableChooser<Command> chooser = new SendableChooser<>();
-
-	Timer timer = new Timer();
-
-	//For tracking iterative updates
-	int track = 0;
-	int check = 10;
-
-	public void update() {					//updates everything
-		updateController();
-
-		//Calls updateSensors every 10 updates
-		track = (track+1) % check;
-		if (track == 0) {
-			updateSensors();
-		}
-
-		//toggle checks
-		fastBool = toggle(buttonB, fastBool, pairB);	//toggles boolean if button is pressed
 	}
 
-	public void dashboardOutput() {			//sends and displays data to smart dashboard
-		SmartDashboard.putBoolean("Fast Mode", fastBool);
-		
-		//ADIS sensor data
-		/* Tbh this just clutters everything up, so I'm going to comment it out for a bit
-		SmartDashboard.putNumber("X acceleration", sensors.accelX);
-		SmartDashboard.putNumber("Y acceleration", sensors.accelY);
-		SmartDashboard.putNumber("Z acceleration", sensors.accelZ);
-		SmartDashboard.putNumber("Angle", sensors.fancyAngle);
-		SmartDashboard.putNumber("X angle", sensors.angleX);
-		SmartDashboard.putNumber("Y angle", sensors.angleY);
-		SmartDashboard.putNumber("Z angle", sensors.angleZ);
-		SmartDashboard.putNumber("Pitch", sensors.pitch);
-		SmartDashboard.putNumber("Yaw", sensors.yaw);
-		SmartDashboard.putNumber("Roll", sensors.roll);
-		SmartDashboard.putNumber("Rate", sensors.fancyRate);
-		SmartDashboard.putNumber("X rate", sensors.rateX);
-		SmartDashboard.putNumber("Y rate", sensors.rateY);
-		SmartDashboard.putNumber("Z rate", sensors.rateZ);
-		
-		SmartDashboard.putNumber("latest time interval", sensors.dt);
-		SmartDashboard.putNumber("X velocity", sensors.velX);
-		SmartDashboard.putNumber("Y velocity", sensors.velY);
-		SmartDashboard.putNumber("Z velocity", sensors.velZ);
-		SmartDashboard.putNumber("Gravity Angle from Vertical", sensors.gravAngle);
-
-		SmartDashboard.putNumber("Center Thing", camera.centerX);
-		//SmartDashboard.putNumber("Temperature: ", sensors.FancyIMU.getTemperature());
-		*/
-
-		SmartDashboard.putNumber("Lift Target Level",targetLevel);
-		SmartDashboard.putNumber("Lift Current Level",currentLevel);
-	}
-
-    public static OI oi;
-
-    @Override
-    public void robotInit() {
-        oi = new OI();
-		
-		//I think this is how we choose different autonomous code options from smartdash
-        chooser.setDefaultOption("Autonomous Command", new AutonomousCommand());
-		SmartDashboard.putData("Auto mode", chooser);
-		
-		sensorInit(); //Calibrates sensors
-		driver.setRightSideInverted(true); //Right side is inverted
-		//lift.encoder.setDistancePerPulse(1); //Only need to run this if we actually get an encoder working
-		
-		timer.start();
-
-		//camera.cameraInit(); //Initialize camera/image processing
-
-    }
-
-    /**
-     * This function is called when the disabled button is hit.
-     * You can use it to reset subsystems before shutting down.
-     */
-    @Override
-    public void disabledInit(){
-		liftSpeed=0;
-    }
-
-    @Override
-    public void disabledPeriodic() {
-        Scheduler.getInstance().run();
-    }
-
-    @Override
-    public void autonomousInit() {
-        autonomousCommand = chooser.getSelected();
-        // schedule the autonomous command (example)
-		if (autonomousCommand != null) autonomousCommand.start();
-		//The autonomous comments/psuedocode were here - I took it out, it'll be in the github if you want it back.
-    }
-
-    @Override
-  public void autonomousPeriodic() {
-		Scheduler.getInstance().run();
-		//If we want to do anything autonomously, we should probably put it in here.
-  }
-
-    @Override
-  public void teleopInit() {
-    // This line stops auto once teleop starts.
-		if (autonomousCommand != null) autonomousCommand.cancel();
-
-		//Rumble controller for half a second
-		rumble(0.5);
-		cameraInit();
-		setup(); //Set sucker to limit switch to prepare for gameplay
-	}
+//Sucker
 	public void intake(){
 		motorGrabL.set(grabSpeed);
 		motorGrabR.set(-grabSpeed);
 		succ();
-}
-public void succ(){
-	motorsSuckerSpinner.set(suckSpeed);
-}
-private static final int IMG_WIDTH = 240;
-	private static final int IMG_HEIGHT = 180;
-	private static final int fps = 20;
-	private VisionThread visionThread;
-	double centerX = 0.0;
-	private final Object imgLock = new Object();
-    //UsbCamera camera = new UsbCamera(String name, String path)*/
-    
-    //Camera Stuff
-    public void cameraInit(){
+	}
+	public void suckerSetup(){
+		motorsSuckerBase.set(pivotSpeed);
+		if(switchSucker.get()){
+			motorsSuckerBase.set(0);
+		}
+	}
+	public void succ(){
+		motorsSuckerSpinner.set(suckSpeed);
+	}
+	public void climb(boolean X){
+		if(X){
+			if(switchBase.get()){
+				motorsSuckerBase.set(0);
+			}
+			else{
+				motorsSuckerBase.set(pivotSpeed);
+			}
+			motorsSuckerSpinner.set(climbSpeed);
+		}	
+	}
+
+//Carriage
+	public void shoot(){
+		motorGrabL.set(-grabSpeed);
+		motorGrabR.set(grabSpeed);
+	}
+	public void runCarriage(boolean a, boolean back){
+		//Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
+		if(a&&currentLevel==0){
+			intake();
+		}
+		else if(a&&currentLevel>0){
+			shoot();
+		}
+		else if(!a){
+			motorGrabL.set(0);
+			motorGrabR.set(0);
+		}
+		//However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
+		if(back&&!hasBall){
+			intake();
+			intakeActive=true;
+		}
+		if(back&&hasBall){
+			shoot();
+			shootActive=true;
+		}
+		if(!back){
+			if(intakeActive){
+				motorGrabL.set(0);
+				motorGrabR.set(0);
+				intakeActive=false;
+				hasBall=true;
+			}
+			if(shootActive){
+				motorGrabL.set(0);
+				motorGrabR.set(0);
+				shootActive=false;
+				hasBall=false;
+			}
+		}	
+	}
+
+//Lift
+	public void updateLevel(boolean BL, boolean BR, boolean[] PBL, boolean[] PBR){
+		//Update bumper - user input for which level to go to.
+		if(runOnce(BR,PBR)&&targetLevel<3){
+			//if bumper R is pressed and target level is less than 3, increase target level
+			targetLevel++;
+		}
+		else if(runOnce(BL,PBL)&&targetLevel>0){
+			//if bumper L is pressed and target level is more than 0, decrease target level
+			targetLevel--;
+		}
+		//Kill if lift hits top or bottom limit switches.
+		if(switchBottom.get()){
+			liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
+			//This ensures the lift speed will be positive.
+			currentLevel = 0;
+		}
+		if(switchTop.get()){
+			liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
+			currentLevel = 4;
+		}
+		//Update limit switches for every level
+		if(switchL1.get()){ //If the limit switch for L1 is hit:
+			if(currentLevel<1){ //If the current level is less than L1:
+					currentLevel++; //Increase current level
+			}
+			else if(currentLevel>1){ //If the current level is greater than L1:
+				currentLevel--; //Decrease current level.				
+			}
+		}
+		if(switchL2.get()){ //Same as above.
+			if(currentLevel<2){
+					currentLevel++;
+			}
+			else if(currentLevel>2){
+				currentLevel--;
+			}
+		}
+		if(switchL3.get()){
+			if(currentLevel<3){
+				currentLevel++;
+			}
+			else if(currentLevel>3){
+				currentLevel--;
+			}
+		}
+	}
+	public void triggerLift(double TL, double TR) { //This is what we'll use if we can't get limit switches or encoders set up - completely user controlled.
+		//From the simulator, it appears that triggerR is [-1,0] and triggerL is [0,1]. Might be different IRL though, so we'll have to test it.
+		if(TR<0&&TL==0){
+			//Move up if right trigger is pressed and left isn't
+			liftSpeed = -TR*speedModifier; //Input is negative, so neg*neg=pos.
+		}
+		else if(TL>0&&TR==0){
+			//Move down if left trigger is pressed and right isn't
+			liftSpeed = -TL*speedModifier;
+		}
+		else if(TL==0&&TR==0){
+			liftSpeed=0;
+		}
+	}
+	public void limitLift(){ //Operate lift based on limit switches
+		if(targetLevel<currentLevel){
+			liftSpeed=-speedModifier; //go down
+		}
+		else if(targetLevel>currentLevel){
+			liftSpeed=speedModifier; //go up
+		}
+		else if(targetLevel==currentLevel){
+			liftSpeed=0; //stop
+		}
+	}
+	public void runLift(boolean BL, boolean BR, double TL, double TR, boolean[] PBL, boolean[] PBR){
+		updateLevel(BL,BR,PBL,PBR); //limit switches and target level (from bumpers)
+		if(liftMode==0){
+			triggerLift(TL,TR);
+		}
+		else if(liftMode==1){
+			limitLift();
+		}
+		motorLift.set(liftSpeed); 
+	}
+
+//Camera
+	public void cameraInit(){
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 		camera.setFPS(fps);
@@ -525,184 +486,65 @@ private static final int IMG_WIDTH = 240;
 			System.out.println();
 			Timer.delay(1);
 		}*/
-    }
-
-public void setup(){
-
-	motorsSuckerBase.set(pivotSpeed);
-	if(switchSucker.get()){
-			motorsSuckerBase.set(0);
 	}
-	
-}
 
-public void climb(boolean X){
-	
-	if(X){
-			if(switchBase.get()){
-					motorsSuckerBase.set(0);
-			}
-			else{
-					motorsSuckerBase.set(pivotSpeed);
-			}
-			motorsSuckerSpinner.set(climbSpeed);
+//Internal commands
+	public void update() {					//updates everything
+		updateController();
+		//toggle checks
+		fastBool = toggle(buttonB, fastBool, pairB);	//toggles boolean if button is pressed
 	}
-	
-}
-
-public void shoot(){
-		motorGrabL.set(-grabSpeed);
-		motorGrabR.set(grabSpeed);
-}
-	public void runCarriage(boolean a, boolean back){
-		//Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
-		if(a&&currentLevel==0){
-				intake();
-		}
-		else if(a&&currentLevel>0){
-				shoot();
-		}
-		else if(!a){
-				motorGrabL.set(0);
-				motorGrabR.set(0);
-		}
-
-		//However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
-		if(back&&!hasBall){
-				intake();
-				intakeActive=true;
-		}
-		if(back&&hasBall){
-				shoot();
-				shootActive=true;
-		}
-		if(!back){
-				if(intakeActive){
-						motorGrabL.set(0);
-						motorGrabR.set(0);
-						intakeActive=false;
-						hasBall=true;
-				}
-				if(shootActive){
-						motorGrabL.set(0);
-						motorGrabR.set(0);
-						shootActive=false;
-						hasBall=false;
-				}
-		}
+	public void dashboardOutput() {			//sends and displays data to smart dashboard
+		SmartDashboard.putBoolean("Fast Mode", fastBool);
+		SmartDashboard.putNumber("Lift Target Level",targetLevel);
+		SmartDashboard.putNumber("Lift Current Level",currentLevel);
 	}
-	public void updateLevel(boolean BL, boolean BR, boolean[] PBL, boolean[] PBR){
-		//Update bumper - user input for which level to go to.
-		if(runOnce(BR,PBR)&&targetLevel<3){
-				//if bumper R is pressed and target level is less than 3, increase target level
-				targetLevel++;
-		}
-		else if(runOnce(BL,PBL)&&targetLevel>0){
-				//if bumper L is pressed and target level is more than 0, decrease target level
-				targetLevel--;
-		}
 
-		//Kill if lift hits top or bottom limit switches.
-		if(switchBottom.get()){
-				liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
-				//This ensures the lift speed will be positive.
-				currentLevel = 0;
-		}
-		if(switchTop.get()){
-				liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
-				currentLevel = 4;
-		}
-		
-		//Update limit switches for every level
-		if(switchL1.get()){ //If the limit switch for L1 is hit:
-				if(currentLevel<1){ //If the current level is less than L1:
-						currentLevel++; //Increase current level
-				}
-				else if(currentLevel>1){ //If the current level is greater than L1:
-						currentLevel--; //Decrease current level.
-				}
-		}
-		if(switchL2.get()){ //Same as above.
-				if(currentLevel<2){
-						currentLevel++;
-				}
-				else if(currentLevel>2){
-						currentLevel--;
-				}
-		}
-		if(switchL3.get()){
-				if(currentLevel<3){
-						currentLevel++;
-				}
-				else if(currentLevel>3){
-						currentLevel--;
-				}
-		}
-
-}
-
-public void triggerLift(double TL, double TR) { //This is what we'll use if we can't get limit switches or encoders set up - completely user controlled.
-		//From the simulator, it appears that triggerR is [-1,0] and triggerL is [0,1]. Might be different IRL though, so we'll have to test it.
-		if(TR<0&&TL==0){
-				//Move up if right trigger is pressed and left isn't
-				liftSpeed = -TR*speedModifier; //Input is negative, so neg*neg=pos.
-		}
-		else if(TL>0&&TR==0){
-				//Move down if left trigger is pressed and right isn't
-				liftSpeed = -TL*speedModifier;
-		}
-		else if(TL==0&&TR==0){
-				liftSpeed=0;
-		}
-}
-
-public void limitLift(){ //Operate lift based on limit switches
-		if(targetLevel<currentLevel){
-				liftSpeed=-speedModifier; //go down
-		}
-		else if(targetLevel>currentLevel){
-				liftSpeed=speedModifier; //go up
-		}
-		else if(targetLevel==currentLevel){
-				liftSpeed=0; //stop
-		}
-}
-
-public void runLift(boolean BL, boolean BR, double TL, double TR, boolean[] PBL, boolean[] PBR){
-		updateLevel(BL,BR,PBL,PBR); //limit switches and target level (from bumpers)
-
-		if(liftMode==0){
-				triggerLift(TL,TR);
-		}
-		else if(liftMode==1){
-				limitLift();
-		}
-
-		motorLift.set(liftSpeed); 
-}
-
-public void tankDriver(double L, double R) {				//left joystick controls left wheels, right joystick controls right wheels
-	if (fastBool) {
-		driver.tankDrive(-L, -R);
-		//System.out.println(controls.joystickLYAxis);
-	
-	} else {
-		driver.tankDrive(-slowModifier*L, -slowModifier*R);
+//Robot blocks
+  @Override
+  public void robotInit() {
+    oi = new OI();
+		//I think this is how we choose different autonomous code options from smartdash
+    chooser.setDefaultOption("Autonomous Command", new AutonomousCommand());
+		SmartDashboard.putData("Auto mode", chooser);
+		driver.setRightSideInverted(true); //TODO: invert right side or nah?
+		timer.start();
+		cameraInit(); //Initialize camera/image processing
+  }
+  @Override
+  public void disabledInit(){
+		liftSpeed=0;
+  }
+  @Override
+  public void disabledPeriodic() {
+    Scheduler.getInstance().run();
+  }
+	@Override
+	public void autonomousInit() {
+		autonomousCommand = chooser.getSelected();
+		if (autonomousCommand != null) autonomousCommand.start();
 	}
-}
-		@Override
-		
-  public void teleopPeriodic() {
-
+  @Override
+  public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-
+  }
+  @Override
+  public void teleopInit() {
+    // This line stops auto once teleop starts.
+		if (autonomousCommand != null) autonomousCommand.cancel();
+		//Rumble controller for half a second
+		rumble(0.5);
+		suckerSetup(); //Set sucker to limit switch to prepare for gameplay
+	}
+	@Override	
+  public void teleopPeriodic() {
+		Scheduler.getInstance().run();
 		update();
 		dashboardOutput();
-
 		tankDriver(joystickLYAxis,joystickRYAxis);
 		climb(buttonX); //On buttonX, bring the arm down and start spinning
-
-		//carriage.runCarriage(controls.buttonA, controls.buttonBack); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
+		runCarriage(buttonA, buttonBack); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
 		runLift(bumperL,bumperR,triggerL,triggerR,pairBumperL,pairBumperR); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.
 	}	
+	
 }
