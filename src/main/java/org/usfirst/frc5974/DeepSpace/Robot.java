@@ -97,8 +97,36 @@ import org.usfirst.frc5974.grip.GripPipeline;
 //import java.util.Set;
 
 public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/241853-choosing-a-base-class
-	//Lift
-	double grabSpeed = 1; //grabber/intake motor speed
+
+//Motors
+	//Carriage motors
+		public VictorSP motorGrabL = new VictorSP(5);
+		public VictorSP motorGrabR = new VictorSP(6);
+	//Sucker motors
+		//These will have 2 motor controllers each.
+		public VictorSP motorsSuckerBase = new VictorSP(7); 
+		public VictorSP motorsSuckerSpinner = new VictorSP(8);
+	//Lift motor
+		VictorSP motorLift = new VictorSP(4);
+	//Drive motors
+		//These have 2 motor controllers each
+		VictorSP motorsRight = new VictorSP(0);
+		VictorSP motorsLeft = new VictorSP(1); 
+
+//Limit switches
+	//Sucker limit switches
+		public DigitalInput switchSucker = new DigitalInput(5);
+		public DigitalInput switchBase = new DigitalInput(6);
+	//Lift limit switches
+		DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
+		DigitalInput switchL1 = new DigitalInput(1);
+		DigitalInput switchL2 = new DigitalInput(2);
+		DigitalInput switchL3 = new DigitalInput(3);
+		DigitalInput switchTop = new DigitalInput(4);
+		
+//Variables
+	//Sucker variables
+		double grabSpeed = 1; //grabber/intake motor speed
     boolean hasBall = false;
     boolean intakeActive=false;
 		boolean shootActive=false;
@@ -106,174 +134,127 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     double suckSpeed=.5;
     double climbSpeed=.75;
 
-    		//Sucker
-		//These will have 2 motor controllers each.
-		public VictorSP motorsSuckerBase = new VictorSP(7); 
-		public VictorSP motorsSuckerSpinner = new VictorSP(8);
-		
-		//Sucker
-		public DigitalInput switchSucker = new DigitalInput(5);
-    public DigitalInput switchBase = new DigitalInput(6);
+  //Lift variables
+    double speedModifier = .5; //change this to make lift move faster or slower
+    int targetLevel = 0; //level it's supposed to go to
+    double currentLevel = 0; //level it's currently at
+    double liftSpeed = 0; //the value we set motorLift to
+    int liftMode = 0; //0 is trigger, 1 is limit switch.
 
-
-    //Carriage
-	public VictorSP motorGrabL = new VictorSP(5);
-	public VictorSP motorGrabR = new VictorSP(6);
-    //Variables
-    public double speedModifier = .5; //change this to make lift move faster or slower
-    public int targetLevel = 0; //level it's supposed to go to
-    public double currentLevel = 0; //level it's currently at
-    public double liftSpeed = 0; //the value we set motorLift to
-    public int liftMode = 0; //0 is trigger, 1 is limit switch.
-
-    //Lift
-		public DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
-        public DigitalInput switchL1 = new DigitalInput(1);
-        public DigitalInput switchL2 = new DigitalInput(2);
-        public DigitalInput switchL3 = new DigitalInput(3);
-        public DigitalInput switchTop = new DigitalInput(4);
-
-        public VictorSP motorLift = new VictorSP(4);
-				
-				
-	//Driving
-	public VictorSP motorRF = new VictorSP(0); //motor right front 
-	public VictorSP motorRB = new VictorSP(1); //motor right back
-	public SpeedControllerGroup motorsRight = new SpeedControllerGroup(motorRF,motorRB); //Groups the right motors together into one object
-
-		public VictorSP motorLF = new VictorSP(2); //motor left front
-		public VictorSP motorLB = new VictorSP(3); //motor left back
-		public SpeedControllerGroup motorsLeft = new SpeedControllerGroup(motorLF, motorLB); //Groups the left motors together into one object
-
-
-	public DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
-
-    //Drive Variables
-	public boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
-	public boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
-	double slowModifier = 0.75; //Set slow mode speed
+  //Drive Variables
+		boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
+		boolean driveNormal = true; 	//drive mode: true = normal tank drive, false = drive straight
+		double slowModifier = 0.75; //Set slow mode speed
+	//Controller Variables
+		double joystickLXAxis;			//left joystick x-axis
+		double joystickLYAxis;			//left joystick y-axis
+		double joystickRXAxis;			//right joystick x-axis
+		double joystickRYAxis;			//right joystick y-axis
+		double triggerL;				//left trigger
+		double triggerR;				//right trigger
+		boolean bumperL;				//left bumper
+		boolean bumperR;				//right bumper
+		boolean buttonX;				//x button
+		boolean buttonY;				//y button
+		boolean buttonA;				//a button
+		boolean buttonB;				//b button
+		int dPad;					    //d-pad
+		boolean joystickLPress;		    //left joystick button press
+		boolean joystickRPress;		    //right joystick button press
+		boolean buttonStart;			//start button
+		boolean buttonBack;			    //back button
+		boolean[] pairX = {false, false};
+		boolean[] pairY = {false, false};
+		boolean[] pairA = {false, false};
+		boolean[] pairB = {false, false};
+		boolean[] pairBumperR = {false,false};
+		boolean[] pairBumperL = {false,false};
+		boolean pressed = false;
 	
-	//Controller
-	    //Variables for the Controller
-			Joystick controller = new Joystick(0);	//controller
-			public double joystickLXAxis;			//left joystick x-axis
-			public double joystickLYAxis;			//left joystick y-axis
-			public double joystickRXAxis;			//right joystick x-axis
-			public double joystickRYAxis;			//right joystick y-axis
-			public double triggerL;				//left trigger
-			public double triggerR;				//right trigger
-			public boolean bumperL;				//left bumper
-			public boolean bumperR;				//right bumper
-			public boolean buttonX;				//x button
-			public boolean buttonY;				//y button
-			public boolean buttonA;				//a button
-			public boolean buttonB;				//b button
-			int dPad;					    //d-pad
-			public boolean joystickLPress;		    //left joystick button press
-			public boolean joystickRPress;		    //right joystick button press
-			public boolean buttonStart;			//start button
-			public boolean buttonBack;			    //back button
-			
-			public boolean[] pairX = {false, false};
-			public boolean[] pairY = {false, false};
-			public boolean[] pairA = {false, false};
-			public boolean[] pairB = {false, false};
-			public boolean[] pairBumperR = {false,false};
-			public boolean[] pairBumperL = {false,false};
-				
-			boolean pressed = false;
-			
-			public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
-				return runOnce(button, buttonPair) ? !toggle : toggle;
+	DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
+
+	//controller
+	Joystick controller = new Joystick(0);
+	public boolean toggle(boolean button, boolean toggle, boolean[] buttonPair) {
+		return runOnce(button, buttonPair) ? !toggle : toggle;
+	}
+	public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
+		//When the button is pushed, once it is released, its toggle is changed
+		if (pressed) {
+			toggle = !toggle;
+			while (pressed) {		//if the riolog complains about loop being overrun or whatever, this code is probably causing it
+				pressed = controller.getRawButton(portNum);
 			}
-		
-			public boolean checkButton(boolean pressed, boolean toggle, int portNum) {
-				//When the button is pushed, once it is released, its toggle is changed
-				if (pressed) {
-					toggle = !toggle;
-					while (pressed) {		//While loops can be problematic in Timed Robot because timing may slip.
-											// This is a pretty small amount of code though, so it shouldn't be an issue?
-						pressed = controller.getRawButton(portNum);
-					}
-				}
-				return toggle;
+		}
+		return toggle;
+	}
+	public boolean runOnce(boolean pressed, boolean[] buttonPair) {	//first in buttonPair is run, second is completed
+		boolean completed = buttonPair[0];
+		if (pressed && !completed) {
+			buttonPair[0] = true;
+			buttonPair[1] = true;
+		} else {
+			if (!pressed && completed) {
+				buttonPair[0] = false;
 			}
-		
-			public boolean runOnce(boolean pressed, boolean[] buttonPair) {	//first in buttonPair is run, second is completed
-				boolean completed = buttonPair[0];
-				if (pressed && !completed) {
-					buttonPair[0] = true;
-					buttonPair[1] = true;
-				} else {
-					if (!pressed && completed) {
-						buttonPair[0] = false;
-					}
-					if (buttonPair[1]) {buttonPair[1] = false;}
-				}
-				return buttonPair[1];
-			}
-		
-			public void joystickDeadZone() {		//Set dead zone for joysticks
-				double deadZoneValue=.16;
-				if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
-					joystickLXAxis = 0;
-				}
-				if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
-					joystickLYAxis = 0;
-				}
-				if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
-					joystickRXAxis = 0;
-				} 
-				if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
-					joystickRYAxis = 0;
-				} 
-		
-				if(triggerL<=0.0001){
-					triggerL=0;
-				}
-				if(triggerR>=-0.0001){
-					triggerR=0;
-				}
-			}
-		
-			public void updateController() {		//updates all controller features
-				//joystick updates
-				joystickLXAxis = controller.getRawAxis(0);		//returns a value [-1,1]
-				joystickLYAxis = controller.getRawAxis(1);		//returns a value [-1,1]
-				joystickRXAxis = controller.getRawAxis(4);		//returns a value [-1,1]
-				joystickRYAxis = controller.getRawAxis(5);		//returns a value [-1,1]
-				joystickLPress = controller.getRawButton(9);	//returns a value {0,1}
-				joystickRPress = controller.getRawButton(10);	//returns a value {0,1}
-				//trigger updates
-				triggerL = controller.getRawAxis(2);		//returns a value [0,1]
-				triggerR = controller.getRawAxis(3);		//returns a value [0,1]
-				joystickDeadZone();
-				//System.out.println(joystickLYAxis);
-				
-				//bumper updates
-				bumperL = controller.getRawButton(5);		//returns a value {0,1}
-				bumperR = controller.getRawButton(6);		//returns a value {0,1}
-				
-				//button updates
-				buttonX = controller.getRawButton(3);		//returns a value {0,1}
-				buttonY = controller.getRawButton(4);		//returns a value {0,1}
-				buttonA = controller.getRawButton(1);		//returns a value {0,1}
-				buttonB = controller.getRawButton(2);		//returns a value {0,1}
-				
-				buttonBack = controller.getRawButton(7);	//returns a value {0,1}
-				buttonStart = controller.getRawButton(8);	//returns a value {0,1}
-				
-				//d-pad/POV updates
-				dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
-			}
-				
-				public void rumble(double duration){
-						controller.setRumble(Joystick.RumbleType.kRightRumble, 0.5);
-				controller.setRumble(Joystick.RumbleType.kLeftRumble, 0.5);
-				Timer.delay(duration);
-				controller.setRumble(Joystick.RumbleType.kRightRumble, 0);
-				controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
-				}
+			if (buttonPair[1]) {buttonPair[1] = false;}
+		}
+		return buttonPair[1];
+	}
+	public void joystickDeadZone() {		//Set dead zone for joysticks
+		double deadZoneValue=.16;
+		if (joystickLXAxis <=deadZoneValue && joystickLXAxis >= -deadZoneValue) {
+			joystickLXAxis = 0;
+		}
+		if (joystickLYAxis <=deadZoneValue && joystickLYAxis >= -deadZoneValue) {
+			joystickLYAxis = 0;
+		}
+		if (joystickRXAxis <=deadZoneValue && joystickRXAxis >= -deadZoneValue) {
+			joystickRXAxis = 0;
+		} 
+		if (joystickRYAxis <=deadZoneValue && joystickRYAxis >= -deadZoneValue) {
+			joystickRYAxis = 0;
+		} 
+
+		if(triggerL<=0.0001){
+			triggerL=0;
+		}
+		if(triggerR>=-0.0001){
+			triggerR=0;
+		}
+	}
+	public void updateController() {		//updates all controller features
+		//joystick updates
+		joystickLXAxis = controller.getRawAxis(0);		//returns a value [-1,1]
+		joystickLYAxis = controller.getRawAxis(1);		//returns a value [-1,1]
+		joystickRXAxis = controller.getRawAxis(4);		//returns a value [-1,1]
+		joystickRYAxis = controller.getRawAxis(5);		//returns a value [-1,1]
+		joystickLPress = controller.getRawButton(9);	//returns a value {0,1}
+		joystickRPress = controller.getRawButton(10);	//returns a value {0,1}
+		//trigger updates
+		triggerL = controller.getRawAxis(2);		//returns a value [0,1]
+		triggerR = controller.getRawAxis(3);		//returns a value [0,1]
+		joystickDeadZone();
+		//bumper updates
+		bumperL = controller.getRawButton(5);		//returns a value {0,1}
+		bumperR = controller.getRawButton(6);		//returns a value {0,1}
+		//button updates
+		buttonX = controller.getRawButton(3);		//returns a value {0,1}
+		buttonY = controller.getRawButton(4);		//returns a value {0,1}
+		buttonA = controller.getRawButton(1);		//returns a value {0,1}
+		buttonB = controller.getRawButton(2);		//returns a value {0,1}
+		buttonBack = controller.getRawButton(7);	//returns a value {0,1}
+		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
+		//d-pad/POV updates
+		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
+	}		
+	public void rumble(double duration){
+		controller.setRumble(Joystick.RumbleType.kRightRumble, 0.5);
+		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0.5);
+		Timer.delay(duration);
+		controller.setRumble(Joystick.RumbleType.kRightRumble, 0);
+		controller.setRumble(Joystick.RumbleType.kLeftRumble, 0);
+	}
 
 			//Sensors
 			//ADXRS450_Gyro gyro = new ADXRS450_Gyro();
