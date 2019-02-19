@@ -75,10 +75,9 @@ import org.usfirst.frc5974.DeepSpace.commands.*;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
 
-import org.usfirst.frc5974.DeepSpace.subsystems.*;
-
 import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.Controller;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -122,7 +121,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     //Carriage
 	public VictorSP motorGrabL = new VictorSP(5);
 	public VictorSP motorGrabR = new VictorSP(6);
-    Controller controls = new Controller();
     //Variables
     public double speedModifier = .5; //change this to make lift move faster or slower
     public int targetLevel = 0; //level it's supposed to go to
@@ -616,11 +614,11 @@ public void shoot(){
 	}
 	public void updateLevel(boolean BL, boolean BR, boolean[] PBL, boolean[] PBR){
 		//Update bumper - user input for which level to go to.
-		if(controls.runOnce(BR,PBR)&&targetLevel<3){
+		if(runOnce(BR,PBR)&&targetLevel<3){
 				//if bumper R is pressed and target level is less than 3, increase target level
 				targetLevel++;
 		}
-		else if(controls.runOnce(BL,PBL)&&targetLevel>0){
+		else if(runOnce(BL,PBL)&&targetLevel>0){
 				//if bumper L is pressed and target level is more than 0, decrease target level
 				targetLevel--;
 		}
