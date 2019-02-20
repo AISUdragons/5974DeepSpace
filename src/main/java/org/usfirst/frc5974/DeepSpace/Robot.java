@@ -515,7 +515,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putData("Auto mode", chooser);
 		driver.setRightSideInverted(true); //TODO: invert right side or nah?
 		timer.start();
-		cameraInit(); //Initialize camera/image processing
+		//cameraInit(); //Initialize camera/image processing
   }
   @Override
   public void disabledInit(){
