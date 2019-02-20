@@ -348,23 +348,25 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 	}
 	public void climb(boolean X, boolean Y){
+		double climbSetSpeed=0;
 		if(switchBase){
-			motorsSuckerBase.set(0);
+			climbSetSpeed=Math.min(0,climbSetSpeed);
 		}
 		else{
 			if(X){
-				motorsSuckerBase.set(pivotSpeed);
+				climbSetSpeed=pivotSpeed;
 			}
 			else if(Y){
-				motorsSuckerBase.set(-pivotSpeed);
+				climbSetSpeed=-pivotSpeed;
 			}
 		}
 		if(X||Y){
 			motorsSuckerSpinner.set(climbSpeed);
 		}
 		else{
-			motorsSuckerBase.set(0);
+			climbSetSpeed=0;
 		}
+		motorsSuckerBase.set(climbSetSpeed);
 	}	
 
 
