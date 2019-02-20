@@ -127,7 +127,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		boolean  switchL2;
 		boolean  switchL3;
 		boolean  switchTop;
-		boolean  switchCarriage;
+		boolean switchCarriage;
 		boolean keyboardEmulation = true;
 		
 //Variables
@@ -139,10 +139,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		double centerX = 0.0;
 		private final Object imgLock = new Object();
 	//Sucker variables
-	double grabSpeed = 1; //grabber/intake motor speed
-    boolean hasBall = false;
-    boolean intakeActive=false;
-	boolean shootActive=false;
 	double pivotSpeed=.5;
     double suckSpeed=.5;
     double climbSpeed=.75;
@@ -153,7 +149,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     double currentLevel = 0; //level it's currently at
     double liftSpeed = 0; //the value we set motorLift to
 	int liftMode = 0; //0 is trigger, 1 is limit switch.
-	int carriageMode=1; //0:levels (A), 1: toggle (back), 2: limit switch (back)
+
+  //Carriage variables
+  int carriageMode=2; //0:levels (A), 1: toggle (back), 2: limit switch (back)
+  double grabSpeed = 1; //grabber/intake motor speed
+    boolean hasBall = false;
+    boolean intakeActive=false;
+	boolean shootActive=false;
+	boolean shot=false;
+	boolean grabbed=false;
 
   //Drive Variables
 		boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
@@ -410,11 +414,13 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		//Limit switch
 		if(carriageMode==2){
 			if(switchCarriage){
-				hasBall=true;
+				grabbed=true;
+				System.out.println("hasBall");
 			}
 			if(back&&hasBall){
 				shoot();
-				hasBall=false;
+				shot=true;
+				grabbed=false;
 			}
 			if(back&&!hasBall){
 				intake(true);
@@ -423,6 +429,12 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			if(!back){
 				intake(false);
 				succ(false);
+				if(shot){
+					hasBall=false;
+				}
+				if(grabbed){
+					hasBall=true;
+				}
 			}
 		}
 	}
@@ -574,6 +586,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		SmartDashboard.putBoolean("Fast Mode", fastBool);
 		SmartDashboard.putNumber("Lift Target Level",targetLevel);
 		SmartDashboard.putNumber("Lift Current Level",currentLevel);
+		
+		SmartDashboard.getBoolean("Sucker at Angle",switchSucker);
+		SmartDashboard.getBoolean("Sucker at Bottom",switchBase);
+		SmartDashboard.getBoolean("Lift at Bottom",switchBottom);
+		SmartDashboard.getBoolean("Lift Level 1",switchL1);
+		SmartDashboard.getBoolean("Lift Level 2",switchL2);
+		SmartDashboard.getBoolean("Lift Level 3",switchL3);
+		SmartDashboard.getBoolean("Lift at Top",switchTop);
+		SmartDashboard.getBoolean("Carriage/ball detector",switchCarriage);
 	}
 
 //Robot blocks
@@ -621,6 +642,9 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		climb(buttonX,buttonY); //X climb, Y retract
 		runCarriage(buttonA, buttonBack); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
 		runLift(bumperL,bumperR,triggerL,triggerR,pairBumperL,pairBumperR); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.
+		if(buttonY){
+			System.out.println("hasBall:"+hasBall);
+		}
 	}	
 
 }

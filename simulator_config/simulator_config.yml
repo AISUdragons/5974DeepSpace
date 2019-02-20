@@ -1,0 +1,67 @@
+!!com.snobot.simulator.config.v1.SimulatorConfigV1
+mAccelerometers: []
+mAnalogIn: []
+mAnalogOut: []
+mDefaultI2CWrappers: {}
+mDefaultSpiWrappers: {}
+mDigitalIO: []
+mEncoders: []
+mGyros: []
+mPwm:
+- mHandle: 0
+  mMotorModelConfig: null
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.SimpleMotorSimulationConfig
+    mMaxSpeed: 0.0
+  mName: motorsRight
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+- mHandle: 1
+  mMotorModelConfig: null
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.SimpleMotorSimulationConfig
+    mMaxSpeed: 0.0
+  mName: motorsLeft
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+- mHandle: 2
+  mMotorModelConfig: null
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.SimpleMotorSimulationConfig
+    mMaxSpeed: 0.0
+  mName: motorSuckerSpinL
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+- mHandle: 3
+  mMotorModelConfig: null
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.SimpleMotorSimulationConfig
+    mMaxSpeed: 0.0
+  mName: motorSuckerSpinR
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+- mHandle: 4
+  mMotorModelConfig: null
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.SimpleMotorSimulationConfig
+    mMaxSpeed: 0.0
+  mName: motorGrabL
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+- mHandle: 5
+  mMotorModelConfig: null
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.SimpleMotorSimulationConfig
+    mMaxSpeed: 0.0
+  mName: motorGrabL
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+- mHandle: 6
+  mMotorModelConfig: null
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.SimpleMotorSimulationConfig
+    mMaxSpeed: 0.0
+  mName: motorSuckerBaseR
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+- mHandle: 7
+  mMotorModelConfig: null
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.SimpleMotorSimulationConfig
+    mMaxSpeed: 0.0
+  mName: motorSuckerBaseL
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+- mHandle: 8
+  mMotorModelConfig: null
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.SimpleMotorSimulationConfig
+    mMaxSpeed: 0.0
+  mName: motorLift
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+mRelays: []
+mSimulatorComponents: []
+mSolenoids: []
