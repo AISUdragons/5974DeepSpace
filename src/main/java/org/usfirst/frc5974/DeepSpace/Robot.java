@@ -136,11 +136,11 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		double centerX = 0.0;
 		private final Object imgLock = new Object();
 	//Sucker variables
-		double grabSpeed = 1; //grabber/intake motor speed
+	double grabSpeed = 1; //grabber/intake motor speed
     boolean hasBall = false;
     boolean intakeActive=false;
-		boolean shootActive=false;
-		double pivotSpeed;
+	boolean shootActive=false;
+	double pivotSpeed=.5;
     double suckSpeed=.5;
     double climbSpeed=.75;
 
@@ -288,34 +288,60 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 
 //Sucker
-	public void intake(){
-		motorGrabL.set(grabSpeed);
-		motorGrabR.set(-grabSpeed);
-		succ();
+	public void intake(boolean enable){
+		if(enable){
+			motorGrabL.set(grabSpeed);
+			motorGrabR.set(-grabSpeed);
+		}
+		else{
+			motorGrabL.set(0);
+			motorGrabR.set(0);
+		}
 	}
 	public void suckerSetup(){
 		motorsSuckerBase.set(pivotSpeed);
 		double moveSpeed = pivotSpeed;
 		if(switchSucker.get()){
 			while(motorsSuckerBase.get()!=0){
-				motorsSuckerBase.set(moveSpeed-.1); //gradually slow when hit limit switch
+				if(moveSpeed>0){
+					moveSpeed=moveSpeed-.0001;
+				}
+				motorsSuckerBase.set(moveSpeed); //gradually slow when hit limit switch. Simulator says this'll take under a second; may have to finetune.
+				if(moveSpeed<.001){
+					motorsSuckerBase.set(0);
+					break;
+				}
 			}
 		}
 	}
-	public void succ(){
-		motorsSuckerSpinner.set(suckSpeed);
+	public void succ(boolean enable){
+		if(enable){
+			motorsSuckerSpinner.set(suckSpeed);
+		}
+		else if(!buttonX&&!buttonY){
+			motorsSuckerSpinner.set(0);
+		}
 	}
-	public void climb(boolean X){
-		if(X){
-			if(switchBase.get()){
-				motorsSuckerBase.set(0);
-			}
-			else{
+	public void climb(boolean X, boolean Y){
+		if(switchBase.get()){
+			motorsSuckerBase.set(0);
+		}
+		else{
+			if(X){
 				motorsSuckerBase.set(pivotSpeed);
 			}
+			else if(Y){
+				motorsSuckerBase.set(-pivotSpeed);
+			}
+		}
+		if(X||Y){
 			motorsSuckerSpinner.set(climbSpeed);
-		}	
-	}
+		}
+		else{
+			motorsSuckerBase.set(0);
+		}
+	}	
+
 
 //Carriage
 	public void shoot(){
@@ -325,18 +351,20 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void runCarriage(boolean a, boolean back){
 		//Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
 		if(a&&currentLevel==0){
-			intake();
+			intake(true);
+			succ(true);
 		}
 		else if(a&&currentLevel>0){
 			shoot();
 		}
 		else if(!a){
-			motorGrabL.set(0);
-			motorGrabR.set(0);
+			intake(false);
+			succ(false);
 		}
 		//However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
 		if(back&&!hasBall){
-			intake();
+			intake(true);
+			succ(true);
 			intakeActive=true;
 		}
 		if(back&&hasBall){
@@ -345,14 +373,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 		if(!back){
 			if(intakeActive){
-				motorGrabL.set(0);
-				motorGrabR.set(0);
+				intake(false);
+				succ(false);
 				intakeActive=false;
 				hasBall=true;
 			}
 			if(shootActive){
-				motorGrabL.set(0);
-				motorGrabR.set(0);
+				intake(false);
+				succ(false);
 				shootActive=false;
 				hasBall=false;
 			}
@@ -548,7 +576,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		update();
 		dashboardOutput();
 		tankDriver(joystickLYAxis,joystickRYAxis);
-		climb(buttonX); //On buttonX, bring the arm down and start spinning
+		climb(buttonX,buttonY); //X climb, Y retract
 		runCarriage(buttonA, buttonBack); //Operate carriage (intake/ball shooter). Also calls sucker.succ().
 		runLift(bumperL,bumperR,triggerL,triggerR,pairBumperL,pairBumperR); //Operate the lift and grabber. Currently based on triggers; change mode in Lift.java.
 	}	
