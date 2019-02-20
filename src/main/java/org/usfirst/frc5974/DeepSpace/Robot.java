@@ -126,6 +126,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		DigitalInput switchL2 = new DigitalInput(2);
 		DigitalInput switchL3 = new DigitalInput(3);
 		DigitalInput switchTop = new DigitalInput(4);
+		DigitalInput switchCarriage = new DigitalInput(7);
 		
 //Variables
 	//Camera variables
