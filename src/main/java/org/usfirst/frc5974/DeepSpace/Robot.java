@@ -151,6 +151,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     double liftSpeed = 0; //the value we set motorLift to
 	int liftMode = 0; //0 is trigger, 1 is limit switch.
 	int carriageMode=1; //0:levels (A), 1: toggle (back), 2: limit switch (back)
+	boolean shot = false;
+	boolean grabbed=false;
 
   //Drive Variables
 		boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
@@ -323,24 +325,24 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 	}
 	public void climb(boolean X, boolean Y){
-		if(switchBase.get()){
-			motorsSuckerBase.set(0);
+		double climbSetSpeed=0;
+		if(X){
+			climbSetSpeed=pivotSpeed;
 		}
-		else{
-			if(X){
-				motorsSuckerBase.set(pivotSpeed);
-			}
-			else if(Y){
-				motorsSuckerBase.set(-pivotSpeed);
-			}
+		else if(Y){
+			climbSetSpeed=-pivotSpeed;
+		}
+		if(switchBase.get()){
+			climbSetSpeed=Math.max(0,climbSetSpeed);
 		}
 		if(X||Y){
 			motorsSuckerSpinner.set(climbSpeed);
 		}
 		else{
-			motorsSuckerBase.set(0);
+			climbSetSpeed=0;
 		}
-	}	
+		motorsSuckerBase.set(climbSetSpeed);
+	} 
 
 
 //Carriage
@@ -389,14 +391,16 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 				}
 			}
 		}
-		//Annnd a limit switch version.
+		//Limit switch
 		if(carriageMode==2){
 			if(switchCarriage.get()){
-				hasBall=true;
+				grabbed=true;
+				System.out.println("hasBall");
 			}
 			if(back&&hasBall){
 				shoot();
-				hasBall=false;
+				shot=true;
+				grabbed=false;
 			}
 			if(back&&!hasBall){
 				intake(true);
@@ -405,9 +409,15 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			if(!back){
 				intake(false);
 				succ(false);
+				if(shot){
+					hasBall=false;
+				}
+				if(grabbed){
+					hasBall=true;
+				}
 			}
 		}
-	}
+}
 
 //Lift
 	public void updateLevel(boolean BL, boolean BR, boolean[] PBL, boolean[] PBR){
