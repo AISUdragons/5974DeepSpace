@@ -99,18 +99,18 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 //Motors
 	//Carriage motors
-		VictorSP motorGrabL = new VictorSP(3);
-		VictorSP motorGrabR = new VictorSP(4);
+		VictorSP motorGrabL = new VictorSP(4);
+		VictorSP motorGrabR = new VictorSP(5);
 	//Sucker motors
 		//These will have 2 motor controllers each.
-		VictorSP motorSuckerBaseL = new VictorSP(5);
+		VictorSP motorSuckerBaseL = new VictorSP(7);
 		VictorSP motorSuckerBaseR = new VictorSP(6);
 		SpeedControllerGroup motorsSuckerBase = new SpeedControllerGroup(motorSuckerBaseL,motorSuckerBaseR);
-		VictorSP motorSuckerSpinL = new VictorSP(7); 
-		VictorSP motorSuckerSpinR = new VictorSP(8);
+		VictorSP motorSuckerSpinL = new VictorSP(2); 
+		VictorSP motorSuckerSpinR = new VictorSP(3);
 		SpeedControllerGroup motorsSuckerSpinner = new SpeedControllerGroup(motorSuckerSpinL,motorSuckerSpinR);
 	//Lift motor
-		VictorSP motorLift = new VictorSP(2);
+		VictorSP motorLift = new VictorSP(8);
 	//Drive motors
 		//These have 2 motor controllers each
 		VictorSP motorsRight = new VictorSP(0);
