@@ -116,17 +116,19 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		VictorSP motorsRight = new VictorSP(0);
 		VictorSP motorsLeft = new VictorSP(1); 
 
-//Limit switches
+//Limit switches (emulated)
+	Joystick keyboard = new Joystick(1); //Not sure if this will work on actual driverstation. We'll see.
 	//Sucker limit switches
-		DigitalInput switchSucker = new DigitalInput(5);
-		DigitalInput switchBase = new DigitalInput(6);
+		boolean  switchSucker;
+		boolean  switchBase;
 	//Lift limit switches
-		DigitalInput switchBottom = new DigitalInput(0); //TODO: Set limit switches to the correct ports
-		DigitalInput switchL1 = new DigitalInput(1);
-		DigitalInput switchL2 = new DigitalInput(2);
-		DigitalInput switchL3 = new DigitalInput(3);
-		DigitalInput switchTop = new DigitalInput(4);
-		DigitalInput switchCarriage = new DigitalInput(7);
+		boolean  switchBottom;
+		boolean  switchL1;
+		boolean  switchL2;
+		boolean  switchL3;
+		boolean  switchTop;
+		boolean  switchCarriage;
+		boolean keyboardEmulation = true;
 		
 //Variables
 	//Camera variables
@@ -268,6 +270,22 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		buttonStart = controller.getRawButton(8);	//returns a value {0,1}
 		//d-pad/POV updates
 		dPad = controller.getPOV(0);		//returns a value {-1,0,45,90,135,180,225,270,315}
+
+		//Limit switch emulation
+		if(keyboardEmulation){
+			switchSucker = keyboard.getRawButton(1);
+			switchBase = keyboard.getRawButton(2);
+			switchBottom = keyboard.getRawButton(3);
+			switchL1 = keyboard.getRawButton(4);
+			switchL2 = keyboard.getRawButton(5);
+			switchL3 = keyboard.getRawButton(6);
+			switchTop = keyboard.getRawButton(7);
+			switchCarriage = keyboard.getRawButton(8);
+		}
+		else{
+			switchSucker = true;
+			switchBase = false;
+		}
 	}		
 	public void rumble(double duration){
 		controller.setRumble(Joystick.RumbleType.kRightRumble, 0.5);
@@ -302,7 +320,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	public void suckerSetup(){
 		motorsSuckerBase.set(pivotSpeed);
 		double moveSpeed = pivotSpeed;
-		if(switchSucker.get()){
+		if(switchSucker){
 			while(motorsSuckerBase.get()!=0){
 				if(moveSpeed>0){
 					moveSpeed=moveSpeed-.0001;
@@ -324,7 +342,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		}
 	}
 	public void climb(boolean X, boolean Y){
-		if(switchBase.get()){
+		if(switchBase){
 			motorsSuckerBase.set(0);
 		}
 		else{
@@ -400,38 +418,40 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 			targetLevel--;
 		}
 		//Kill if lift hits top or bottom limit switches.
-		if(switchBottom.get()){
-			liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
-			//This ensures the lift speed will be positive.
-			currentLevel = 0;
-		}
-		if(switchTop.get()){
-			liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
-			currentLevel = 4;
-		}
-		//Update limit switches for every level
-		if(switchL1.get()){ //If the limit switch for L1 is hit:
-			if(currentLevel<1){ //If the current level is less than L1:
-					currentLevel++; //Increase current level
+		if(keyboardEmulation){
+			if(switchBottom){
+				liftSpeed=Math.max(0,liftSpeed); //We can't just set it to 0, because the limit switch will continue being held down, disabling the motor for the rest of the game.
+				//This ensures the lift speed will be positive.
+				currentLevel = 0;
 			}
-			else if(currentLevel>1){ //If the current level is greater than L1:
-				currentLevel--; //Decrease current level.				
+			if(switchTop){
+				liftSpeed = Math.min(0,liftSpeed); //See above comments; this ensures lift speed will be negative.
+				currentLevel = 4;
 			}
-		}
-		if(switchL2.get()){ //Same as above.
-			if(currentLevel<2){
+			//Update limit switches for every level
+			if(switchL1){ //If the limit switch for L1 is hit:
+				if(currentLevel<1){ //If the current level is less than L1:
+						currentLevel++; //Increase current level
+				}
+				else if(currentLevel>1){ //If the current level is greater than L1:
+					currentLevel--; //Decrease current level.				
+				}
+			}
+			if(switchL2){ //Same as above.
+				if(currentLevel<2){
+						currentLevel++;
+				}
+				else if(currentLevel>2){
+					currentLevel--;
+				}
+			}
+			if(switchL3){
+				if(currentLevel<3){
 					currentLevel++;
-			}
-			else if(currentLevel>2){
-				currentLevel--;
-			}
-		}
-		if(switchL3.get()){
-			if(currentLevel<3){
-				currentLevel++;
-			}
-			else if(currentLevel>3){
-				currentLevel--;
+				}
+				else if(currentLevel>3){
+					currentLevel--;
+				}
 			}
 		}
 	}
