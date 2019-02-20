@@ -148,7 +148,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     int targetLevel = 0; //level it's supposed to go to
     double currentLevel = 0; //level it's currently at
     double liftSpeed = 0; //the value we set motorLift to
-	int liftMode = 0; //0 is trigger, 1 is limit switch.
+	int liftMode = 1; //0 is trigger, 1 is limit switch.
 
   //Carriage variables
   int carriageMode=2; //0:levels (A), 1: toggle (back), 2: limit switch (back)
@@ -326,6 +326,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		motorsSuckerBase.set(pivotSpeed);
 		double moveSpeed = pivotSpeed;
 		if(switchSucker){
+			//System.out.println("switchSucker");
 			while(motorsSuckerBase.get()!=0){
 				if(moveSpeed>0){
 					moveSpeed=moveSpeed-.0001;
