@@ -152,7 +152,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     int targetLevel = 0; //level it's supposed to go to
     double currentLevel = 0; //level it's currently at
     double liftSpeed = 0; //the value we set motorLift to
-    int liftMode = 0; //0 is trigger, 1 is limit switch.
+	int liftMode = 0; //0 is trigger, 1 is limit switch.
+	int carriageMode=1; //0:levels (A), 1: toggle (back), 2: limit switch (back)
 
   //Drive Variables
 		boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
@@ -369,41 +370,61 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 	public void runCarriage(boolean a, boolean back){
 		//Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
-		if(a&&currentLevel==0){
-			intake(true);
-			succ(true);
-		}
-		else if(a&&currentLevel>0){
-			shoot();
-		}
-		else if(!a){
-			intake(false);
-			succ(false);
-		}
-		//However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
-		if(back&&!hasBall){
-			intake(true);
-			succ(true);
-			intakeActive=true;
-		}
-		if(back&&hasBall){
-			shoot();
-			shootActive=true;
-		}
-		if(!back){
-			if(intakeActive){
+		if(carriageMode==0){
+			if(a&&currentLevel==0){
+				intake(true);
+				succ(true);
+			}
+			else if(a&&currentLevel>0){
+				shoot();
+			}
+			else if(!a){
 				intake(false);
 				succ(false);
-				intakeActive=false;
+		}}
+		//However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
+		if(carriageMode==1){
+			if(back&&!hasBall){
+				intake(true);
+				succ(true);
+				intakeActive=true;
+			}
+			if(back&&hasBall){
+				shoot();
+				shootActive=true;
+			}
+			if(!back){
+				if(intakeActive){
+					intake(false);
+					succ(false);
+					intakeActive=false;
+					hasBall=true;
+				}
+				if(shootActive){
+					intake(false);
+					succ(false);
+					shootActive=false;
+					hasBall=false;
+				}
+			}	}
+		//Limit switch
+		if(carriageMode==2){
+			if(switchCarriage){
 				hasBall=true;
 			}
-			if(shootActive){
-				intake(false);
-				succ(false);
-				shootActive=false;
+			if(back&&hasBall){
+				shoot();
 				hasBall=false;
 			}
-		}	
+			if(back&&!hasBall){
+				intake(true);
+				succ(true);
+			}
+			if(!back){
+				intake(false);
+				succ(false);
+			}
+		}
 	}
 
 //Lift
