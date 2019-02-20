@@ -349,16 +349,14 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 	public void climb(boolean X, boolean Y){
 		double climbSetSpeed=0;
-		if(switchBase){
-			climbSetSpeed=Math.min(0,climbSetSpeed);
+		if(X){
+			climbSetSpeed=pivotSpeed;
 		}
-		else{
-			if(X){
-				climbSetSpeed=pivotSpeed;
-			}
-			else if(Y){
-				climbSetSpeed=-pivotSpeed;
-			}
+		else if(Y){
+			climbSetSpeed=-pivotSpeed;
+		}
+		if(switchBase){
+			climbSetSpeed=Math.max(0,climbSetSpeed);
 		}
 		if(X||Y){
 			motorsSuckerSpinner.set(climbSpeed);
