@@ -5,14 +5,11 @@ package org.usfirst.frc5974.DeepSpace;
 
 /*Master todo list once the robot is built:
 Carriage:
-	Double check PWM ports
 	Set grabSpeed
 	Test
 Driving:
-	Double check PWM ports
 	Test
 Lift:
-	Double check PWM port
 	Double check DIO ports
 	Set liftMode
 	Set speedModifier
@@ -21,7 +18,6 @@ Robot:
 Sensors:
 
 Sucker:
-	Double check PWM ports
 	Double check DIO port
 	Set pivotSpeed
 	Set suckSpeed
@@ -78,6 +74,9 @@ import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+
+import static org.junit.Assume.assumeFalse;
+
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
@@ -126,6 +125,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		DigitalInput switchL2 = new DigitalInput(2);
 		DigitalInput switchL3 = new DigitalInput(3);
 		DigitalInput switchTop = new DigitalInput(4);
+		DigitalInput switchCarriage = new DigitalInput(7);
 		
 //Variables
 	//Camera variables
@@ -149,7 +149,8 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
     int targetLevel = 0; //level it's supposed to go to
     double currentLevel = 0; //level it's currently at
     double liftSpeed = 0; //the value we set motorLift to
-    int liftMode = 0; //0 is trigger, 1 is limit switch.
+	int liftMode = 0; //0 is trigger, 1 is limit switch.
+	int carriageMode=1; //0:levels (A), 1: toggle (back), 2: limit switch (back)
 
   //Drive Variables
 		boolean fastBool = false;		//speed mode: true = fast mode, false = slow mode
@@ -190,8 +191,6 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 		Command autonomousCommand;
 		SendableChooser<Command> chooser = new SendableChooser<>();
 		public static OI oi;
-	
-	DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
 
 //Controller
 	Joystick controller = new Joystick(0);
@@ -278,6 +277,7 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 
 
 //Driver
+	DifferentialDrive driver = new DifferentialDrive(motorsLeft, motorsRight);
 	public void tankDriver(double L, double R) {	//left joystick controls left wheels, right joystick controls right wheels
 		if (fastBool) {
 			driver.tankDrive(-L, -R);
@@ -350,41 +350,63 @@ public class Robot extends TimedRobot { //https://wpilib.screenstepslive.com/s/c
 	}
 	public void runCarriage(boolean a, boolean back){
 		//Theoretically, this will take in balls if it's at the bottom level, and shoot if it's at higher levels.
-		if(a&&currentLevel==0){
-			intake(true);
-			succ(true);
-		}
-		else if(a&&currentLevel>0){
-			shoot();
-		}
-		else if(!a){
-			intake(false);
-			succ(false);
+		if(carriageMode==0){
+			if(a&&currentLevel==0){
+				intake(true);
+				succ(true);
+			}
+			else if(a&&currentLevel>0){
+				shoot();
+			}
+			else if(!a){
+				intake(false);
+				succ(false);
+			}
 		}
 		//However, this won't work if we're using triggers, or if code is just bad, so here's a fallback.
-		if(back&&!hasBall){
-			intake(true);
-			succ(true);
-			intakeActive=true;
+		if(carriageMode==1){
+			if(back&&!hasBall){
+				intake(true);
+				succ(true);
+				intakeActive=true;
+			}
+			if(back&&hasBall){
+				shoot();
+				shootActive=true;
+			}
+			if(!back){
+				if(intakeActive){
+					intake(false);
+					succ(false);
+					intakeActive=false;
+					hasBall=true;
+				}
+				if(shootActive){
+					intake(false);
+					succ(false);
+					shootActive=false;
+					hasBall=false;
+				}
+			}
 		}
-		if(back&&hasBall){
-			shoot();
-			shootActive=true;
-		}
-		if(!back){
-			if(intakeActive){
-				intake(false);
-				succ(false);
-				intakeActive=false;
+		//Annnd a limit switch version.
+		if(carriageMode==2){
+			if(switchCarriage.get()){
 				hasBall=true;
 			}
-			if(shootActive){
-				intake(false);
-				succ(false);
-				shootActive=false;
+			if(back&&hasBall){
+				shoot();
 				hasBall=false;
 			}
-		}	
+			if(back&&!hasBall){
+				intake(true);
+				succ(true);
+			}
+			if(!back){
+				intake(false);
+				succ(false);
+			}
+		}
 	}
 
 //Lift
