@@ -75,7 +75,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
-import static org.junit.Assume.assumeFalse;
+//import static org.junit.Assume.assumeFalse;
 
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
